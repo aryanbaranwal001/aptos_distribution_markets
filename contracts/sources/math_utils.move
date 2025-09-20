@@ -1,8 +1,6 @@
 /// Mathematical utilities for distribution markets
 /// Provides fixed-point arithmetic and statistical functions
 module distribution_markets::math_utils {
-    use std::vector;
-    use aptos_std::math64;
 
     // ==============================
     // Constants
@@ -219,8 +217,8 @@ module distribution_markets::math_utils {
     /// Calculate the cost of moving from one distribution to another
     /// Based on the L2 norm difference in the AMM
     public fun calculate_trade_cost(
-        from_mean: u128, from_std_dev: u128, from_mean_is_negative: bool,
-        to_mean: u128, to_std_dev: u128, to_mean_is_negative: bool,
+        _from_mean: u128, from_std_dev: u128, _from_mean_is_negative: bool,
+        _to_mean: u128, to_std_dev: u128, _to_mean_is_negative: bool,
         backing: u128
     ): u128 {
         let from_norm = normal_l2_norm(from_std_dev);

@@ -697,10 +697,10 @@ module distribution_markets::distribution_markets {
     // Position Management Functions
     // ==============================
 
-    /// Get trader's total exposure across all positions
-    /// @param trader Address of the trader
-    /// @param market_addr Address of the market
-    /// @return Aggregated normal distribution parameters representing total exposure
+    // Get trader's total exposure across all positions
+    // @param trader Address of the trader
+    // @param market_addr Address of the market
+    // @return Aggregated normal distribution parameters representing total exposure
     #[view]
     public fun get_trader_total_exposure(
         trader: address,
@@ -810,10 +810,10 @@ module distribution_markets::distribution_markets {
         });
     }
 
-    /// Get claimable amount for a trader after resolution
-    /// @param trader Address of the trader
-    /// @param market_addr Address of the market
-    /// @return Claimable amount
+    // Get claimable amount for a trader after resolution
+    // @param trader Address of the trader
+    // @param market_addr Address of the market
+    // @return Claimable amount
     #[view]
     public fun get_claimable_amount(
         trader: address,
