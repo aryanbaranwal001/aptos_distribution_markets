@@ -1,0 +1,19 @@
+[package]
+name = "distribution_markets"
+version = "1.0.0"
+
+[addresses]
+distribution_markets = "_"
+
+[dev-addresses]
+distribution_markets = "0x123"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-framework.git"
+rev = "mainnet"
+subdir = "aptos-framework"
+
+[dependencies.AptosStdlib]
+git = "https://github.com/aptos-labs/aptos-framework.git"
+rev = "mainnet"
+subdir = "aptos-stdlib"
