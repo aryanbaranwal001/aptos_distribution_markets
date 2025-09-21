@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
-import { Market, formatVolume } from '@/data/markets';
+import { Market, formatVolume, formatDate, truncateAddress } from '@/data/markets';
 import BookmarkIcon from './BookmarkIcon';
 
 interface MarketCardProps {
@@ -80,6 +80,22 @@ const MarketCard = ({ market }: MarketCardProps) => {
             {category}
           </span>
         ))}
+      </div>
+
+      {/* Market Details */}
+      <div className="flex items-center justify-between mb-4 text-sm">
+        <div className="flex flex-col">
+          <span className={`${theme.textSecondary} mb-1 text-xs`}>Contract</span>
+          <span className={`${theme.text} font-mono text-sm font-medium`}>
+            {truncateAddress(market.address)}
+          </span>
+        </div>
+        <div className="flex flex-col text-right">
+          <span className={`${theme.textSecondary} mb-1 text-xs`}>Ends</span>
+          <span className={`${theme.text} text-sm font-medium`}>
+            {formatDate(market.endDate)}
+          </span>
+        </div>
       </div>
 
       {/* Bottom Section - Volume and Bookmark */}

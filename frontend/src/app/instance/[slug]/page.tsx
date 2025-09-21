@@ -6,7 +6,7 @@ import { ArrowLeft, Bookmark, TrendingUp, Users, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
-import { markets, Market, formatVolume } from '@/data/markets';
+import { markets, Market, formatVolume, formatDate, truncateAddress } from '@/data/markets';
 import Navbar from '@/components/Navbar';
 import CategoryNav from '@/components/CategoryNav';
 
@@ -146,7 +146,7 @@ const MarketInstancePage = () => {
                 </div>
                 <div className="text-center">
                   <Calendar className={`w-8 h-8 ${theme.primary} mx-auto mb-2`} />
-                  <div className="text-2xl font-bold">Dec 2024</div>
+                  <div className="text-2xl font-bold">{formatDate(market.endDate)}</div>
                   <div className={`text-sm ${theme.textSecondary}`}>Resolution Date</div>
                 </div>
               </div>
@@ -194,8 +194,16 @@ const MarketInstancePage = () => {
                   <span>{market.id}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className={theme.textSecondary}>Created</span>
-                  <span>Nov 2024</span>
+                  <span className={theme.textSecondary}>Contract</span>
+                  <span className="font-mono text-sm">{truncateAddress(market.address)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className={theme.textSecondary}>Start Date</span>
+                  <span>{formatDate(market.startDate)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className={theme.textSecondary}>End Date</span>
+                  <span>{formatDate(market.endDate)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className={theme.textSecondary}>Fee</span>
