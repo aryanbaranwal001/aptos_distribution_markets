@@ -89,12 +89,17 @@ const Navbar = () => {
                   <Menu className="w-5 h-5" />
                 </button>
                 
+                {/* Invisible bridge to prevent menu from closing */}
+                {isMenuOpen && (
+                  <div className="absolute top-full right-0 w-48 h-2 z-40" />
+                )}
+                
                 {/* Hamburger Menu Dropdown */}
-                <div className={`absolute top-full right-0 w-48 ${theme.cardBg} border ${theme.border} rounded-lg shadow-lg z-50 transition-all duration-200 ease-out ${
+                <div className={`absolute top-full right-0 mt-2 w-48 sm:w-52 ${theme.cardBg} border ${theme.border} rounded-lg shadow-lg z-50 transition-all duration-200 ease-out ${
                   isMenuOpen 
                     ? 'opacity-100 translate-y-0 scale-100' 
                     : 'opacity-0 translate-y-[-10px] scale-95 pointer-events-none'
-                }`}>
+                } sm:right-0 xs:right-[-12px]`}>
                   <div className="py-2">
                     <a
                       href="/dashboard"
