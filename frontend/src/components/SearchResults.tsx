@@ -47,7 +47,7 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
   const handleResultClick = useCallback((market: Market) => {
     // Generate the same slug as MarketCard component
     const slug = market.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    router.push(`/${slug}`);
+    router.push(`/instance/${slug}`);
     onClose();
   }, [router, onClose]);
 
