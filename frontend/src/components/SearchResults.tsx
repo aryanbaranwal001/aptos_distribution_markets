@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Search } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useAppStore } from '@/store/appStore';
 import { searchMarkets, Market, formatVolume } from '@/data/markets';
@@ -14,9 +15,11 @@ interface SearchResultsProps {
 const SearchResults = ({ onClose }: SearchResultsProps) => {
   const { color } = useThemeStore();
   const { searchQuery } = useAppStore();
+  const router = useRouter();
   const [searchResults, setSearchResults] = useState<Market[]>([]);
   const [iconSources, setIconSources] = useState<{[key: string]: string}>({});
   const [iconErrors, setIconErrors] = useState<{[key: string]: boolean}>({});
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   
   const theme = getThemeClasses(color);
 
@@ -32,18 +35,21 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
       });
       setIconSources(newIconSources);
       setIconErrors({});
+      setSelectedIndex(-1);
     } else {
       setSearchResults([]);
       setIconSources({});
       setIconErrors({});
+      setSelectedIndex(-1);
     }
   }, [searchQuery]);
 
-  const handleResultClick = (market: Market) => {
-    // Navigate to market detail (placeholder for now)
-    console.log('Navigate to market:', market.id);
+  const handleResultClick = useCallback((market: Market) => {
+    // Generate the same slug as MarketCard component
+    const slug = market.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    router.push(`/${slug}`);
     onClose();
-  };
+  }, [router, onClose]);
 
   const handleImageError = (marketId: string) => {
     if (!iconErrors[marketId]) {
@@ -54,6 +60,39 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
       setIconSources(prev => ({ ...prev, [marketId]: svgSrc }));
     }
   };
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (searchResults.length === 0) return;
+
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          setSelectedIndex(prev => 
+            prev < searchResults.length - 1 ? prev + 1 : prev
+          );
+          break;
+        case 'ArrowUp':
+          event.preventDefault();
+          setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
+          break;
+        case 'Enter':
+          event.preventDefault();
+          if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
+            handleResultClick(searchResults[selectedIndex]);
+          }
+          break;
+        case 'Escape':
+          event.preventDefault();
+          onClose();
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [searchResults, selectedIndex, onClose, handleResultClick]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -72,11 +111,16 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
     <div className="search-dropdown h-full overflow-y-auto">
       {searchResults.length > 0 ? (
         <div className="py-2">
-          {searchResults.map((market) => (
+          {searchResults.map((market, index) => (
             <button
               key={market.id}
               onClick={() => handleResultClick(market)}
-              className={`w-full text-left px-4 py-3 ${theme.hoverBg} transition-colors flex items-center space-x-3`}
+              onMouseEnter={() => setSelectedIndex(index)}
+              className={`w-full text-left px-4 py-3 transition-colors flex items-center space-x-3 ${
+                selectedIndex === index 
+                  ? `bg-gray-700/30` 
+                  : `hover:bg-gray-700/20`
+              }`}
             >
               <div className="flex-shrink-0">
                 <Image 
