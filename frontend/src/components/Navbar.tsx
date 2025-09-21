@@ -106,11 +106,11 @@ const Navbar = () => {
                 
                 {/* Invisible bridge to prevent menu from closing */}
                 {isMenuOpen && (
-                  <div className="absolute top-full right-0 w-40 h-6 z-40" />
+                  <div className="absolute top-full right-0 w-40 h-4 z-40" />
                 )}
                 
                 {/* Hamburger Menu Dropdown */}
-                <div className={`absolute top-full right-0 mt-6 w-40 ${theme.cardBg} border ${theme.border} rounded-lg shadow-lg z-50 transition-all duration-200 ease-out ${
+                <div className={`absolute top-full right-0 mt-4 w-40 ${theme.cardBg} border ${theme.border} rounded-lg shadow-lg z-50 transition-all duration-200 ease-out ${
                   isMenuOpen 
                     ? 'opacity-100 translate-y-0 scale-100' 
                     : 'opacity-0 translate-y-[-10px] scale-95 pointer-events-none'
