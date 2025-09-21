@@ -30,7 +30,7 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
       
       // Initialize icon sources for new results (PNG first)
       const newIconSources: {[key: string]: string} = {};
-      results.slice(0, 8).forEach(market => {
+      results.slice(0, 8).forEach((market: Market) => {
         newIconSources[market.id] = `/icons/${market.iconName.replace('.svg', '.png')}`;
       });
       setIconSources(newIconSources);
@@ -45,9 +45,7 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
   }, [searchQuery]);
 
   const handleResultClick = useCallback((market: Market) => {
-    // Generate the same slug as MarketCard component
-    const slug = market.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    router.push(`/${slug}`);
+    router.push(`/market/${market.slug}`);
     onClose();
   }, [router, onClose]);
 
