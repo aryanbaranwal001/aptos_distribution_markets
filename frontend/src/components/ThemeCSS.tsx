@@ -11,30 +11,20 @@ const ThemeCSS = () => {
     
     // Define theme colors for wallet selector
     const themeColors = {
-      blue: {
-        primaryBg: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-        primaryHover: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-        primaryShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-      },
-      purple: {
-        primaryBg: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-        primaryHover: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
-        primaryShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
-      },
       green: {
-        primaryBg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-        primaryHover: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-        primaryShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+        primaryBg: 'linear-gradient(135deg, #11b881 0%, #0f9d6f 100%)',
+        primaryHover: 'linear-gradient(135deg, #0f9d6f 0%, #0d8660 100%)',
+        primaryShadow: '0 4px 12px rgba(17, 184, 129, 0.3)',
       },
       orange: {
-        primaryBg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-        primaryHover: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
-        primaryShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+        primaryBg: 'linear-gradient(135deg, #e59500 0%, #cc8500 100%)',
+        primaryHover: 'linear-gradient(135deg, #cc8500 0%, #b37400 100%)',
+        primaryShadow: '0 4px 12px rgba(229, 149, 0, 0.3)',
       },
-      red: {
-        primaryBg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-        primaryHover: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-        primaryShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
+      coral: {
+        primaryBg: 'linear-gradient(135deg, #ef2d56 0%, #d92548 100%)',
+        primaryHover: 'linear-gradient(135deg, #d92548 0%, #c21e3a 100%)',
+        primaryShadow: '0 4px 12px rgba(239, 45, 86, 0.3)',
       },
     };
 
