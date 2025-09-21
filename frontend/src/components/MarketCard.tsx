@@ -86,13 +86,13 @@ const MarketCard = ({ market }: MarketCardProps) => {
       <div className="flex items-center justify-between mb-4 text-sm">
         <div className="flex flex-col">
           <span className={`${theme.textSecondary} mb-1 text-xs`}>Contract</span>
-          <span className={`${theme.text} font-mono text-sm font-medium`}>
+          <span className={`${theme.primary} font-mono text-sm font-bold`}>
             {truncateAddress(market.address)}
           </span>
         </div>
         <div className="flex flex-col text-right">
           <span className={`${theme.textSecondary} mb-1 text-xs`}>Ends</span>
-          <span className={`${theme.text} text-sm font-medium`}>
+          <span className={`${theme.primary} text-sm font-bold`}>
             {formatDate(market.endDate)}
           </span>
         </div>
