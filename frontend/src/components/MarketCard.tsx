@@ -25,15 +25,11 @@ const MarketCard = ({ market }: MarketCardProps) => {
     console.log('Navigate to market:', market.id);
   };
 
-  const truncateDescription = (text: string, maxLength: number = 120) => {
-    if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength) + '...';
-  };
 
   return (
     <div
       onClick={handleCardClick}
-      className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg} hover:shadow-lg transition-all duration-200 cursor-pointer group`}
+      className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg} hover:shadow-lg transition-all duration-200 cursor-pointer group flex flex-col h-full`}
     >
       {/* Market Title */}
       <h3 className={`text-lg font-semibold ${theme.text} mb-3 group-hover:${theme.primary} transition-colors`}>
@@ -41,8 +37,8 @@ const MarketCard = ({ market }: MarketCardProps) => {
       </h3>
 
       {/* Market Description */}
-      <p className={`${theme.textSecondary} mb-4 leading-relaxed`}>
-        {truncateDescription(market.description)}
+      <p className={`${theme.textSecondary} mb-4 leading-relaxed line-clamp-2`}>
+        {market.description}
       </p>
 
       {/* Categories */}
@@ -58,7 +54,7 @@ const MarketCard = ({ market }: MarketCardProps) => {
       </div>
 
       {/* Bottom Section - Volume and Bookmark */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mt-auto">
         <div className="flex flex-col">
           <span className={`text-xs ${theme.textSecondary} mb-1`}>Volume</span>
           <span className={`text-lg font-semibold ${theme.primary}`}>
