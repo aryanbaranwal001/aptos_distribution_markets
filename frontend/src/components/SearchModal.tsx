@@ -36,7 +36,7 @@ const SearchModal = () => {
   if (!isSearchOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20">
       <div className={`w-full max-w-2xl mx-4 ${theme.cardBg} rounded-lg shadow-xl border ${theme.border}`}>
         {/* Search Header */}
         <div className={`flex items-center p-4 border-b ${theme.border}`}>
