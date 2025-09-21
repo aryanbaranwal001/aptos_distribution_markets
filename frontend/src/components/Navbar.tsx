@@ -45,7 +45,7 @@ const Navbar = () => {
             {/* Search Bar */}
             <div className="flex-1 max-w-lg mx-8">
               <div className="relative">
-                <div className={`relative ${isSearchOpen ? theme.searchBg : theme.cardBg} ${isSearchOpen ? 'rounded-t-lg border border-b-0' : 'rounded-lg'} ${isSearchOpen ? theme.border : ''}`}>
+                <div className={`relative ${isSearchOpen ? theme.searchBg : theme.cardBg} ${isSearchOpen ? 'rounded-t-lg border border-b-0' : 'rounded-lg'} ${isSearchOpen ? theme.searchBorder : ''}`}>
                   <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${theme.textSecondary}`} />
                   <input
                     type="text"
@@ -59,7 +59,7 @@ const Navbar = () => {
                 
                 {/* Search Results Dropdown */}
                 {isSearchOpen && (
-                  <div className={`absolute top-full left-0 right-0 ${theme.searchBg} rounded-b-lg shadow-xl z-50 border border-t ${theme.border}`} style={{ height: '384px' }}>
+                  <div className={`absolute top-full left-0 right-0 ${theme.searchBg} rounded-b-lg shadow-xl z-50 border border-t ${theme.searchBorder}`} style={{ height: '384px' }}>
                     <SearchResults onClose={() => setSearchOpen(false)} />
                   </div>
                 )}

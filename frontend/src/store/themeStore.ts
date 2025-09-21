@@ -36,6 +36,7 @@ export const getThemeClasses = (color: ThemeColor) => {
     cardBg: 'bg-[#1a1b1e]',
     searchBg: 'bg-[#2a2b2e]',
     border: 'border-[#2a2b2e]',
+    searchBorder: 'border-[#1a1b1e]',
     hoverBg: 'hover:bg-[#2a2b2e]',
   };
 
