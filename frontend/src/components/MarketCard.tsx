@@ -54,7 +54,7 @@ const MarketCard = ({ market }: MarketCardProps) => {
       </div>
 
       {/* Bottom Section - Volume and Bookmark */}
-      <div className="flex items-center justify-between mt-auto">
+      <div className="flex items-center justify-between mt-auto -mb-2 sm:-mb-3 lg:-mb-4">
         <div className="flex flex-col">
           <span className={`text-xs ${theme.textSecondary} mb-1`}>Volume</span>
           <span className={`text-lg font-semibold ${theme.primary}`}>
