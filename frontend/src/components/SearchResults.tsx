@@ -15,6 +15,8 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
   const { color } = useThemeStore();
   const { searchQuery } = useAppStore();
   const [searchResults, setSearchResults] = useState<Market[]>([]);
+  const [iconSources, setIconSources] = useState<{[key: string]: string}>({});
+  const [iconErrors, setIconErrors] = useState<{[key: string]: boolean}>({});
   
   const theme = getThemeClasses(color);
 
@@ -22,8 +24,18 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
     if (searchQuery.trim()) {
       const results = searchMarkets(searchQuery);
       setSearchResults(results.slice(0, 8)); // Limit to 8 results
+      
+      // Initialize icon sources for new results (PNG first)
+      const newIconSources: {[key: string]: string} = {};
+      results.slice(0, 8).forEach(market => {
+        newIconSources[market.id] = `/icons/${market.iconName.replace('.svg', '.png')}`;
+      });
+      setIconSources(newIconSources);
+      setIconErrors({});
     } else {
       setSearchResults([]);
+      setIconSources({});
+      setIconErrors({});
     }
   }, [searchQuery]);
 
@@ -31,6 +43,16 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
     // Navigate to market detail (placeholder for now)
     console.log('Navigate to market:', market.id);
     onClose();
+  };
+
+  const handleImageError = (marketId: string) => {
+    if (!iconErrors[marketId]) {
+      setIconErrors(prev => ({ ...prev, [marketId]: true }));
+      // Try SVG fallback by replacing .png with .svg
+      const currentSrc = iconSources[marketId];
+      const svgSrc = currentSrc.replace('.png', '.svg');
+      setIconSources(prev => ({ ...prev, [marketId]: svgSrc }));
+    }
   };
 
   // Close dropdown when clicking outside
@@ -58,11 +80,12 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
             >
               <div className="flex-shrink-0">
                 <Image 
-                  src={`/icons/${market.iconName}`}
+                  src={iconSources[market.id] || `/icons/${market.iconName.replace('.svg', '.png')}`}
                   alt="Market icon"
                   width={32}
                   height={32}
                   className="w-8 h-8 rounded-full"
+                  onError={() => handleImageError(market.id)}
                 />
               </div>
               <div className="flex-1 min-w-0">
