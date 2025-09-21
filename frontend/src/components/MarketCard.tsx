@@ -82,45 +82,85 @@ const MarketCard = ({ market }: MarketCardProps) => {
         ))}
       </div>
 
-      {/* Market Details */}
-      <div className="flex items-center justify-between mb-4 text-sm">
-        <div className="flex flex-col">
-          <span className={`${theme.textSecondary} mb-1 text-xs`}>Contract</span>
-          <span className={`${theme.primary} font-mono text-sm font-bold`}>
-            {truncateAddress(market.address)}
-          </span>
+      {/* Bottom Section - All Market Details */}
+      <div className="mt-auto">
+        {/* Desktop Layout - Single Row */}
+        <div className="hidden lg:flex items-center justify-between -mb-2">
+          <div className="flex flex-col">
+            <span className={`${theme.textSecondary} mb-1 text-xs`}>Contract</span>
+            <span className={`${theme.primary} font-mono text-sm font-bold`}>
+              {truncateAddress(market.address)}
+            </span>
+          </div>
+          <div className="flex flex-col text-center">
+            <span className={`${theme.textSecondary} mb-1 text-xs`}>Ends</span>
+            <span className={`${theme.primary} text-sm font-bold`}>
+              {formatDate(market.endDate)}
+            </span>
+          </div>
+          <div className="flex flex-col text-center">
+            <span className={`text-xs ${theme.textSecondary} mb-1`}>Volume</span>
+            <span className={`text-lg font-semibold ${theme.primary}`}>
+              {formatVolume(market.volume)}
+            </span>
+          </div>
+          <button
+            onClick={handleBookmark}
+            className={`p-2 rounded-full transition-colors ${
+              isBookmarked
+                ? `${theme.textSecondary}`
+                : `${theme.textSecondary} hover:${theme.primary}`
+            }`}
+          >
+            <BookmarkIcon 
+              filled={isBookmarked} 
+              className="w-5 h-5"
+              themeColor={theme.primary}
+            />
+          </button>
         </div>
-        <div className="flex flex-col text-right">
-          <span className={`${theme.textSecondary} mb-1 text-xs`}>Ends</span>
-          <span className={`${theme.primary} text-sm font-bold`}>
-            {formatDate(market.endDate)}
-          </span>
-        </div>
-      </div>
 
-      {/* Bottom Section - Volume and Bookmark */}
-      <div className="flex items-center justify-between mt-auto -mb-2 sm:-mb-3 lg:-mb-4">
-        <div className="flex flex-col">
-          <span className={`text-xs ${theme.textSecondary} mb-1`}>Volume</span>
-          <span className={`text-lg font-semibold ${theme.primary}`}>
-            {formatVolume(market.volume)}
-          </span>
-        </div>
+        {/* Mobile/Tablet Layout - Two Rows */}
+        <div className="lg:hidden">
+          <div className="flex items-center justify-between mb-3 text-sm">
+            <div className="flex flex-col">
+              <span className={`${theme.textSecondary} mb-1 text-xs`}>Contract</span>
+              <span className={`${theme.primary} font-mono text-sm font-bold`}>
+                {truncateAddress(market.address)}
+              </span>
+            </div>
+            <div className="flex flex-col text-right">
+              <span className={`${theme.textSecondary} mb-1 text-xs`}>Ends</span>
+              <span className={`${theme.primary} text-sm font-bold`}>
+                {formatDate(market.endDate)}
+              </span>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between -mb-2 sm:-mb-3">
+            <div className="flex flex-col">
+              <span className={`text-xs ${theme.textSecondary} mb-1`}>Volume</span>
+              <span className={`text-lg font-semibold ${theme.primary}`}>
+                {formatVolume(market.volume)}
+              </span>
+            </div>
 
-        <button
-          onClick={handleBookmark}
-          className={`p-2 rounded-full transition-colors ${
-            isBookmarked
-              ? `${theme.textSecondary}`
-              : `${theme.textSecondary} hover:${theme.primary}`
-          }`}
-        >
-          <BookmarkIcon 
-            filled={isBookmarked} 
-            className="w-5 h-5"
-            themeColor={theme.primary}
-          />
-        </button>
+            <button
+              onClick={handleBookmark}
+              className={`p-2 rounded-full transition-colors ${
+                isBookmarked
+                  ? `${theme.textSecondary}`
+                  : `${theme.textSecondary} hover:${theme.primary}`
+              }`}
+            >
+              <BookmarkIcon 
+                filled={isBookmarked} 
+                className="w-5 h-5"
+                themeColor={theme.primary}
+              />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
