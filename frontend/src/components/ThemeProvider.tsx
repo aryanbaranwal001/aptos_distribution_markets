@@ -8,8 +8,8 @@ interface ThemeProviderProps {
 }
 
 const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  const { color, mode } = useThemeStore();
-  const theme = getThemeClasses(color, mode);
+  const { color } = useThemeStore();
+  const theme = getThemeClasses(color);
 
   useEffect(() => {
     // Apply theme classes to document body

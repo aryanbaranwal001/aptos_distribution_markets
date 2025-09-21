@@ -9,7 +9,7 @@ export default function Home() {
     <div className="min-h-screen">
       <Navbar />
       <CategoryNav />
-      <main className="pt-32">
+      <main className="pt-16">
         <MarketGrid />
       </main>
     </div>

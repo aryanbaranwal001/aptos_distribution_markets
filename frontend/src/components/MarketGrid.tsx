@@ -8,11 +8,11 @@ import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 
 const MarketGrid = () => {
   const { activeCategory } = useAppStore();
-  const { color, mode } = useThemeStore();
+  const { color } = useThemeStore();
   const [markets, setMarkets] = useState<Market[]>([]);
   const [loading, setLoading] = useState(false);
   
-  const theme = getThemeClasses(color, mode);
+  const theme = getThemeClasses(color);
 
   useEffect(() => {
     setLoading(true);
@@ -47,18 +47,18 @@ const MarketGrid = () => {
           {[...Array(6)].map((_, index) => (
             <div
               key={index}
-              className={`p-6 rounded-lg border border-gray-200 dark:border-gray-700 ${theme.background} animate-pulse`}
+              className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg} animate-pulse`}
             >
-              <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded mb-3"></div>
-              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded mb-2"></div>
-              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded mb-4 w-3/4"></div>
+              <div className="h-6 bg-gray-600 rounded mb-3"></div>
+              <div className="h-4 bg-gray-600 rounded mb-2"></div>
+              <div className="h-4 bg-gray-600 rounded mb-4 w-3/4"></div>
               <div className="flex gap-2 mb-4">
-                <div className="h-6 w-16 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
-                <div className="h-6 w-20 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                <div className="h-6 w-16 bg-gray-600 rounded-full"></div>
+                <div className="h-6 w-20 bg-gray-600 rounded-full"></div>
               </div>
               <div className="flex justify-between items-center">
-                <div className="h-8 w-20 bg-gray-300 dark:bg-gray-600 rounded"></div>
-                <div className="h-8 w-8 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                <div className="h-8 w-20 bg-gray-600 rounded"></div>
+                <div className="h-8 w-8 bg-gray-600 rounded-full"></div>
               </div>
             </div>
           ))}

@@ -7,11 +7,11 @@ import { useAppStore } from '@/store/appStore';
 import { searchMarkets, Market } from '@/data/markets';
 
 const SearchModal = () => {
-  const { color, mode } = useThemeStore();
+  const { color } = useThemeStore();
   const { isSearchOpen, setSearchOpen, searchQuery, setSearchQuery } = useAppStore();
   const [searchResults, setSearchResults] = useState<Market[]>([]);
   
-  const theme = getThemeClasses(color, mode);
+  const theme = getThemeClasses(color);
 
   useEffect(() => {
     if (searchQuery.trim()) {
@@ -37,9 +37,9 @@ const SearchModal = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black bg-opacity-50">
-      <div className={`w-full max-w-2xl mx-4 ${theme.background} rounded-lg shadow-xl border border-gray-200 dark:border-gray-700`}>
+      <div className={`w-full max-w-2xl mx-4 ${theme.cardBg} rounded-lg shadow-xl border ${theme.border}`}>
         {/* Search Header */}
-        <div className="flex items-center p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className={`flex items-center p-4 border-b ${theme.border}`}>
           <Search className={`w-5 h-5 mr-3 ${theme.textSecondary}`} />
           <input
             type="text"
@@ -65,7 +65,7 @@ const SearchModal = () => {
                 <button
                   key={market.id}
                   onClick={() => handleResultClick(market)}
-                  className={`w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors`}
+                  className={`w-full text-left px-4 py-3 ${theme.hoverBg} transition-colors`}
                 >
                   <div className={`font-medium ${theme.text} mb-1`}>
                     {market.title}

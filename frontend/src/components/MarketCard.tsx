@@ -10,10 +10,10 @@ interface MarketCardProps {
 }
 
 const MarketCard = ({ market }: MarketCardProps) => {
-  const { color, mode } = useThemeStore();
+  const { color } = useThemeStore();
   const [isBookmarked, setIsBookmarked] = useState(market.isBookmarked || false);
   
-  const theme = getThemeClasses(color, mode);
+  const theme = getThemeClasses(color);
 
   const handleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -33,7 +33,7 @@ const MarketCard = ({ market }: MarketCardProps) => {
   return (
     <div
       onClick={handleCardClick}
-      className={`p-6 rounded-lg border border-gray-200 dark:border-gray-700 ${theme.background} hover:shadow-lg transition-all duration-200 cursor-pointer group`}
+      className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg} hover:shadow-lg transition-all duration-200 cursor-pointer group`}
     >
       {/* Market Title */}
       <h3 className={`text-lg font-semibold ${theme.text} mb-3 group-hover:${theme.primary} transition-colors`}>
@@ -50,7 +50,7 @@ const MarketCard = ({ market }: MarketCardProps) => {
         {market.categories.slice(0, 3).map((category) => (
           <span
             key={category}
-            className={`px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 ${theme.textSecondary}`}
+            className={`px-2 py-1 text-xs rounded-full ${theme.cardBg} border ${theme.border} ${theme.textSecondary}`}
           >
             {category}
           </span>

@@ -1,19 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Menu, X, Sun, Moon, Wallet } from 'lucide-react';
+import { Search, Menu, X, Wallet } from 'lucide-react';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useWalletStore } from '@/store/walletStore';
 import { useAppStore } from '@/store/appStore';
 import SearchModal from './SearchModal';
 
 const Navbar = () => {
-  const { color, mode, nextColor, toggleMode } = useThemeStore();
+  const { color, nextColor } = useThemeStore();
   const { isConnected, address, connect, disconnect } = useWalletStore();
   const { setSearchOpen } = useAppStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  const theme = getThemeClasses(color, mode);
+  const theme = getThemeClasses(color);
 
   const handleWalletConnect = () => {
     if (isConnected) {
@@ -31,7 +31,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 ${theme.background} ${theme.text} border-b border-gray-200 dark:border-gray-800`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 ${theme.background} ${theme.text}`}>
         {/* Top Navbar */}
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -47,7 +47,7 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setSearchOpen(true)}
-                  className={`w-full px-4 py-2 text-left ${theme.textSecondary} bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 transition-colors`}
+                  className={`w-full px-4 py-2 text-left ${theme.textSecondary} ${theme.cardBg} rounded-lg ${theme.hoverBg} transition-colors`}
                 >
                   <div className="flex items-center">
                     <Search className="w-4 h-4 mr-2" />
@@ -62,7 +62,7 @@ const Navbar = () => {
               {/* Connect Wallet Button */}
               <button
                 onClick={handleWalletConnect}
-                className={`flex items-center px-4 py-2 rounded-lg ${theme.primaryBg} ${theme.primaryHover} text-white transition-colors`}
+                className={`flex items-center px-4 py-2 rounded-lg ${theme.primaryBg} ${theme.primaryHover} text-black transition-colors`}
               >
                 <Wallet className="w-4 h-4 mr-2" />
                 {isConnected ? formatAddress(address!) : 'Connect Wallet'}
@@ -81,7 +81,7 @@ const Navbar = () => {
 
         {/* Hamburger Menu Dropdown */}
         {isMenuOpen && (
-          <div className={`absolute top-16 right-4 w-48 ${theme.background} border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg`}>
+          <div className={`absolute top-16 right-4 w-48 ${theme.cardBg} border ${theme.border} rounded-lg shadow-lg`}>
             <div className="py-2">
               <a
                 href="/dashboard"
@@ -94,13 +94,6 @@ const Navbar = () => {
                 className={`w-full text-left px-4 py-2 ${theme.textSecondary} hover:${theme.primary} transition-colors`}
               >
                 Theme: {color.charAt(0).toUpperCase() + color.slice(1)}
-              </button>
-              <button
-                onClick={toggleMode}
-                className={`w-full text-left px-4 py-2 ${theme.textSecondary} hover:${theme.primary} transition-colors flex items-center`}
-              >
-                {mode === 'dark' ? <Sun className="w-4 h-4 mr-2" /> : <Moon className="w-4 h-4 mr-2" />}
-                {mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
               </button>
             </div>
           </div>

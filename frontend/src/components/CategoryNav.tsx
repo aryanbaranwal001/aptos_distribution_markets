@@ -5,10 +5,10 @@ import { useAppStore } from '@/store/appStore';
 import { categories } from '@/data/markets';
 
 const CategoryNav = () => {
-  const { color, mode } = useThemeStore();
+  const { color } = useThemeStore();
   const { activeCategory, setActiveCategory } = useAppStore();
   
-  const theme = getThemeClasses(color, mode);
+  const theme = getThemeClasses(color);
 
   const categoryLabels: Record<string, string> = {
     trending: 'Trending',
@@ -25,17 +25,17 @@ const CategoryNav = () => {
   };
 
   return (
-    <div className={`sticky top-16 z-40 ${theme.background} border-b border-gray-200 dark:border-gray-800`}>
+    <div className={`sticky top-16 z-40 ${theme.background} border-b ${theme.border}`}>
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center space-x-8 overflow-x-auto py-4">
+        <div className="flex items-center space-x-8 overflow-x-auto py-2">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`whitespace-nowrap pb-2 border-b-2 transition-colors ${
+              className={`whitespace-nowrap transition-colors ${
                 activeCategory === category
-                  ? `${theme.primary} border-current`
-                  : `${theme.textSecondary} border-transparent hover:${theme.primary}`
+                  ? `${theme.primary}`
+                  : `${theme.textSecondary} hover:${theme.primary}`
               }`}
             >
               {categoryLabels[category]}

@@ -3,8 +3,8 @@
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 
 export default function Dashboard() {
-  const { color, mode } = useThemeStore();
-  const theme = getThemeClasses(color, mode);
+  const { color } = useThemeStore();
+  const theme = getThemeClasses(color);
 
   return (
     <div className={`min-h-screen ${theme.background} ${theme.text}`}>
@@ -13,7 +13,7 @@ export default function Dashboard() {
           <h1 className={`text-3xl font-bold ${theme.primary} mb-8`}>
             Dashboard
           </h1>
-          <div className={`p-8 rounded-lg border border-gray-200 dark:border-gray-700 ${theme.background}`}>
+          <div className={`p-8 rounded-lg border ${theme.border} ${theme.cardBg}`}>
             <p className={`text-lg ${theme.textSecondary}`}>
               Dashboard functionality will be implemented here.
             </p>

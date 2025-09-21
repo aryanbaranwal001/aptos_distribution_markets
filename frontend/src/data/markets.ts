@@ -30,6 +30,48 @@ export const markets: Market[] = [
     volume: 800000,
     categories: ["trending", "tech"]
   },
+  {
+    id: "22",
+    title: "Apple Vision Pro Market Adoption Rate",
+    description: "Prediction market on Apple Vision Pro achieving 1 million units sold by end of 2024, considering pricing and consumer adoption patterns.",
+    volume: 1900000,
+    categories: ["trending", "tech"]
+  },
+  {
+    id: "23",
+    title: "Global Inflation Peak in 2024",
+    description: "Market predicting when global inflation rates will reach their peak in 2024, analyzing central bank policies and economic indicators.",
+    volume: 3100000,
+    categories: ["trending", "economy"]
+  },
+  {
+    id: "24",
+    title: "SpaceX Mars Mission Timeline",
+    description: "Betting market on SpaceX announcing a crewed Mars mission date within the next 2 years, based on current development progress.",
+    volume: 2700000,
+    categories: ["trending", "tech", "world"]
+  },
+  {
+    id: "25",
+    title: "FIFA World Cup 2026 Host Cities",
+    description: "Prediction market on which additional cities will be selected as FIFA World Cup 2026 venues beyond the already announced locations.",
+    volume: 1600000,
+    categories: ["trending", "sports", "world"]
+  },
+  {
+    id: "26",
+    title: "Cryptocurrency Market Cap Milestone",
+    description: "Market predicting if the total cryptocurrency market cap will exceed $3 trillion by the end of 2024, considering adoption and regulation.",
+    volume: 4200000,
+    categories: ["trending", "crypto", "economy"]
+  },
+  {
+    id: "27",
+    title: "Climate Change COP29 Outcomes",
+    description: "Prediction market on key outcomes from the COP29 climate summit, including new emission reduction commitments and funding agreements.",
+    volume: 2300000,
+    categories: ["trending", "world", "geopolitics"]
+  },
 
   // New Markets
   {

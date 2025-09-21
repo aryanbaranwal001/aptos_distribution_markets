@@ -1,28 +1,21 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type ThemeColor = 'green' | 'orange' | 'coral' | 'blue';
-export type ThemeMode = 'light' | 'dark';
+export type ThemeColor = 'green' | 'orange' | 'coral';
 
 interface ThemeState {
   color: ThemeColor;
-  mode: ThemeMode;
   setColor: (color: ThemeColor) => void;
-  setMode: (mode: ThemeMode) => void;
-  toggleMode: () => void;
   nextColor: () => void;
 }
 
-const themeColors: ThemeColor[] = ['green', 'orange', 'coral', 'blue'];
+const themeColors: ThemeColor[] = ['green', 'orange', 'coral'];
 
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
       color: 'green',
-      mode: 'dark',
       setColor: (color) => set({ color }),
-      setMode: (mode) => set({ mode }),
-      toggleMode: () => set((state) => ({ mode: state.mode === 'light' ? 'dark' : 'light' })),
       nextColor: () => {
         const currentIndex = themeColors.indexOf(get().color);
         const nextIndex = (currentIndex + 1) % themeColors.length;
@@ -35,11 +28,14 @@ export const useThemeStore = create<ThemeState>()(
   )
 );
 
-export const getThemeClasses = (color: ThemeColor, mode: ThemeMode) => {
+export const getThemeClasses = (color: ThemeColor) => {
   const baseClasses = {
-    background: mode === 'dark' ? 'bg-[#0a0b0d]' : 'bg-[#fffffa]',
-    text: mode === 'dark' ? 'text-[#fffffa]' : 'text-[#0a0b0d]',
-    textSecondary: mode === 'dark' ? 'text-gray-300' : 'text-gray-600',
+    background: 'bg-[#0a0b0d]',
+    text: 'text-[#fffffa]',
+    textSecondary: 'text-gray-300',
+    cardBg: 'bg-gray-800',
+    border: 'border-gray-700',
+    hoverBg: 'hover:bg-gray-700',
   };
 
   const colorClasses = {
@@ -58,18 +54,11 @@ export const getThemeClasses = (color: ThemeColor, mode: ThemeMode) => {
       accent: 'accent-[#e59500]',
     },
     coral: {
-      primary: 'text-[#eb9486]',
-      primaryBg: 'bg-[#eb9486]',
-      primaryHover: 'hover:bg-[#e6826f]',
-      border: 'border-[#eb9486]',
-      accent: 'accent-[#eb9486]',
-    },
-    blue: {
-      primary: 'text-blue-500',
-      primaryBg: 'bg-blue-500',
-      primaryHover: 'hover:bg-blue-600',
-      border: 'border-blue-500',
-      accent: 'accent-blue-500',
+      primary: 'text-[#ef2d56]',
+      primaryBg: 'bg-[#ef2d56]',
+      primaryHover: 'hover:bg-[#d92548]',
+      border: 'border-[#ef2d56]',
+      accent: 'accent-[#ef2d56]',
     },
   };
 
