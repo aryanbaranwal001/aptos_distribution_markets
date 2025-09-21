@@ -1,0 +1,19 @@
+/* Custom styles for Aptos Wallet Selector - Button Only */
+.wallet-button {
+  background: var(--theme-primary-bg, linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  color: black !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.wallet-button:hover {
+  background: var(--theme-primary-hover, linear-gradient(135deg, #2563eb 0%, #1e40af 100%)) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--theme-primary-shadow, 0 4px 12px rgba(59, 130, 246, 0.3)) !important;
+}
