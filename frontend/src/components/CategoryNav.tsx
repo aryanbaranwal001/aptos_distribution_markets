@@ -32,7 +32,7 @@ const CategoryNav = () => {
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`whitespace-nowrap transition-colors ${
+              className={`whitespace-nowrap transition-colors cursor-pointer ${
                 activeCategory === category
                   ? `${theme.primary}`
                   : `${theme.textSecondary} hover:${theme.primary}`

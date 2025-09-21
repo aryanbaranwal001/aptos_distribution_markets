@@ -58,7 +58,7 @@ const MarketCard = ({ market }: MarketCardProps) => {
           />
         </div>
         <Link href={`/${market.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
-          <h3 className={`text-lg font-semibold ${theme.text} hover:${theme.primary} transition-colors flex-1 cursor-pointer`}>
+          <h3 className={`text-lg font-semibold ${theme.text} hover:${theme.primary} hover:underline transition-all flex-1 cursor-pointer`}>
             {market.title}
           </h3>
         </Link>
