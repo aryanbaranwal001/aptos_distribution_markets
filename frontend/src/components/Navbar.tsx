@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Menu, X, Wallet } from 'lucide-react';
+import { Search, Menu, Wallet } from 'lucide-react';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useWalletStore } from '@/store/walletStore';
 import { useAppStore } from '@/store/appStore';
@@ -78,19 +78,31 @@ const Navbar = () => {
               </button>
 
               {/* Hamburger Menu */}
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`p-2 rounded-lg ${theme.textSecondary} hover:${theme.primary} transition-colors`}
+              <div
+                onMouseEnter={() => setIsMenuOpen(true)}
+                onMouseLeave={() => setIsMenuOpen(false)}
+                className="relative"
               >
-                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
+                <button
+                  className={`p-2 rounded-lg ${theme.textSecondary} hover:bg-gray-800 transition-colors`}
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Hamburger Menu Dropdown */}
-        {isMenuOpen && (
-          <div className={`absolute top-16 right-4 w-48 ${theme.cardBg} border ${theme.border} rounded-lg shadow-lg`}>
+        <div 
+          className={`absolute top-14 right-4 w-48 ${theme.cardBg} border ${theme.border} rounded-lg shadow-lg transition-all duration-200 ease-in-out ${
+            isMenuOpen 
+              ? 'opacity-100 scale-100 translate-y-0' 
+              : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+          }`}
+          onMouseEnter={() => setIsMenuOpen(true)}
+          onMouseLeave={() => setIsMenuOpen(false)}
+        >
             <div className="py-2">
               <a
                 href="/dashboard"
@@ -105,8 +117,7 @@ const Navbar = () => {
                 Theme: {color.charAt(0).toUpperCase() + color.slice(1)}
               </button>
             </div>
-          </div>
-        )}
+        </div>
       </nav>
 
     </>
