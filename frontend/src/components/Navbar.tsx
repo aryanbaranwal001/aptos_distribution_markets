@@ -84,13 +84,13 @@ const Navbar = () => {
                 onMouseLeave={() => setIsMenuOpen(false)}
               >
                 <button
-                  className={`p-2 rounded-lg ${theme.textSecondary} hover:${theme.primary} hover:bg-gray-700/20 transition-all duration-200`}
+                  className={`p-2 rounded-lg ${theme.textSecondary} hover:${theme.primary} hover:bg-gray-600/15 transition-all duration-200`}
                 >
                   <Menu className="w-5 h-5" />
                 </button>
                 
                 {/* Hamburger Menu Dropdown */}
-                <div className={`absolute top-full right-0 mt-1 w-48 ${theme.cardBg} border ${theme.border} rounded-lg shadow-lg z-50 transition-all duration-200 ease-out ${
+                <div className={`absolute top-full right-0 w-48 ${theme.cardBg} border ${theme.border} rounded-lg shadow-lg z-50 transition-all duration-200 ease-out ${
                   isMenuOpen 
                     ? 'opacity-100 translate-y-0 scale-100' 
                     : 'opacity-0 translate-y-[-10px] scale-95 pointer-events-none'
@@ -98,13 +98,13 @@ const Navbar = () => {
                   <div className="py-2">
                     <a
                       href="/dashboard"
-                      className={`block px-4 py-2 ${theme.textSecondary} hover:${theme.primary} transition-colors`}
+                      className={`block px-4 py-2 ${theme.textSecondary} hover:${theme.primary} hover:bg-gray-600/10 transition-colors`}
                     >
                       Dashboard
                     </a>
                     <button
                       onClick={nextColor}
-                      className={`w-full text-left px-4 py-2 ${theme.textSecondary} hover:${theme.primary} transition-colors`}
+                      className={`w-full text-left px-4 py-2 ${theme.textSecondary} hover:${theme.primary} hover:bg-gray-600/10 transition-colors`}
                     >
                       Theme: {color.charAt(0).toUpperCase() + color.slice(1)}
                     </button>
