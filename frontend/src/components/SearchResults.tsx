@@ -46,7 +46,7 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
   }, [onClose]);
 
   return (
-    <div className="search-dropdown max-h-96 overflow-y-auto">
+    <div className="search-dropdown h-full overflow-y-auto">
       {searchResults.length > 0 ? (
         <div className="py-2">
           {searchResults.map((market) => (

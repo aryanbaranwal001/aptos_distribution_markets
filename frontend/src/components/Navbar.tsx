@@ -59,7 +59,7 @@ const Navbar = () => {
                 
                 {/* Search Results Dropdown */}
                 {isSearchOpen && (
-                  <div className={`absolute top-full left-0 right-0 mt-1 ${theme.cardBg} rounded-lg shadow-xl border ${theme.border} z-50`}>
+                  <div className={`absolute top-full left-0 right-0 ${theme.cardBg} rounded-lg shadow-xl z-50`} style={{ height: '384px' }}>
                     <SearchResults onClose={() => setSearchOpen(false)} />
                   </div>
                 )}
