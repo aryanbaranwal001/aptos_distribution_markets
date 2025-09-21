@@ -6,6 +6,8 @@ import "../styles/wallet-selector.css";
 import ThemeProvider from "@/components/ThemeProvider";
 import { WalletProvider } from "@/components/WalletProvider";
 import ThemeCSS from "@/components/ThemeCSS";
+import Navbar from "@/components/Navbar";
+import CategoryNav from "@/components/CategoryNav";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,7 +30,13 @@ export default function RootLayout({
         <WalletProvider>
           <ThemeProvider>
             <ThemeCSS />
-            {children}
+            <div className="min-h-screen">
+              <Navbar />
+              <CategoryNav />
+              <main className="pt-32">
+                {children}
+              </main>
+            </div>
           </ThemeProvider>
         </WalletProvider>
       </body>

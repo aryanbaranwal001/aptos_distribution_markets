@@ -7,8 +7,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { markets, Market } from '@/data/markets';
-import Navbar from '@/components/Navbar';
-import CategoryNav from '@/components/CategoryNav';
 
 const MarketDetailPage = () => {
   const params = useParams();
@@ -233,9 +231,7 @@ const MarketDetailPage = () => {
 
   return (
     <div className={`min-h-screen ${theme.background} ${theme.text}`}>
-      <Navbar />
-      <CategoryNav />
-      <div className="pt-32 px-4 sm:px-6 md:px-12 lg:px-24 xl:px-48">
+      <div className="px-4 sm:px-6 md:px-12 lg:px-24 xl:px-48">
         {/* Header */}
         <div className="flex items-center mb-6">
           <Link href="/" className={`${theme.textSecondary} hover:${theme.primary} mr-4`}>

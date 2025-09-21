@@ -33,6 +33,7 @@ const CategoryNav = () => {
 
   const getCurrentCategory = () => {
     if (pathname === '/') return 'trending';
+    if (pathname.startsWith('/market/')) return null; // No highlight for market pages
     const pathCategory = pathname.slice(1); // Remove leading slash
     return categories.includes(pathCategory) ? pathCategory : 'trending';
   };

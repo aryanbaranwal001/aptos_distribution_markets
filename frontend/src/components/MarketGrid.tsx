@@ -5,6 +5,7 @@ import { useAppStore } from '@/store/appStore';
 import { getMarketsByCategory, Market } from '@/data/markets';
 import MarketCard from './MarketCard';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
+import Link from 'next/link';
 
 const MarketGrid = () => {
   const { activeCategory } = useAppStore();
@@ -45,22 +46,27 @@ const MarketGrid = () => {
       <div className="px-12 sm:px-24 lg:px-48 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, index) => (
-            <div
+            <Link
               key={index}
-              className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg} animate-pulse`}
+              href={`/market/${index}`}
+              className="block hover:scale-105 transition-transform duration-200"
             >
-              <div className="h-6 bg-gray-600 rounded mb-3"></div>
-              <div className="h-4 bg-gray-600 rounded mb-2"></div>
-              <div className="h-4 bg-gray-600 rounded mb-4 w-3/4"></div>
-              <div className="flex gap-2 mb-4">
-                <div className="h-6 w-16 bg-gray-600 rounded-full"></div>
-                <div className="h-6 w-20 bg-gray-600 rounded-full"></div>
+              <div
+                className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg} animate-pulse`}
+              >
+                <div className="h-6 bg-gray-600 rounded mb-3"></div>
+                <div className="h-4 bg-gray-600 rounded mb-2"></div>
+                <div className="h-4 bg-gray-600 rounded mb-4 w-3/4"></div>
+                <div className="flex gap-2 mb-4">
+                  <div className="h-6 w-16 bg-gray-600 rounded-full"></div>
+                  <div className="h-6 w-20 bg-gray-600 rounded-full"></div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="h-8 w-20 bg-gray-600 rounded"></div>
+                  <div className="h-8 w-8 bg-gray-600 rounded-full"></div>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <div className="h-8 w-20 bg-gray-600 rounded"></div>
-                <div className="h-8 w-8 bg-gray-600 rounded-full"></div>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
