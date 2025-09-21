@@ -7,6 +7,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { markets, Market, formatVolume } from '@/data/markets';
+import Navbar from '@/components/Navbar';
+import CategoryNav from '@/components/CategoryNav';
 
 const MarketInstancePage = () => {
   const params = useParams();
@@ -48,12 +50,16 @@ const MarketInstancePage = () => {
 
   if (!market) {
     return (
-      <div className={`min-h-screen ${theme.background} ${theme.text} flex items-center justify-center`}>
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Market Not Found</h1>
-          <Link href="/" className={`${theme.primary} hover:underline`}>
-            Return to Markets
-          </Link>
+      <div className={`min-h-screen ${theme.background} ${theme.text}`}>
+        <Navbar />
+        <CategoryNav />
+        <div className="flex items-center justify-center pt-32">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Market Not Found</h1>
+            <Link href="/" className={`${theme.primary} hover:underline`}>
+              Return to Markets
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -61,15 +67,20 @@ const MarketInstancePage = () => {
 
   return (
     <div className={`min-h-screen ${theme.background} ${theme.text}`}>
-      {/* Header */}
-      <div className={`border-b ${theme.border} ${theme.cardBg}`}>
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="flex items-center space-x-4 mb-6">
-            <Link href="/" className={`p-2 rounded-lg ${theme.hoverBg} transition-colors`}>
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <h1 className="text-2xl font-bold">Market Details</h1>
-          </div>
+      <Navbar />
+      <CategoryNav />
+      
+      {/* Market Content */}
+      <main className="pt-16">
+        {/* Header */}
+        <div className={`border-b ${theme.border} ${theme.cardBg}`}>
+          <div className="max-w-6xl mx-auto px-4 py-6">
+            <div className="flex items-center space-x-4 mb-6">
+              <Link href="/" className={`p-2 rounded-lg ${theme.hoverBg} transition-colors`}>
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+              <h1 className="text-2xl font-bold">Market Details</h1>
+            </div>
           
           <div className="flex items-start space-x-6">
             <div className="flex-shrink-0">
@@ -112,11 +123,11 @@ const MarketInstancePage = () => {
               <Bookmark className={`w-6 h-6 ${isBookmarked ? 'fill-current' : ''}`} />
             </button>
           </div>
+          </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Main Content */}
+        <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Market Stats */}
           <div className="lg:col-span-2 space-y-6">
@@ -198,7 +209,8 @@ const MarketInstancePage = () => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };
