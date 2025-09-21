@@ -41,7 +41,7 @@ const Navbar = () => {
   const handleMenuMouseLeave = () => {
     menuTimeoutRef.current = setTimeout(() => {
       setIsMenuOpen(false);
-    }, 300); // 300ms delay
+    }, 150); // 150ms delay
   };
 
   return (
