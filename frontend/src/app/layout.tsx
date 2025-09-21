@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
+import "../styles/wallet-selector.css";
 import ThemeProvider from "@/components/ThemeProvider";
+import { WalletProvider } from "@/components/WalletProvider";
+import ThemeCSS from "@/components/ThemeCSS";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,9 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <WalletProvider>
+          <ThemeProvider>
+            <ThemeCSS />
+            {children}
+          </ThemeProvider>
+        </WalletProvider>
       </body>
     </html>
   );

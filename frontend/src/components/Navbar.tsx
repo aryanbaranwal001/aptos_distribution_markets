@@ -1,34 +1,19 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Search, Menu, Wallet } from 'lucide-react';
+import { Search, Menu } from 'lucide-react';
+import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
-import { useWalletStore } from '@/store/walletStore';
 import { useAppStore } from '@/store/appStore';
 import SearchResults from './SearchResults';
 
 const Navbar = () => {
   const { color, nextColor } = useThemeStore();
-  const { isConnected, address, connect, disconnect } = useWalletStore();
   const { isSearchOpen, setSearchOpen, searchQuery, setSearchQuery } = useAppStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const theme = getThemeClasses(color);
-
-  const handleWalletConnect = () => {
-    if (isConnected) {
-      disconnect();
-    } else {
-      // Simulate wallet connection
-      const mockAddress = "0x" + Math.random().toString(16).substr(2, 40);
-      connect(mockAddress, "mainnet");
-    }
-  };
-
-  const formatAddress = (addr: string) => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-  };
 
   const handleMenuMouseEnter = () => {
     if (menuTimeoutRef.current) {
@@ -84,13 +69,9 @@ const Navbar = () => {
             {/* Right Side Actions */}
             <div className="flex items-center space-x-4">
               {/* Connect Wallet Button */}
-              <button
-                onClick={handleWalletConnect}
-                className={`flex items-center px-4 py-2 rounded-lg ${theme.primaryBg} ${theme.primaryHover} text-black transition-colors`}
-              >
-                <Wallet className="w-4 h-4 mr-2" />
-                {isConnected ? formatAddress(address!) : 'Connect Wallet'}
-              </button>
+              <div className="wallet-selector-wrapper">
+                <WalletSelector />
+              </div>
 
               {/* Hamburger Menu */}
               <div
