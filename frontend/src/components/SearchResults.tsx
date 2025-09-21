@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
+import Image from 'next/image';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useAppStore } from '@/store/appStore';
 import { searchMarkets, Market } from '@/data/markets';
+import { getCategoryIcon } from '@/utils/categoryIcons';
 
 interface SearchResultsProps {
   onClose: () => void;
@@ -53,23 +55,21 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
             <button
               key={market.id}
               onClick={() => handleResultClick(market)}
-              className={`w-full text-left px-4 py-3 ${theme.hoverBg} transition-colors`}
+              className={`w-full text-left px-4 py-3 ${theme.hoverBg} transition-colors flex items-center space-x-3`}
             >
-              <div className={`font-medium ${theme.text} mb-1`}>
-                {market.title}
+              <div className="flex-shrink-0">
+                <Image 
+                  src={getCategoryIcon(market.categories, market.title)}
+                  alt="Category icon"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full"
+                />
               </div>
-              <div className={`text-sm ${theme.textSecondary} line-clamp-2`}>
-                {market.description}
-              </div>
-              <div className="flex items-center mt-2 space-x-2">
-                {market.categories.slice(0, 3).map((category) => (
-                  <span
-                    key={category}
-                    className={`px-2 py-1 text-xs rounded-full ${theme.primaryBg} text-white`}
-                  >
-                    {category}
-                  </span>
-                ))}
+              <div className="flex-1 min-w-0">
+                <div className={`font-medium ${theme.text} truncate`}>
+                  {market.title}
+                </div>
               </div>
             </button>
           ))}
