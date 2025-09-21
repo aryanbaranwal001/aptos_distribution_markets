@@ -33,9 +33,9 @@ export const getThemeClasses = (color: ThemeColor) => {
     background: 'bg-[#0a0b0d]',
     text: 'text-[#fffffa]',
     textSecondary: 'text-gray-300',
-    cardBg: 'bg-gray-800',
-    border: 'border-gray-700',
-    hoverBg: 'hover:bg-gray-700',
+    cardBg: 'bg-[#1a1b1e]',
+    border: 'border-[#2a2b2e]',
+    hoverBg: 'hover:bg-[#2a2b2e]',
   };
 
   const colorClasses = {
