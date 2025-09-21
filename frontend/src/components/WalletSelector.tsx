@@ -39,7 +39,7 @@ export const WalletSelector = () => {
       <div className="relative">
         <button
           onClick={() => setIsModalOpen(!isModalOpen)}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${theme.primaryBg} text-white font-medium hover:opacity-90 transition-opacity`}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${theme.primaryBg} text-black font-medium hover:opacity-90 transition-opacity`}
         >
           <Wallet className="w-4 h-4" />
           <span>{truncateAddress(account.address)}</span>
@@ -71,7 +71,7 @@ export const WalletSelector = () => {
     <>
       <button
         onClick={() => setIsModalOpen(true)}
-        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${theme.primaryBg} text-white font-medium hover:opacity-90 transition-opacity`}
+        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${theme.primaryBg} text-black font-medium hover:opacity-90 transition-opacity`}
       >
         <Wallet className="w-4 h-4" />
         <span>Connect Wallet</span>
