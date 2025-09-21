@@ -10,7 +10,9 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
       autoConnect={true}
       dappConfig={{
         network: Network.TESTNET, // Using testnet for development
-        // aptosApiKeys can be added later when we have API keys
+        aptosApiKeys: {
+          testnet: process.env.NEXT_PUBLIC_APTOS_API_KEY,
+        }
       }}
       onError={(error) => {
         console.log("Wallet connection error:", error);

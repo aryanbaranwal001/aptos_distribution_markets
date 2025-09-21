@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Search, Menu } from 'lucide-react';
-import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
+import { WalletSelector } from './WalletSelector';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useAppStore } from '@/store/appStore';
 import SearchResults from './SearchResults';
