@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Search, Menu, Wallet } from 'lucide-react';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useWalletStore } from '@/store/walletStore';
@@ -12,6 +12,7 @@ const Navbar = () => {
   const { isConnected, address, connect, disconnect } = useWalletStore();
   const { isSearchOpen, setSearchOpen, searchQuery, setSearchQuery } = useAppStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const theme = getThemeClasses(color);
 
@@ -27,6 +28,20 @@ const Navbar = () => {
 
   const formatAddress = (addr: string) => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
+
+  const handleMenuMouseEnter = () => {
+    if (menuTimeoutRef.current) {
+      clearTimeout(menuTimeoutRef.current);
+      menuTimeoutRef.current = null;
+    }
+    setIsMenuOpen(true);
+  };
+
+  const handleMenuMouseLeave = () => {
+    menuTimeoutRef.current = setTimeout(() => {
+      setIsMenuOpen(false);
+    }, 300); // 300ms delay
   };
 
   return (
@@ -80,8 +95,8 @@ const Navbar = () => {
               {/* Hamburger Menu */}
               <div
                 className="relative"
-                onMouseEnter={() => setIsMenuOpen(true)}
-                onMouseLeave={() => setIsMenuOpen(false)}
+                onMouseEnter={handleMenuMouseEnter}
+                onMouseLeave={handleMenuMouseLeave}
               >
                 <button
                   className={`p-2 rounded-lg ${theme.textSecondary} hover:${theme.primary} hover:bg-gray-600/15 transition-all duration-200`}
