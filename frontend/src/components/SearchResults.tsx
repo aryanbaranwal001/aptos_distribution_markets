@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useAppStore } from '@/store/appStore';
 import { searchMarkets, Market, formatVolume } from '@/data/markets';
-import { getCategoryIcon } from '@/utils/categoryIcons';
 
 interface SearchResultsProps {
   onClose: () => void;
@@ -59,8 +58,8 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
             >
               <div className="flex-shrink-0">
                 <Image 
-                  src={getCategoryIcon(market.categories, market.title)}
-                  alt="Category icon"
+                  src={`/icons/${market.iconName}`}
+                  alt="Market icon"
                   width={32}
                   height={32}
                   className="w-8 h-8 rounded-full"

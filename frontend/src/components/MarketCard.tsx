@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Bookmark } from 'lucide-react';
+import Image from 'next/image';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { Market, formatVolume } from '@/data/markets';
 
@@ -12,6 +13,9 @@ interface MarketCardProps {
 const MarketCard = ({ market }: MarketCardProps) => {
   const { color } = useThemeStore();
   const [isBookmarked, setIsBookmarked] = useState(market.isBookmarked || false);
+  // Start with PNG first, then fallback to SVG
+  const [iconSrc, setIconSrc] = useState(`/icons/${market.iconName.replace('.svg', '.png')}`);
+  const [hasError, setHasError] = useState(false);
   
   const theme = getThemeClasses(color);
 
@@ -25,16 +29,37 @@ const MarketCard = ({ market }: MarketCardProps) => {
     console.log('Navigate to market:', market.id);
   };
 
+  const handleImageError = () => {
+    if (!hasError) {
+      setHasError(true);
+      // Try SVG fallback by replacing .png with .svg
+      const svgSrc = iconSrc.replace('.png', '.svg');
+      setIconSrc(svgSrc);
+    }
+  };
+
 
   return (
     <div
       onClick={handleCardClick}
       className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg} hover:shadow-lg transition-all duration-200 cursor-pointer group flex flex-col h-full`}
     >
-      {/* Market Title */}
-      <h3 className={`text-lg font-semibold ${theme.text} mb-3 group-hover:${theme.primary} transition-colors`}>
-        {market.title}
-      </h3>
+      {/* Icon and Market Title */}
+      <div className="flex items-start space-x-3 mb-3">
+        <div className="flex-shrink-0">
+          <Image 
+            src={iconSrc}
+            alt="Market icon"
+            width={32}
+            height={32}
+            className="w-8 h-8 rounded-full"
+            onError={handleImageError}
+          />
+        </div>
+        <h3 className={`text-lg font-semibold ${theme.text} group-hover:${theme.primary} transition-colors flex-1`}>
+          {market.title}
+        </h3>
+      </div>
 
       {/* Market Description */}
       <p className={`${theme.textSecondary} mb-4 leading-relaxed line-clamp-2`}>
