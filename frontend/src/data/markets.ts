@@ -26,7 +26,7 @@ export const markets: Market[] = [
     description: "Betting market on the outcome of the 2024 United States Presidential Election with real-time odds based on polling data and campaign performance.",
     volume: 15000000,
     categories: ["trending", "politics", "elections"],
-    iconName: "election.svg",
+    iconName: "election.png",
     slug: "us-presidential-election-2024-winner"
   },
   {
@@ -39,27 +39,27 @@ export const markets: Market[] = [
     slug: "will-openai-release-gpt-5-in-2024"
   },
   {
-    id: "22",
+    id: "4",
     title: "Apple Vision Pro Market Adoption Rate",
     description: "Prediction market on Apple Vision Pro achieving 1 million units sold by end of 2024, considering pricing and consumer adoption patterns.",
     volume: 1900000,
     categories: ["trending", "tech"],
-    iconName: "apple.svg",
+    iconName: "vision-pro.png",
     slug: "apple-vision-pro-market-adoption-rate"
   },
   {
-    id: "23",
+    id: "5",
     title: "Global Inflation Peak in 2024",
     description: "Market predicting when global inflation rates will reach their peak in 2024, analyzing central bank policies and economic indicators.",
     volume: 3100000,
     categories: ["trending", "economy"],
-    iconName: "inflation.svg",
+    iconName: "inflation.png",
     slug: "global-inflation-peak-in-2024"
   },
 
   // New Markets
   {
-    id: "4",
+    id: "6",
     title: "Tesla Stock Price Above $300 by Q2 2024",
     description: "Prediction market on Tesla's stock performance considering EV market competition, production targets, and Elon Musk's strategic decisions.",
     volume: 1200000,
@@ -68,102 +68,84 @@ export const markets: Market[] = [
     slug: "tesla-stock-price-above-300-by-q2-2024"
   },
   {
-    id: "5",
+    id: "7",
     title: "Will there be a recession in 2024?",
     description: "Economic prediction market analyzing GDP growth, unemployment rates, and Federal Reserve policies to forecast recession probability.",
     volume: 4500000,
     categories: ["new", "economy"],
-    iconName: "recession.svg",
+    iconName: "recession.png",
     slug: "will-there-be-a-recession-in-2024"
   },
   {
-    id: "6",
-    title: "Next FIFA World Cup Host Country",
-    description: "Betting market on the selection process for future FIFA World Cup hosting rights, considering geopolitical and infrastructure factors.",
+    id: "8",
+    title: "FIFA World Cup 2026 Predictions",
+    description: "Betting market on the upcoming FIFA World Cup, considering team performance and qualification scenarios.",
     volume: 900000,
     categories: ["new", "sports"],
-    iconName: "fifa.svg",
-    slug: "next-fifa-world-cup-host-country"
+    iconName: "fifa.png",
+    slug: "fifa-world-cup-2026-predictions"
   },
 
   // Politics Markets
   {
-    id: "7",
+    id: "9",
     title: "UK General Election Results 2024",
     description: "Comprehensive betting market on UK parliamentary elections, tracking party performance and coalition possibilities.",
     volume: 2800000,
     categories: ["politics", "elections"],
-    iconName: "uk-flag.svg",
+    iconName: "uk-election.png",
     slug: "uk-general-election-results-2024"
   },
   {
-    id: "8",
-    title: "European Union Expansion in 2024",
-    description: "Political prediction market on potential new EU member states, considering accession negotiations and referendum outcomes.",
-    volume: 650000,
-    categories: ["politics", "geopolitics"],
-    iconName: "eu-flag.svg",
-    slug: "european-union-expansion-in-2024"
+    id: "10",
+    title: "European Parliament Election Results",
+    description: "Continental political market predicting party group compositions and policy direction changes in the European Parliament.",
+    volume: 1700000,
+    categories: ["politics", "elections"],
+    iconName: "eu-parliament.png",
+    slug: "european-parliament-election-results"
   },
 
   // Sports Markets
   {
-    id: "9",
-    title: "Super Bowl 2024 Winner",
-    description: "NFL championship betting market with real-time odds based on team performance, injuries, and playoff positioning.",
+    id: "11",
+    title: "NBA Championship 2024 Winner",
+    description: "Basketball championship betting market with real-time odds based on team performance, injuries, and playoff positioning.",
     volume: 8500000,
     categories: ["sports"],
-    iconName: "nfl.svg",
-    slug: "super-bowl-2024-winner"
-  },
-  {
-    id: "10",
-    title: "Olympics 2024 Medal Count Leader",
-    description: "Summer Olympics prediction market forecasting which country will top the medal table based on athlete performance and historical data.",
-    volume: 3200000,
-    categories: ["sports"],
-    iconName: "olympics.svg",
-    slug: "olympics-2024-medal-count-leader"
+    iconName: "nba.svg",
+    slug: "nba-championship-2024-winner"
   },
 
   // Crypto Markets
   {
-    id: "11",
-    title: "Ethereum 2.0 Staking Rewards Rate",
-    description: "Cryptocurrency market predicting ETH staking yields and network participation rates following major protocol upgrades.",
+    id: "12",
+    title: "Ethereum Price Above $5,000 by 2024",
+    description: "Cryptocurrency market predicting ETH price movements and network adoption rates following major protocol upgrades.",
     volume: 1800000,
     categories: ["crypto"],
-    iconName: "ethereum.svg",
-    slug: "ethereum-2-0-staking-rewards-rate"
+    iconName: "ethereum.png",
+    slug: "ethereum-price-above-5000-by-2024"
   },
   {
-    id: "12",
-    title: "Next Cryptocurrency to Reach $1 Trillion Market Cap",
-    description: "Prediction market on which digital asset will achieve trillion-dollar valuation, analyzing adoption trends and institutional investment.",
+    id: "13",
+    title: "Next Major Cryptocurrency Bull Run",
+    description: "Prediction market on which digital asset will lead the next major market rally, analyzing adoption trends and institutional investment.",
     volume: 2100000,
     categories: ["crypto"],
-    iconName: "crypto-market.svg",
-    slug: "next-cryptocurrency-to-reach-1-trillion-market-cap"
+    iconName: "crypto.png",
+    slug: "next-major-cryptocurrency-bull-run"
   },
 
   // Earnings Markets
   {
-    id: "13",
+    id: "14",
     title: "Apple Q4 2024 Revenue Forecast",
     description: "Corporate earnings prediction market for Apple's quarterly performance, considering iPhone sales, services growth, and market conditions.",
     volume: 2700000,
     categories: ["earnings", "tech"],
-    iconName: "apple.svg",
+    iconName: "apple.png",
     slug: "apple-q4-2024-revenue-forecast"
-  },
-  {
-    id: "14",
-    title: "Amazon Prime Membership Growth Rate",
-    description: "Market predicting Amazon's subscriber growth trajectory, analyzing competitive streaming landscape and e-commerce trends.",
-    volume: 1600000,
-    categories: ["earnings", "tech"],
-    iconName: "amazon.svg",
-    slug: "amazon-prime-membership-growth-rate"
   },
 
   // Geopolitics Markets
@@ -173,88 +155,39 @@ export const markets: Market[] = [
     description: "Geopolitical prediction market assessing diplomatic tensions and potential conflict scenarios in the Taiwan Strait region.",
     volume: 1100000,
     categories: ["geopolitics", "world"],
-    iconName: "china-taiwan.svg",
+    iconName: "china-taiwan.png",
     slug: "china-taiwan-relations-stability-index"
   },
   {
     id: "16",
-    title: "Middle East Peace Agreement Progress",
-    description: "International relations market tracking diplomatic initiatives and peace process developments in the Middle East region.",
+    title: "Ukraine Conflict Resolution Timeline",
+    description: "International relations market tracking diplomatic initiatives and conflict resolution developments in Eastern Europe.",
     volume: 850000,
     categories: ["geopolitics", "world"],
-    iconName: "peace.svg",
-    slug: "middle-east-peace-agreement-progress"
-  },
-
-  // Tech Markets
-  {
-    id: "17",
-    title: "Autonomous Vehicle Deployment Timeline",
-    description: "Technology adoption market predicting when fully autonomous vehicles will achieve widespread commercial deployment.",
-    volume: 1950000,
-    categories: ["tech"],
-    iconName: "autonomous-car.svg",
-    slug: "autonomous-vehicle-deployment-timeline"
-  },
-  {
-    id: "18",
-    title: "Quantum Computing Breakthrough Date",
-    description: "Scientific prediction market on quantum supremacy milestones and practical quantum computing applications timeline.",
-    volume: 1300000,
-    categories: ["tech"],
-    iconName: "quantum.svg",
-    slug: "quantum-computing-breakthrough-date"
+    iconName: "ukraine-conflict.png",
+    slug: "ukraine-conflict-resolution-timeline"
   },
 
   // World Markets
   {
-    id: "19",
-    title: "Global Climate Agreement Compliance",
+    id: "17",
+    title: "Global Climate Goals Achievement 2024",
     description: "Environmental prediction market tracking international climate commitments and carbon emission reduction targets achievement.",
     volume: 2200000,
     categories: ["world", "economy"],
-    iconName: "climate.svg",
-    slug: "global-climate-agreement-compliance"
-  },
-  {
-    id: "20",
-    title: "World Population Milestone Timing",
-    description: "Demographic prediction market forecasting when global population will reach specific milestones based on current growth trends.",
-    volume: 750000,
-    categories: ["world"],
-    iconName: "population.svg",
-    slug: "world-population-milestone-timing"
+    iconName: "climate-goals.png",
+    slug: "global-climate-goals-achievement-2024"
   },
 
   // Economy Markets
   {
-    id: "21",
+    id: "18",
     title: "Federal Reserve Interest Rate Changes",
     description: "Monetary policy prediction market analyzing Fed decisions based on inflation data, employment statistics, and economic indicators.",
     volume: 5200000,
     categories: ["economy"],
-    iconName: "fed.svg",
+    iconName: "fed-rate.png",
     slug: "federal-reserve-interest-rate-changes"
-  },
-
-  // Elections Markets
-  {
-    id: "24",
-    title: "Indian General Election Outcome 2024",
-    description: "Democratic process prediction market covering the world's largest election, analyzing party coalitions and voter sentiment.",
-    volume: 3800000,
-    categories: ["elections", "politics"],
-    iconName: "india-flag.svg",
-    slug: "indian-general-election-outcome-2024"
-  },
-  {
-    id: "25",
-    title: "European Parliament Election Results",
-    description: "Continental political market predicting party group compositions and policy direction changes in the European Parliament.",
-    volume: 1700000,
-    categories: ["elections", "politics"],
-    iconName: "eu-parliament.svg",
-    slug: "european-parliament-election-results"
   }
 ];
 
