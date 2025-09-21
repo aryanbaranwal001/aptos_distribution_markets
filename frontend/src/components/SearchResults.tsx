@@ -5,7 +5,7 @@ import { Search } from 'lucide-react';
 import Image from 'next/image';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useAppStore } from '@/store/appStore';
-import { searchMarkets, Market } from '@/data/markets';
+import { searchMarkets, Market, formatVolume } from '@/data/markets';
 import { getCategoryIcon } from '@/utils/categoryIcons';
 
 interface SearchResultsProps {
@@ -69,6 +69,11 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
               <div className="flex-1 min-w-0">
                 <div className={`font-medium ${theme.text} truncate`}>
                   {market.title}
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <div className={`text-sm font-semibold ${theme.primary}`}>
+                  {formatVolume(market.volume)}
                 </div>
               </div>
             </button>
