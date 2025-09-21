@@ -1,4 +1,4 @@
-/* Custom styles for Aptos Wallet Selector */
+/* Custom styles for Aptos Wallet Selector - Button Only */
 .wallet-button {
   background: var(--theme-primary-bg, linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)) !important;
   border: none !important;
@@ -16,74 +16,4 @@
   background: var(--theme-primary-hover, linear-gradient(135deg, #2563eb 0%, #1e40af 100%)) !important;
   transform: translateY(-1px) !important;
   box-shadow: var(--theme-primary-shadow, 0 4px 12px rgba(59, 130, 246, 0.3)) !important;
-}
-
-.wallet-selector-modal {
-  background: rgba(17, 24, 39, 0.95) !important;
-  backdrop-filter: blur(8px) !important;
-}
-
-.wallet-selector-modal .ant-modal-content {
-  background: #1f2937 !important;
-  border: 1px solid #374151 !important;
-  border-radius: 12px !important;
-}
-
-.wallet-selector-modal .ant-modal-header {
-  background: #1f2937 !important;
-  border-bottom: 1px solid #374151 !important;
-}
-
-.wallet-selector-modal .ant-modal-title {
-  color: #f9fafb !important;
-}
-
-.wallet-selector-modal .ant-modal-close-x {
-  color: #9ca3af !important;
-}
-
-.wallet-selector-modal .ant-modal-close-x:hover {
-  color: #f9fafb !important;
-}
-
-.wallet-menu-wrapper {
-  background: #1f2937 !important;
-}
-
-.wallet-name-wrapper {
-  background: #374151 !important;
-  border: 1px solid #4b5563 !important;
-  border-radius: 8px !important;
-  transition: all 0.2s ease !important;
-}
-
-.wallet-name-wrapper:hover {
-  background: #4b5563 !important;
-  border-color: #3b82f6 !important;
-}
-
-.wallet-name-wrapper span {
-  color: #f9fafb !important;
-}
-
-.wallet-connect-button {
-  background: #3b82f6 !important;
-  border: none !important;
-  color: white !important;
-  border-radius: 6px !important;
-}
-
-.wallet-connect-button:hover {
-  background: #2563eb !important;
-}
-
-.wallet-connect-install {
-  background: #dc2626 !important;
-  border: none !important;
-  color: white !important;
-  border-radius: 6px !important;
-}
-
-.wallet-connect-install:hover {
-  background: #b91c1c !important;
 }
