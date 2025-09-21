@@ -5,12 +5,12 @@ import { Search, Menu, X, Wallet } from 'lucide-react';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useWalletStore } from '@/store/walletStore';
 import { useAppStore } from '@/store/appStore';
-import SearchModal from './SearchModal';
+import SearchResults from './SearchResults';
 
 const Navbar = () => {
   const { color, nextColor } = useThemeStore();
   const { isConnected, address, connect, disconnect } = useWalletStore();
-  const { setSearchOpen } = useAppStore();
+  const { isSearchOpen, setSearchOpen, searchQuery, setSearchQuery } = useAppStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const theme = getThemeClasses(color);
@@ -45,15 +45,24 @@ const Navbar = () => {
             {/* Search Bar */}
             <div className="flex-1 max-w-lg mx-8">
               <div className="relative">
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className={`w-full px-4 py-2 text-left ${theme.textSecondary} ${theme.cardBg} rounded-lg ${theme.hoverBg} transition-colors`}
-                >
-                  <div className="flex items-center">
-                    <Search className="w-4 h-4 mr-2" />
-                    <span>Search for a market...</span>
+                <div className={`relative ${theme.cardBg} rounded-lg`}>
+                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${theme.textSecondary}`} />
+                  <input
+                    type="text"
+                    placeholder="Search for a market..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setSearchOpen(true)}
+                    className={`search-input w-full pl-10 pr-4 py-2 bg-transparent ${theme.text} placeholder-gray-400 outline-none rounded-lg`}
+                  />
+                </div>
+                
+                {/* Search Results Dropdown */}
+                {isSearchOpen && (
+                  <div className={`absolute top-full left-0 right-0 mt-1 ${theme.cardBg} rounded-lg shadow-xl border ${theme.border} z-50`}>
+                    <SearchResults onClose={() => setSearchOpen(false)} />
                   </div>
-                </button>
+                )}
               </div>
             </div>
 
@@ -100,8 +109,6 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* Search Modal */}
-      <SearchModal />
     </>
   );
 };
