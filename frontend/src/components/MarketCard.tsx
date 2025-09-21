@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Bookmark } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { Market, formatVolume } from '@/data/markets';
+import BookmarkIcon from './BookmarkIcon';
 
 interface MarketCardProps {
   market: Market;
@@ -95,11 +95,15 @@ const MarketCard = ({ market }: MarketCardProps) => {
           onClick={handleBookmark}
           className={`p-2 rounded-full transition-colors ${
             isBookmarked
-              ? `${theme.primaryBg} text-white`
+              ? `${theme.textSecondary}`
               : `${theme.textSecondary} hover:${theme.primary}`
           }`}
         >
-          <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
+          <BookmarkIcon 
+            filled={isBookmarked} 
+            className="w-5 h-5"
+            themeColor={theme.primary}
+          />
         </button>
       </div>
     </div>
