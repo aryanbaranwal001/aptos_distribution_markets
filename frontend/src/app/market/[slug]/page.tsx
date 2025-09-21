@@ -7,11 +7,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { markets, Market } from '@/data/markets';
+import MarketDetailSkeleton from '@/components/MarketDetailSkeleton';
 
 const MarketDetailPage = () => {
   const params = useParams();
   const { color } = useThemeStore();
   const [market, setMarket] = useState<Market | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [iconSrc, setIconSrc] = useState('');
   const [hasError, setHasError] = useState(false);
   
@@ -35,21 +37,20 @@ const MarketDetailPage = () => {
     collateralRequired: 1250,
     maxPayout: 2500,
     tradingFee: 0.02,
-    liquidityPool: 125000
+    liquidityPool: 125000,
+    marketId: market?.id || "Loading..."
   };
 
   useEffect(() => {
     if (params.slug) {
-      // Find market by matching slug with title
-      const foundMarket = markets.find(m => {
-        const slug = m.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        return slug === params.slug;
-      });
+      // Find market by slug
+      const foundMarket = markets.find(m => m.slug === params.slug);
       
       if (foundMarket) {
         setMarket(foundMarket);
         setIconSrc(`/icons/${foundMarket.iconName.replace('.svg', '.png')}`);
       }
+      setIsLoading(false);
     }
   }, [params.slug]);
 
@@ -216,17 +217,9 @@ const MarketDetailPage = () => {
 
   }, [mean, stdDev, mouseX, marketData.currentMean, marketData.currentStdDev]);
 
-  if (!market) {
-    return (
-      <div className={`min-h-screen ${theme.background} ${theme.text} flex items-center justify-center`}>
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Market Not Found</h1>
-          <Link href="/" className={`${theme.primary} hover:underline`}>
-            Return to Markets
-          </Link>
-        </div>
-      </div>
-    );
+  // Show loading skeleton while loading or if market not found
+  if (isLoading || !market) {
+    return <MarketDetailSkeleton />;
   }
 
   return (
@@ -245,7 +238,7 @@ const MarketDetailPage = () => {
                   alt={market.title}
                   fill
                   className="rounded-full object-cover"
-                  onError={() => setHasError(true)}
+                  onError={handleImageError}
                 />
               ) : (
                 <div className={`w-full h-full rounded-full ${theme.cardBg} flex items-center justify-center text-xs font-bold`}>
