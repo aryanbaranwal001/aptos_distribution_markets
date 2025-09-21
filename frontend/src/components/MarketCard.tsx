@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Bookmark } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { Market, formatVolume } from '@/data/markets';
 
@@ -24,9 +25,10 @@ const MarketCard = ({ market }: MarketCardProps) => {
     setIsBookmarked(!isBookmarked);
   };
 
-  const handleCardClick = () => {
-    // Navigate to market detail (placeholder for now)
-    console.log('Navigate to market:', market.id);
+  const handleCategoryClick = (e: React.MouseEvent, category: string) => {
+    e.stopPropagation();
+    // Handle category filter (placeholder for now)
+    console.log('Filter by category:', category);
   };
 
   const handleImageError = () => {
@@ -41,8 +43,7 @@ const MarketCard = ({ market }: MarketCardProps) => {
 
   return (
     <div
-      onClick={handleCardClick}
-      className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg} hover:shadow-lg transition-all duration-200 cursor-pointer group flex flex-col h-full`}
+      className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg} hover:shadow-lg transition-all duration-200 group flex flex-col h-full`}
     >
       {/* Icon and Market Title */}
       <div className="flex items-start space-x-3 mb-3">
@@ -56,9 +57,11 @@ const MarketCard = ({ market }: MarketCardProps) => {
             onError={handleImageError}
           />
         </div>
-        <h3 className={`text-lg font-semibold ${theme.text} group-hover:${theme.primary} transition-colors flex-1`}>
-          {market.title}
-        </h3>
+        <Link href={`/${market.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
+          <h3 className={`text-lg font-semibold ${theme.text} hover:${theme.primary} transition-colors flex-1 cursor-pointer`}>
+            {market.title}
+          </h3>
+        </Link>
       </div>
 
       {/* Market Description */}
@@ -71,7 +74,8 @@ const MarketCard = ({ market }: MarketCardProps) => {
         {market.categories.slice(0, 3).map((category) => (
           <span
             key={category}
-            className={`px-2 py-1 text-xs rounded-full ${theme.cardBg} border ${theme.border} ${theme.textSecondary}`}
+            onClick={(e) => handleCategoryClick(e, category)}
+            className={`px-2 py-1 text-xs rounded-full ${theme.cardBg} border ${theme.border} ${theme.textSecondary} cursor-pointer hover:${theme.primary} transition-colors`}
           >
             {category}
           </span>
