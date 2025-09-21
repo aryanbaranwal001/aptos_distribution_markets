@@ -26,8 +26,8 @@ const CategoryNav = () => {
 
   return (
     <div className={`sticky top-16 z-40 ${theme.background} border-b ${theme.border}`}>
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center space-x-8 overflow-x-auto py-2">
+      <div className="px-12 sm:px-24 lg:px-48">
+        <div className="flex items-center justify-center space-x-8 overflow-x-auto py-2">
           {categories.map((category) => (
             <button
               key={category}

@@ -33,7 +33,7 @@ const Navbar = () => {
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 ${theme.background} ${theme.text}`}>
         {/* Top Navbar */}
-        <div className="px-4 sm:px-6 lg:px-8">
+        <div className="px-12 sm:px-24 lg:px-48">
           <div className="flex items-center justify-between h-16">
             {/* Company Name */}
             <div className="flex-shrink-0">

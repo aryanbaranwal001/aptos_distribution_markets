@@ -42,7 +42,7 @@ const MarketGrid = () => {
 
   if (loading) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className="px-12 sm:px-24 lg:px-48 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, index) => (
             <div
@@ -68,7 +68,7 @@ const MarketGrid = () => {
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8">
+    <div className="px-12 sm:px-24 lg:px-48 py-8">
       <div className="mb-8">
         <h2 className={`text-2xl font-bold ${theme.text} mb-2`}>
           {categoryLabels[activeCategory]} Markets
