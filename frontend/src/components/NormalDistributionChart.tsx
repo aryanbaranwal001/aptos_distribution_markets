@@ -200,13 +200,12 @@ const NormalDistributionChart: React.FC<NormalDistributionChartProps> = ({
       },
     },
     animation: {
-      duration: 300,
-      easing: 'easeInOutQuart' as const,
+      duration: 0,
     },
     transitions: {
       active: {
         animation: {
-          duration: 200,
+          duration: 0,
         },
       },
     },
