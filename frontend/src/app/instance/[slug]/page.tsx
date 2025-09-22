@@ -128,7 +128,7 @@ const MarketInstancePage = () => {
         </div>
 
         {/* Main Container */}
-        <div className={`rounded-lg border ${theme.border} ${theme.cardBg} p-6`}>
+        <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-6">
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
@@ -324,84 +324,6 @@ const MarketInstancePage = () => {
                       <span>Total Required</span>
                       <span className="font-mono">0.071 APT</span>
                     </div>
-                  </div>
-                </div>
-
-                {/* Mean Slider Container */}
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="text-sm font-semibold">MEAN (M)</label>
-                    <span className="text-lg font-bold">{userMean.toFixed(2)}</span>
-                  </div>
-                  <div className="mb-2">
-                    <input
-                      type="range"
-                      min={market.market_mean_min}
-                      max={market.market_mean_max}
-                      step={0.01}
-                      value={userMean}
-                      onChange={(e) => setUserMean(parseFloat(e.target.value))}
-                      className={`w-full h-2 rounded-lg appearance-none cursor-pointer slider-${color}`}
-                      style={{
-                        background: `linear-gradient(to right, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} 0%, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} ${((userMean - market.market_mean_min) / (market.market_mean_max - market.market_mean_min)) * 100}%, #374151 ${((userMean - market.market_mean_min) / (market.market_mean_max - market.market_mean_min)) * 100}%, #374151 100%)`
-                      }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className={theme.textSecondary}>{market.market_mean_min}</span>
-                    <span className={theme.textSecondary}>{market.market_mean_max}</span>
-                  </div>
-                </div>
-
-                {/* Standard Deviation Slider Container */}
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="text-sm font-semibold">STD DEV (σ)</label>
-                    <span className="text-lg font-bold">{userStdDev.toFixed(3)}</span>
-                  </div>
-                  <div className="mb-2">
-                    <input
-                      type="range"
-                      min={market.market_standard_deviation_min}
-                      max={market.market_standard_deviation_max}
-                      step={0.001}
-                      value={userStdDev}
-                      onChange={(e) => setUserStdDev(parseFloat(e.target.value))}
-                      className={`w-full h-2 rounded-lg appearance-none cursor-pointer slider-${color}`}
-                      style={{
-                        background: `linear-gradient(to right, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} 0%, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} ${((userStdDev - market.market_standard_deviation_min) / (market.market_standard_deviation_max - market.market_standard_deviation_min)) * 100}%, #374151 ${((userStdDev - market.market_standard_deviation_min) / (market.market_standard_deviation_max - market.market_standard_deviation_min)) * 100}%, #374151 100%)`
-                      }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className={theme.textSecondary}>{market.market_standard_deviation_min}</span>
-                    <span className={theme.textSecondary}>{market.market_standard_deviation_max}</span>
-                  </div>
-                  <div className={`text-xs ${theme.textSecondary} mt-1`}>
-                    Min σ: {market.market_standard_deviation_min} (contract enforced)
-                  </div>
-                </div>
-
-                {/* Collateral Required Container */}
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <h3 className="text-sm font-semibold mb-2">Collateral Required</h3>
-                  <div className="text-2xl font-bold mb-1">1.22 <span className="text-sm font-normal">STRK</span></div>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between">
-                      <span className={theme.textSecondary}>FEES (EST)</span>
-                      <span>0 STRK Ⓒ</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={theme.textSecondary}>MIN (1x)</span>
-                      <span>0.000000</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={theme.textSecondary}>ARG MIN σ</span>
-                      <span>243.352</span>
-                    </div>
-                  </div>
-                  <div className={`text-xs ${theme.textSecondary} mt-2`}>
-                    Collateral secures against maximum potential loss.
                   </div>
                 </div>
 
