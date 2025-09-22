@@ -282,6 +282,7 @@ const MarketInstancePage = () => {
                     type="range"
                     min={market.market_mean_min}
                     max={market.market_mean_max}
+                    step="0.01"
                     value={userMean}
                     onChange={(e) => setUserMean(Number(e.target.value))}
                     className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-600"
@@ -305,6 +306,7 @@ const MarketInstancePage = () => {
                     type="range"
                     min={market.market_standard_deviation_min}
                     max={market.market_standard_deviation_max}
+                    step="0.01"
                     value={userStdDev}
                     onChange={(e) => setUserStdDev(Number(e.target.value))}
                     className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-600"

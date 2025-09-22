@@ -34,8 +34,9 @@ interface NormalDistributionChartProps {
 
 // Normal distribution probability density function
 const normalPDF = (x: number, mean: number, stdDev: number): number => {
-  const coefficient = 1 / (stdDev * Math.sqrt(2 * Math.PI));
-  const exponent = -0.5 * Math.pow((x - mean) / stdDev, 2);
+  if (stdDev <= 0) return 0;
+  const coefficient = 1 / (Math.abs(stdDev) * Math.sqrt(2 * Math.PI));
+  const exponent = -0.5 * Math.pow((x - mean) / Math.abs(stdDev), 2);
   return coefficient * Math.exp(exponent);
 };
 
@@ -62,8 +63,8 @@ const NormalDistributionChart: React.FC<NormalDistributionChartProps> = ({
   const chartRef = useRef<ChartJS<'line'>>(null);
 
   // Calculate the range for x-axis (show ±4 standard deviations from both means)
-  const minX = Math.min(marketMean - 4 * marketStdDev, userMean - 4 * userStdDev);
-  const maxX = Math.max(marketMean + 4 * marketStdDev, userMean + 4 * userStdDev);
+  const minX = Math.min(marketMean - 4 * Math.abs(marketStdDev), userMean - 4 * Math.abs(userStdDev));
+  const maxX = Math.max(marketMean + 4 * Math.abs(marketStdDev), userMean + 4 * Math.abs(userStdDev));
 
   // Generate data for all three curves
   const marketData = generateCurveData(marketMean, marketStdDev, minX, maxX);
