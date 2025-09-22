@@ -387,8 +387,8 @@ const MarketInstancePage = () => {
                           <span className="font-mono text-xs">0.001 APT</span>
                         </div>
                         <hr className="border-t border-gray-500/20 my-2" />
-                        <div className="flex justify-between text-xs">
-                          <span>Total Required</span>
+                        <div className="flex justify-between text-xs ">
+                          <span className='align-middle'>Total Required</span>
                           <span className="font-mono text-lg">0.071 APT</span>
                         </div>
                       </div>
