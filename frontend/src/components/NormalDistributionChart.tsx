@@ -11,6 +11,8 @@ import {
   Tooltip,
   Legend,
   Filler,
+  ChartEvent,
+  ActiveElement
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -30,6 +32,8 @@ interface NormalDistributionChartProps {
   marketStdDev: number;
   userMean: number;
   userStdDev: number;
+  onHover?: (value: number | null) => void;
+  xAxisLabel?: string;
 }
 
 // Normal distribution probability density function
@@ -59,6 +63,8 @@ const NormalDistributionChart: React.FC<NormalDistributionChartProps> = ({
   marketStdDev,
   userMean,
   userStdDev,
+  onHover,
+  xAxisLabel,
 }) => {
   const chartRef = useRef<ChartJS<'line'>>(null);
 
@@ -144,7 +150,7 @@ const NormalDistributionChart: React.FC<NormalDistributionChartProps> = ({
             return `${label}: ${value.toFixed(4)}`;
           },
           title: function(context: Array<{ parsed: { x: number } }>) {
-            return `Value: ${context[0].parsed.x.toFixed(2)}`;
+            return `${context[0].parsed.x.toFixed(2)}`;
           },
         },
       },
@@ -155,7 +161,7 @@ const NormalDistributionChart: React.FC<NormalDistributionChartProps> = ({
         position: 'bottom' as const,
         title: {
           display: true,
-          text: 'Electoral College Votes (ECV)',
+          text: xAxisLabel || 'Value',
           color: '#9ca3af',
           font: {
             size: 12,
@@ -194,6 +200,21 @@ const NormalDistributionChart: React.FC<NormalDistributionChartProps> = ({
     interaction: {
       mode: 'index' as const,
       intersect: false,
+    },
+    onHover: (event: ChartEvent, elements: ActiveElement[]) => {
+      if (onHover) {
+        if (elements.length > 0) {
+          const chart = chartRef.current;
+          if (chart && event.native) {
+            const rect = chart.canvas.getBoundingClientRect();
+            const x = (event.native as MouseEvent).clientX - rect.left;
+            const dataX = chart.scales.x.getValueForPixel(x);
+            onHover(dataX ?? null);
+          }
+        } else {
+          onHover(null);
+        }
+      }
     },
     elements: {
       line: {
