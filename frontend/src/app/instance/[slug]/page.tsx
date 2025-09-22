@@ -461,7 +461,7 @@ const MarketInstancePage = () => {
                     <hr className="border-t border-gray-500/20 mb-4" />
 
                     {/* Liquidity Position Summary */}
-                    <div className="mb-4">
+                    <div className="mb-2">
                       <h3 className="text-xs font-semibold mb-3 uppercase tracking-wide">POSITION SUMMARY</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between">
@@ -485,24 +485,23 @@ const MarketInstancePage = () => {
                       </div>
                     </div>
 
-                    <hr className="border-t border-gray-500/20 mb-4" />
+                    <hr className="border-t border-gray-500/20 mb-2" />
 
                     {/* LP Share Definition */}
-                    <div className="mb-4">
+                    <div className="mb-2">
                       <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">LP SHARE DEFINITION</h3>
                       <p className="text-xs text-gray-400 leading-relaxed">
-                        LP shares represent your proportional ownership of the liquidity pool and you earn trading fees 
-                        proportional to your share.
+                      LP shares show your pool ownership and earn you proportional trading fees.
                       </p>
                     </div>
 
-                    <hr className="border-t border-gray-500/20 mb-4" />
+                    <hr className="border-t border-gray-500/20 mb-2" />
 
                     {/* Liquidity Provider Risk */}
-                    <div className="mb-4">
+                    <div className="mb-2">
                       <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide text-yellow-400">LIQUIDITY PROVIDER RISK</h3>
                       <p className="text-xs text-gray-400 leading-relaxed">
-                        Risk of impermanent loss, market volatility, and smart contract vulnerabilities. LP at your own discretion.
+                        Risk of impermanent loss, market volatility, and smart contract vulnerabilities.
                       </p>
                     </div>
 
