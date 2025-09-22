@@ -6,6 +6,7 @@ import { ArrowLeft, Bookmark } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
+import NormalDistributionChart from '@/components/NormalDistributionChart';
 import { markets, Market, formatDate } from '@/data/markets';
 import Navbar from '@/components/Navbar';
 import CategoryNav from '@/components/CategoryNav';
@@ -19,8 +20,8 @@ const MarketInstancePage = () => {
   const [hasError, setHasError] = useState(false);
   
   // Slider states for mean and std dev
-  const [userMean, setUserMean] = useState(0);
-  const [userStdDev, setUserStdDev] = useState(0);
+  const [userMean, setUserMean] = useState(50); // Center position for zero delta
+  const [userStdDev, setUserStdDev] = useState(15); // Center position for zero delta
   
   const theme = getThemeClasses(color);
 
@@ -72,8 +73,7 @@ const MarketInstancePage = () => {
     );
   }
 
-  // Calculate deltas for display
-  const deltaMu = userMean - market.market_mean;
+  // Calculate deltas for display (removed unused variable)
 
   return (
     <div className={`min-h-screen ${theme.background} ${theme.text}`}>
@@ -158,15 +158,13 @@ const MarketInstancePage = () => {
                 <hr className="border-t border-gray-500/20 mb-4" />
 
                 {/* Graph Section - Flexible Height */}
-                <div className="p-8 flex-1 mb-4 min-h-[400px]">
-                  <div className="text-center h-full flex flex-col justify-center">
-                    <div className={`text-5xl mb-3 ${theme.textSecondary}`}>📊</div>
-                    <h3 className={`text-lg font-semibold mb-2 ${theme.textSecondary}`}>Distribution Graph</h3>
-                    <p className={`${theme.textSecondary} text-sm`}>Normal distribution curve will be displayed here</p>
-                    <div className="mt-3 flex items-center justify-center">
-                      <span className={`text-xs ${theme.textSecondary}`}>Current Market vs Your Proposal visualization</span>
-                    </div>
-                  </div>
+                <div className="flex-1 mb-4 min-h-[400px]">
+                  <NormalDistributionChart
+                    marketMean={market.market_mean}
+                    marketStdDev={market.market_standard_deviation}
+                    userMean={market.market_mean + (userMean - 50) * 0.5} // Convert slider to delta
+                    userStdDev={market.market_standard_deviation + (userStdDev - 15) * 0.2} // Convert slider to delta
+                  />
                 </div>
 
                 <hr className="border-t border-gray-500/20 mb-4" />
@@ -251,28 +249,6 @@ const MarketInstancePage = () => {
                     </button>
                   </div>
                 </div>
-
-                <hr className="border-t border-gray-500/20 mb-4" />
-
-                {/* Proposed Values */}
-                <div className="mb-4">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                    <span className={`text-xs font-semibold ${theme.textSecondary}`}>PROPOSED</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>Delta μ</span>
-                      <span className="font-mono text-xs">{deltaMu > 0 ? '+' : ''}{deltaMu.toFixed(1)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>σ</span>
-                      <span className="font-mono text-xs">{userStdDev.toFixed(1)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <hr className="border-t border-gray-500/20 mb-4" />
 
                 {/* Mean Slider */}
                 <div className="mb-4">
