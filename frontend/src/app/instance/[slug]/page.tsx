@@ -131,7 +131,7 @@ const MarketInstancePage = () => {
         </div>
 
         {/* Main Container */}
-        <div className="rounded-lg border border-gray-500/20 p-6 mb-12" style={{backgroundColor: '#1a1a1f'}}>
+        <div className="rounded-lg border border-gray-500/20 p-6 mb-20" style={{backgroundColor: '#1a1a1f'}}>
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:h-auto">
             
@@ -354,6 +354,9 @@ const MarketInstancePage = () => {
         </div>
 
       </main>
+      
+      {/* Bottom Spacer */}
+      <div className="h-20"></div>
     </div>
   );
 };
