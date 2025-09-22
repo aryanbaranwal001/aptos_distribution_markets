@@ -199,6 +199,17 @@ const NormalDistributionChart: React.FC<NormalDistributionChartProps> = ({
         borderWidth: 2,
       },
     },
+    animation: {
+      duration: 300,
+      easing: 'easeInOutQuart' as const,
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: 200,
+        },
+      },
+    },
   };
 
   return (

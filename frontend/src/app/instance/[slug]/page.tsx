@@ -19,9 +19,9 @@ const MarketInstancePage = () => {
   const [iconSrc, setIconSrc] = useState('');
   const [hasError, setHasError] = useState(false);
   
-  // Slider states for mean and std dev
-  const [userMean, setUserMean] = useState(50); // Center position for zero delta
-  const [userStdDev, setUserStdDev] = useState(15); // Center position for zero delta
+  // Slider states for mean and std dev - dynamically set to market values for zero delta
+  const [userMean, setUserMean] = useState(0);
+  const [userStdDev, setUserStdDev] = useState(0);
   
   const theme = getThemeClasses(color);
 
@@ -36,8 +36,11 @@ const MarketInstancePage = () => {
       if (foundMarket) {
         setMarket(foundMarket);
         setIsBookmarked(foundMarket.isBookmarked || false);
-        setIconSrc(`/icons/${foundMarket.iconName.replace('.svg', '.png')}`);
-        // Initialize sliders with market values
+        
+        // Set initial icon source
+        setIconSrc(`/icons/${foundMarket.iconName}`);
+        
+        // Initialize sliders to center positions for zero delta
         setUserMean(foundMarket.market_mean);
         setUserStdDev(foundMarket.market_standard_deviation);
       }
@@ -162,8 +165,8 @@ const MarketInstancePage = () => {
                   <NormalDistributionChart
                     marketMean={market.market_mean}
                     marketStdDev={market.market_standard_deviation}
-                    userMean={market.market_mean + (userMean - 50) * 0.5} // Convert slider to delta
-                    userStdDev={market.market_standard_deviation + (userStdDev - 15) * 0.2} // Convert slider to delta
+                    userMean={userMean} // Direct value from slider
+                    userStdDev={userStdDev} // Direct value from slider
                   />
                 </div>
 
@@ -195,12 +198,12 @@ const MarketInstancePage = () => {
                     <h3 className="text-xs font-semibold mb-3 uppercase tracking-wide">CAP & SCALE (λ)</h3>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className={`${theme.textSecondary} text-xs`}>Peak p</span>
-                        <span className="font-mono text-xs">{market.peak_p}</span>
+                        <span className={`${theme.textSecondary} text-xs`}>Delta μ</span>
+                        <span className="font-mono text-xs">{(userMean - market.market_mean).toFixed(1)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className={`${theme.textSecondary} text-xs`}>Headroom</span>
-                        <span className="font-mono text-xs">{market.headroom} (79.2%)</span>
+                        <span className={`${theme.textSecondary} text-xs`}>Delta σ</span>
+                        <span className="font-mono text-xs">{(userStdDev - market.market_standard_deviation).toFixed(1)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className={`${theme.textSecondary} text-xs`}>λ</span>
@@ -258,16 +261,16 @@ const MarketInstancePage = () => {
                   </div>
                   <input
                     type="range"
-                    min="0"
-                    max="100"
+                    min={market.market_mean_min}
+                    max={market.market_mean_max}
                     value={userMean}
                     onChange={(e) => setUserMean(Number(e.target.value))}
                     className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-600"
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>0</span>
-                    <span>50</span>
-                    <span>100</span>
+                    <span>{market.market_mean_min}</span>
+                    <span>{market.market_mean}</span>
+                    <span>{market.market_mean_max}</span>
                   </div>
                 </div>
 
@@ -281,16 +284,16 @@ const MarketInstancePage = () => {
                   </div>
                   <input
                     type="range"
-                    min="1"
-                    max="30"
+                    min={market.market_standard_deviation_min}
+                    max={market.market_standard_deviation_max}
                     value={userStdDev}
                     onChange={(e) => setUserStdDev(Number(e.target.value))}
                     className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-600"
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>1</span>
-                    <span>15</span>
-                    <span>30</span>
+                    <span>{market.market_standard_deviation_min}</span>
+                    <span>{market.market_standard_deviation}</span>
+                    <span>{market.market_standard_deviation_max}</span>
                   </div>
                 </div>
 
