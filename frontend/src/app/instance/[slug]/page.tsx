@@ -135,19 +135,21 @@ const MarketInstancePage = () => {
             {/* Left Container - Graph and Data (3/4 width) */}
             <div className="lg:col-span-3">
               {/* Stats Row Above Graph */}
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
-                  <div className={`text-xs ${theme.textSecondary} mb-1`}>Value (ECV)</div>
-                  <div className="text-lg font-bold">{market.market_mean.toFixed(2)}</div>
-                  <div className={`text-xs ${theme.textSecondary}`}>ECV</div>
-                </div>
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
-                  <div className={`text-xs ${theme.textSecondary} mb-1`}>Probability</div>
-                  <div className="text-lg font-bold">0.0%</div>
-                </div>
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
-                  <div className={`text-xs ${theme.textSecondary} mb-1`}>Cumulative</div>
-                  <div className="text-lg font-bold">100.0%</div>
+              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4 mb-6">
+                <div className="grid grid-cols-3 divide-x divide-gray-600/30">
+                  <div className="pr-4">
+                    <div className={`text-xs ${theme.textSecondary} mb-1`}>Value (ECV)</div>
+                    <div className="text-lg font-bold">{market.market_mean.toFixed(2)}</div>
+                    <div className={`text-xs ${theme.textSecondary}`}>ECV</div>
+                  </div>
+                  <div className="px-4">
+                    <div className={`text-xs ${theme.textSecondary} mb-1`}>Probability</div>
+                    <div className="text-lg font-bold">0.0%</div>
+                  </div>
+                  <div className="pl-4">
+                    <div className={`text-xs ${theme.textSecondary} mb-1`}>Cumulative</div>
+                    <div className="text-lg font-bold">100.0%</div>
+                  </div>
                 </div>
               </div>
 
@@ -164,60 +166,62 @@ const MarketInstancePage = () => {
               </div>
 
               {/* Market Parameters Below Graph */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {/* Stiffness Section */}
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
-                  <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">STIFFNESS (LOCAL)</h3>
-                  <div className="space-y-1">
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>S</span>
-                      <span className="font-mono text-xs">{market.s}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>μ per σ1</span>
-                      <span className="font-mono text-xs">{market.mu_per_one}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>σ per σ1</span>
-                      <span className="font-mono text-xs">{market.sigma_per_one}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Cap & Scale Section */}
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
-                  <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">CAP & SCALE (λ)</h3>
-                  <div className="space-y-1">
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>Peak p</span>
-                      <span className="font-mono text-xs">{market.peak_p}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>Headroom</span>
-                      <span className="font-mono text-xs">{market.headroom} (79.2%)</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>λ</span>
-                      <span className="font-mono text-xs">{market.Lambda}</span>
+              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-600/30">
+                  {/* Stiffness Section */}
+                  <div className="py-3 md:py-0 md:pr-4">
+                    <h3 className="text-xs font-semibold mb-3 uppercase tracking-wide">STIFFNESS (LOCAL)</h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className={`${theme.textSecondary} text-xs`}>S</span>
+                        <span className="font-mono text-xs">{market.s}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className={`${theme.textSecondary} text-xs`}>μ per σ1</span>
+                        <span className="font-mono text-xs">{market.mu_per_one}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className={`${theme.textSecondary} text-xs`}>σ per σ1</span>
+                        <span className="font-mono text-xs">{market.sigma_per_one}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Lifecycle Section */}
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
-                  <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">LIFECYCLE</h3>
-                  <div className="space-y-1">
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>Status</span>
-                      <span className="text-green-500 text-xs">Active</span>
+                  {/* Cap & Scale Section */}
+                  <div className="py-3 md:py-0 md:px-4">
+                    <h3 className="text-xs font-semibold mb-3 uppercase tracking-wide">CAP & SCALE (λ)</h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className={`${theme.textSecondary} text-xs`}>Peak p</span>
+                        <span className="font-mono text-xs">{market.peak_p}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className={`${theme.textSecondary} text-xs`}>Headroom</span>
+                        <span className="font-mono text-xs">{market.headroom} (79.2%)</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className={`${theme.textSecondary} text-xs`}>λ</span>
+                        <span className="font-mono text-xs">{market.Lambda}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>Expires</span>
-                      <span className="text-xs">{formatDate(market.endDate)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-xs`}>Created</span>
-                      <span className="text-xs">{formatDate(market.startDate)}</span>
+                  </div>
+
+                  {/* Lifecycle Section */}
+                  <div className="py-3 md:py-0 md:pl-4">
+                    <h3 className="text-xs font-semibold mb-3 uppercase tracking-wide">LIFECYCLE</h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className={`${theme.textSecondary} text-xs`}>Status</span>
+                        <span className="text-green-500 text-xs">Active</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className={`${theme.textSecondary} text-xs`}>Expires</span>
+                        <span className="text-xs">{formatDate(market.endDate)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className={`${theme.textSecondary} text-xs`}>Created</span>
+                        <span className="text-xs">{formatDate(market.startDate)}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -226,10 +230,10 @@ const MarketInstancePage = () => {
 
             {/* Right Container - Sidebar (1/4 width) */}
             <div className="lg:col-span-1">
-              <div className="space-y-4">
-                
-                {/* Trade Actions Container */}
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+              {/* Trading Panel - Single Container */}
+              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4">
+                {/* Trade Actions */}
+                <div className="mb-4">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <button className={`px-3 py-2 rounded-lg ${theme.primaryBg} text-white text-sm font-semibold hover:opacity-90 transition-opacity`}>
                       Trade
@@ -243,13 +247,15 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                {/* Proposed Values Container */}
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
-                  <div className="flex items-center space-x-2 mb-2">
+                <hr className="border-t border-gray-600/30 mb-4" />
+
+                {/* Proposed Values */}
+                <div className="mb-4">
+                  <div className="flex items-center space-x-2 mb-3">
                     <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                    <span className={`text-xs ${theme.textSecondary}`}>Proposed</span>
+                    <span className={`text-xs font-semibold ${theme.textSecondary}`}>PROPOSED</span>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className={`${theme.textSecondary} text-xs`}>Delta μ</span>
                       <span className="font-mono text-xs">{deltaMu > 0 ? '+' : ''}{deltaMu.toFixed(1)}</span>
@@ -261,8 +267,10 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                {/* Mean Slider Container */}
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                <hr className="border-t border-gray-600/30 mb-4" />
+
+                {/* Mean Slider */}
+                <div className="mb-4">
                   <div className="flex justify-between items-center mb-2">
                     <label className="text-xs font-semibold">MEAN (M)</label>
                     <span className="text-sm font-bold">{userMean.toFixed(2)}</span>
@@ -282,8 +290,10 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                {/* Sigma Slider Container */}
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                <hr className="border-t border-gray-600/30 mb-4" />
+
+                {/* Sigma Slider */}
+                <div className="mb-4">
                   <div className="flex justify-between items-center mb-2">
                     <label className="text-xs font-semibold">SIGMA (σ)</label>
                     <span className="text-sm font-bold">{userStdDev.toFixed(2)}</span>
@@ -303,10 +313,12 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                {/* Collateral Required Container */}
-                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
-                  <h3 className="text-xs font-semibold mb-2">COLLATERAL REQUIRED</h3>
-                  <div className="space-y-1">
+                <hr className="border-t border-gray-600/30 mb-4" />
+
+                {/* Collateral Required */}
+                <div className="mb-4">
+                  <h3 className="text-xs font-semibold mb-3">COLLATERAL REQUIRED</h3>
+                  <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className={`${theme.textSecondary} text-xs`}>Base Fee</span>
                       <span className="font-mono text-xs">0.05 APT</span>
@@ -319,13 +331,15 @@ const MarketInstancePage = () => {
                       <span className={`${theme.textSecondary} text-xs`}>Gas Estimate</span>
                       <span className="font-mono text-xs">0.001 APT</span>
                     </div>
-                    <hr className="border-t border-gray-600/30" />
+                    <hr className="border-t border-gray-600/30 my-2" />
                     <div className="flex justify-between font-semibold text-xs">
                       <span>Total Required</span>
                       <span className="font-mono">0.071 APT</span>
                     </div>
                   </div>
                 </div>
+
+                <hr className="border-t border-gray-600/30 mb-4" />
 
                 {/* Connect Wallet Button */}
                 <button className={`w-full px-4 py-3 rounded-lg ${theme.primaryBg} text-white font-semibold hover:opacity-90 transition-opacity`}>
