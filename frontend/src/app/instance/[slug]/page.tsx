@@ -6,7 +6,7 @@ import { ArrowLeft, Bookmark } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
-import { markets, Market, formatVolume, formatDate, truncateAddress } from '@/data/markets';
+import { markets, Market, formatDate } from '@/data/markets';
 import Navbar from '@/components/Navbar';
 import CategoryNav from '@/components/CategoryNav';
 
@@ -72,9 +72,8 @@ const MarketInstancePage = () => {
     );
   }
 
-  // Calculate deltas
+  // Calculate deltas for display
   const deltaMu = userMean - market.market_mean;
-  const deltaSigma = userStdDev - market.market_standard_deviation;
 
   return (
     <div className={`min-h-screen ${theme.background} ${theme.text}`}>
@@ -137,88 +136,88 @@ const MarketInstancePage = () => {
             <div className="lg:col-span-3">
               {/* Stats Row Above Graph */}
               <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <div className={`text-sm ${theme.textSecondary} mb-1`}>Value (ECV)</div>
-                  <div className="text-xl font-bold">{market.market_mean.toFixed(2)}</div>
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <div className={`text-xs ${theme.textSecondary} mb-1`}>Value (ECV)</div>
+                  <div className="text-lg font-bold">{market.market_mean.toFixed(2)}</div>
                   <div className={`text-xs ${theme.textSecondary}`}>ECV</div>
                 </div>
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <div className={`text-sm ${theme.textSecondary} mb-1`}>Probability</div>
-                  <div className="text-xl font-bold">0.0%</div>
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <div className={`text-xs ${theme.textSecondary} mb-1`}>Probability</div>
+                  <div className="text-lg font-bold">0.0%</div>
                 </div>
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <div className={`text-sm ${theme.textSecondary} mb-1`}>Cumulative</div>
-                  <div className="text-xl font-bold">100.0%</div>
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <div className={`text-xs ${theme.textSecondary} mb-1`}>Cumulative</div>
+                  <div className="text-lg font-bold">100.0%</div>
                 </div>
               </div>
 
               {/* Graph Container */}
-              <div className={`rounded-lg border ${theme.border} bg-white/5 p-8 h-96 mb-6`}>
+              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-8 h-96 mb-6">
                 <div className="text-center h-full flex flex-col justify-center">
-                  <div className={`text-6xl mb-4 ${theme.textSecondary}`}>📊</div>
-                  <h3 className={`text-xl font-semibold mb-2 ${theme.textSecondary}`}>Distribution Graph</h3>
-                  <p className={`${theme.textSecondary}`}>Normal distribution curve will be displayed here</p>
-                  <div className="mt-4 flex items-center justify-center">
-                    <span className={`text-sm ${theme.textSecondary}`}>Current Market vs Your Proposal visualization</span>
+                  <div className={`text-5xl mb-3 ${theme.textSecondary}`}>📊</div>
+                  <h3 className={`text-lg font-semibold mb-2 ${theme.textSecondary}`}>Distribution Graph</h3>
+                  <p className={`${theme.textSecondary} text-sm`}>Normal distribution curve will be displayed here</p>
+                  <div className="mt-3 flex items-center justify-center">
+                    <span className={`text-xs ${theme.textSecondary}`}>Current Market vs Your Proposal visualization</span>
                   </div>
                 </div>
               </div>
 
               {/* Market Parameters Below Graph */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {/* Stiffness Section */}
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <h3 className="text-sm font-semibold mb-3 uppercase tracking-wide">STIFFNESS (LOCAL)</h3>
-                  <div className="space-y-2">
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">STIFFNESS (LOCAL)</h3>
+                  <div className="space-y-1">
                     <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-sm`}>S</span>
-                      <span className="font-mono text-sm">{market.s}</span>
+                      <span className={`${theme.textSecondary} text-xs`}>S</span>
+                      <span className="font-mono text-xs">{market.s}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-sm`}>μ per σ1</span>
-                      <span className="font-mono text-sm">{market.mu_per_one}</span>
+                      <span className={`${theme.textSecondary} text-xs`}>μ per σ1</span>
+                      <span className="font-mono text-xs">{market.mu_per_one}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-sm`}>σ per σ1</span>
-                      <span className="font-mono text-sm">{market.sigma_per_one}</span>
+                      <span className={`${theme.textSecondary} text-xs`}>σ per σ1</span>
+                      <span className="font-mono text-xs">{market.sigma_per_one}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Cap & Scale Section */}
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <h3 className="text-sm font-semibold mb-3 uppercase tracking-wide">CAP & SCALE (λ)</h3>
-                  <div className="space-y-2">
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">CAP & SCALE (λ)</h3>
+                  <div className="space-y-1">
                     <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-sm`}>Peak p</span>
-                      <span className="font-mono text-sm">{market.peak_p}</span>
+                      <span className={`${theme.textSecondary} text-xs`}>Peak p</span>
+                      <span className="font-mono text-xs">{market.peak_p}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-sm`}>Headroom</span>
-                      <span className="font-mono text-sm">{market.headroom} (79.2%)</span>
+                      <span className={`${theme.textSecondary} text-xs`}>Headroom</span>
+                      <span className="font-mono text-xs">{market.headroom} (79.2%)</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-sm`}>λ</span>
-                      <span className="font-mono text-sm">{market.Lambda}</span>
+                      <span className={`${theme.textSecondary} text-xs`}>λ</span>
+                      <span className="font-mono text-xs">{market.Lambda}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Lifecycle Section */}
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <h3 className="text-sm font-semibold mb-3 uppercase tracking-wide">LIFECYCLE</h3>
-                  <div className="space-y-2">
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">LIFECYCLE</h3>
+                  <div className="space-y-1">
                     <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-sm`}>Status</span>
-                      <span className="text-green-500 text-sm">Active</span>
+                      <span className={`${theme.textSecondary} text-xs`}>Status</span>
+                      <span className="text-green-500 text-xs">Active</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-sm`}>Expires</span>
-                      <span className="text-sm">{formatDate(market.endDate)}</span>
+                      <span className={`${theme.textSecondary} text-xs`}>Expires</span>
+                      <span className="text-xs">{formatDate(market.endDate)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={`${theme.textSecondary} text-sm`}>Created</span>
-                      <span className="text-sm">{formatDate(market.startDate)}</span>
+                      <span className={`${theme.textSecondary} text-xs`}>Created</span>
+                      <span className="text-xs">{formatDate(market.startDate)}</span>
                     </div>
                   </div>
                 </div>
@@ -230,38 +229,100 @@ const MarketInstancePage = () => {
               <div className="space-y-4">
                 
                 {/* Trade Actions Container */}
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <div className="flex flex-col space-y-2">
-                    <button className={`px-4 py-2 rounded-lg ${theme.primaryBg} text-white font-semibold hover:opacity-90 transition-opacity`}>
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <button className={`px-3 py-2 rounded-lg ${theme.primaryBg} text-white text-sm font-semibold hover:opacity-90 transition-opacity`}>
                       Trade
                     </button>
-                    <button className={`px-4 py-2 rounded-lg border ${theme.border} hover:bg-white/5 transition-colors`}>
+                    <button className="px-3 py-2 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors text-sm">
                       Positions
                     </button>
-                    <button className={`px-4 py-2 rounded-lg border ${theme.border} hover:bg-white/5 transition-colors`}>
+                    <button className="px-3 py-2 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors text-sm">
                       Add Liquidity
                     </button>
                   </div>
                 </div>
 
                 {/* Proposed Values Container */}
-                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
-                  <div className="flex items-center space-x-2 mb-3">
-                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <span className={`text-sm ${theme.textSecondary}`}>Proposed</span>
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                    <span className={`text-xs ${theme.textSecondary}`}>Proposed</span>
                   </div>
                   <div className="space-y-1">
                     <div className="flex justify-between">
-                      <span className="text-sm font-mono">Δμ:</span>
-                      <span className={`text-sm font-mono ${deltaMu >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {deltaMu >= 0 ? '+' : ''}{deltaMu.toFixed(3)}
-                      </span>
+                      <span className={`${theme.textSecondary} text-xs`}>Delta μ</span>
+                      <span className="font-mono text-xs">{deltaMu > 0 ? '+' : ''}{deltaMu.toFixed(1)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm font-mono">Δσ:</span>
-                      <span className={`text-sm font-mono ${deltaSigma >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {deltaSigma >= 0 ? '+' : ''}{deltaSigma.toFixed(3)}
-                      </span>
+                      <span className={`${theme.textSecondary} text-xs`}>σ</span>
+                      <span className="font-mono text-xs">{userStdDev.toFixed(1)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mean Slider Container */}
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-xs font-semibold">MEAN (M)</label>
+                    <span className="text-sm font-bold">{userMean.toFixed(2)}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={userMean}
+                    onChange={(e) => setUserMean(Number(e.target.value))}
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-600"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0</span>
+                    <span>50</span>
+                    <span>100</span>
+                  </div>
+                </div>
+
+                {/* Sigma Slider Container */}
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-xs font-semibold">SIGMA (σ)</label>
+                    <span className="text-sm font-bold">{userStdDev.toFixed(2)}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="30"
+                    value={userStdDev}
+                    onChange={(e) => setUserStdDev(Number(e.target.value))}
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-600"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>1</span>
+                    <span>15</span>
+                    <span>30</span>
+                  </div>
+                </div>
+
+                {/* Collateral Required Container */}
+                <div className="p-3 rounded-lg border border-gray-600/30 bg-gray-800/20">
+                  <h3 className="text-xs font-semibold mb-2">COLLATERAL REQUIRED</h3>
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-xs`}>Base Fee</span>
+                      <span className="font-mono text-xs">0.05 APT</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-xs`}>Protocol Fee</span>
+                      <span className="font-mono text-xs">0.02 APT</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-xs`}>Gas Estimate</span>
+                      <span className="font-mono text-xs">0.001 APT</span>
+                    </div>
+                    <hr className="border-t border-gray-600/30" />
+                    <div className="flex justify-between font-semibold text-xs">
+                      <span>Total Required</span>
+                      <span className="font-mono">0.071 APT</span>
                     </div>
                   </div>
                 </div>
