@@ -134,39 +134,44 @@ const MarketInstancePage = () => {
             
             {/* Left Container - Graph and Data (3/4 width) */}
             <div className="lg:col-span-3">
-              {/* Stats Row Above Graph */}
-              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4 mb-6">
-                <div className="grid grid-cols-3 divide-x divide-gray-600/30">
+              {/* Combined Stats, Graph and Market Parameters Container */}
+              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4">
+                {/* Stats Row - Inline Values */}
+                <div className="grid grid-cols-3 divide-x divide-gray-600/30 mb-4">
                   <div className="pr-4">
-                    <div className={`text-xs ${theme.textSecondary} mb-1`}>Value (ECV)</div>
-                    <div className="text-lg font-bold">{market.market_mean.toFixed(2)}</div>
-                    <div className={`text-xs ${theme.textSecondary}`}>ECV</div>
+                    <div className={`text-xs ${theme.textSecondary}`}>
+                      Value (ECV): <span className="font-bold text-white">{market.market_mean.toFixed(2)}</span>
+                    </div>
                   </div>
                   <div className="px-4">
-                    <div className={`text-xs ${theme.textSecondary} mb-1`}>Probability</div>
-                    <div className="text-lg font-bold">0.0%</div>
+                    <div className={`text-xs ${theme.textSecondary}`}>
+                      Probability: <span className="font-bold text-white">0.0%</span>
+                    </div>
                   </div>
                   <div className="pl-4">
-                    <div className={`text-xs ${theme.textSecondary} mb-1`}>Cumulative</div>
-                    <div className="text-lg font-bold">100.0%</div>
+                    <div className={`text-xs ${theme.textSecondary}`}>
+                      Cumulative: <span className="font-bold text-white">100.0%</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Graph Container */}
-              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-8 h-96 mb-6">
-                <div className="text-center h-full flex flex-col justify-center">
-                  <div className={`text-5xl mb-3 ${theme.textSecondary}`}>📊</div>
-                  <h3 className={`text-lg font-semibold mb-2 ${theme.textSecondary}`}>Distribution Graph</h3>
-                  <p className={`${theme.textSecondary} text-sm`}>Normal distribution curve will be displayed here</p>
-                  <div className="mt-3 flex items-center justify-center">
-                    <span className={`text-xs ${theme.textSecondary}`}>Current Market vs Your Proposal visualization</span>
+                <hr className="border-t border-gray-600/30 mb-4" />
+
+                {/* Graph Section */}
+                <div className="p-8 h-96 mb-4">
+                  <div className="text-center h-full flex flex-col justify-center">
+                    <div className={`text-5xl mb-3 ${theme.textSecondary}`}>📊</div>
+                    <h3 className={`text-lg font-semibold mb-2 ${theme.textSecondary}`}>Distribution Graph</h3>
+                    <p className={`${theme.textSecondary} text-sm`}>Normal distribution curve will be displayed here</p>
+                    <div className="mt-3 flex items-center justify-center">
+                      <span className={`text-xs ${theme.textSecondary}`}>Current Market vs Your Proposal visualization</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Market Parameters Below Graph */}
-              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4">
+                <hr className="border-t border-gray-600/30 mb-4" />
+
+                {/* Market Parameters */}
                 <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-600/30">
                   {/* Stiffness Section */}
                   <div className="py-3 md:py-0 md:pr-4">
@@ -234,14 +239,14 @@ const MarketInstancePage = () => {
               <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4">
                 {/* Trade Actions */}
                 <div className="mb-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <button className={`px-3 py-2 rounded-lg ${theme.primaryBg} text-white text-sm font-semibold hover:opacity-90 transition-opacity`}>
+                  <div className="grid grid-cols-3 gap-1 p-1 rounded-lg bg-gray-700/30">
+                    <button className={`px-3 py-2 rounded-md ${theme.primaryBg} text-white text-sm font-semibold transition-all duration-200`}>
                       Trade
                     </button>
-                    <button className="px-3 py-2 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors text-sm">
+                    <button className="px-3 py-2 rounded-md hover:bg-gray-600/50 transition-all duration-200 text-sm text-gray-300">
                       Positions
                     </button>
-                    <button className="px-3 py-2 rounded-lg border border-gray-600/30 hover:bg-gray-700/30 transition-colors text-sm">
+                    <button className="px-3 py-2 rounded-md hover:bg-gray-600/50 transition-all duration-200 text-sm text-gray-300">
                       Add Liquidity
                     </button>
                   </div>
