@@ -128,16 +128,16 @@ const MarketInstancePage = () => {
         </div>
 
         {/* Main Container */}
-        <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-6 mb-12">
+        <div className="rounded-lg border border-gray-500/20 p-6 mb-12" style={{backgroundColor: '#1a1a1f'}}>
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:h-auto">
             
             {/* Left Container - Graph and Data (3/4 width) */}
             <div className="lg:col-span-3">
               {/* Combined Stats, Graph and Market Parameters Container */}
-              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4 h-full flex flex-col">
+              <div className="rounded-lg border border-gray-500/20 p-4 h-full flex flex-col" style={{backgroundColor: '#1a1a1f'}}>
                 {/* Stats Row - Inline Values */}
-                <div className="grid grid-cols-3 divide-x divide-gray-600/30 mb-4">
+                <div className="grid grid-cols-3 divide-x divide-gray-500/20 mb-4">
                   <div className="pr-4">
                     <div className={`text-xs ${theme.textSecondary}`}>
                       Value (ECV): <span className="font-bold text-white">{market.market_mean.toFixed(2)}</span>
@@ -155,7 +155,7 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                <hr className="border-t border-gray-600/30 mb-4" />
+                <hr className="border-t border-gray-500/20 mb-4" />
 
                 {/* Graph Section - Flexible Height */}
                 <div className="p-8 flex-1 mb-4 min-h-[400px]">
@@ -169,10 +169,10 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                <hr className="border-t border-gray-600/30 mb-4" />
+                <hr className="border-t border-gray-500/20 mb-4" />
 
                 {/* Market Parameters */}
-                <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-600/30">
+                <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-500/20">
                   {/* Stiffness Section */}
                   <div className="py-3 md:py-0 md:pr-4">
                     <h3 className="text-xs font-semibold mb-3 uppercase tracking-wide">STIFFNESS (LOCAL)</h3>
@@ -236,10 +236,10 @@ const MarketInstancePage = () => {
             {/* Right Container - Sidebar (1/4 width) */}
             <div className="lg:col-span-1">
               {/* Trading Panel - Single Container */}
-              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4 h-full">
+              <div className="rounded-lg border border-gray-500/20 p-4 h-full" style={{backgroundColor: '#1a1a1f'}}>
                 {/* Trade Actions */}
                 <div className="mb-4">
-                  <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-gray-700/30">
+                  <div className="grid grid-cols-3 gap-1 p-1 rounded-xl" style={{backgroundColor: '#2a2a2f'}}>
                     <button className={`px-3 py-2 rounded-lg ${theme.primaryBg} text-white text-sm font-semibold transition-all duration-200`}>
                       Trade
                     </button>
@@ -252,7 +252,7 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                <hr className="border-t border-gray-600/30 mb-4" />
+                <hr className="border-t border-gray-500/20 mb-4" />
 
                 {/* Proposed Values */}
                 <div className="mb-4">
@@ -272,7 +272,7 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                <hr className="border-t border-gray-600/30 mb-4" />
+                <hr className="border-t border-gray-500/20 mb-4" />
 
                 {/* Mean Slider */}
                 <div className="mb-4">
@@ -295,7 +295,7 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                <hr className="border-t border-gray-600/30 mb-4" />
+                <hr className="border-t border-gray-500/20 mb-4" />
 
                 {/* Sigma Slider */}
                 <div className="mb-4">
@@ -318,7 +318,7 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                <hr className="border-t border-gray-600/30 mb-4" />
+                <hr className="border-t border-gray-500/20 mb-4" />
 
                 {/* Collateral Required */}
                 <div className="mb-4">
@@ -336,7 +336,7 @@ const MarketInstancePage = () => {
                       <span className={`${theme.textSecondary} text-xs`}>Gas Estimate</span>
                       <span className="font-mono text-xs">0.001 APT</span>
                     </div>
-                    <hr className="border-t border-gray-600/30 my-2" />
+                    <hr className="border-t border-gray-500/20 my-2" />
                     <div className="flex justify-between font-semibold text-xs">
                       <span>Total Required</span>
                       <span className="font-mono">0.071 APT</span>
@@ -344,7 +344,7 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                <hr className="border-t border-gray-600/30 mb-4" />
+                <hr className="border-t border-gray-500/20 mb-4" />
 
                 {/* Connect Wallet Button */}
                 <button className={`w-full px-4 py-3 rounded-lg ${theme.primaryBg} text-white font-semibold hover:opacity-90 transition-opacity`}>
