@@ -6,7 +6,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useAppStore } from '@/store/appStore';
-import { searchMarkets, Market, formatVolume } from '@/data/markets';
+import { useSearchMarkets } from '@/hooks/useMarkets';
+import { Market } from '@/data/markets';
 
 interface SearchResultsProps {
   onClose: () => void;
@@ -16,20 +17,19 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
   const { color } = useThemeStore();
   const { searchQuery } = useAppStore();
   const router = useRouter();
-  const [searchResults, setSearchResults] = useState<Market[]>([]);
-  const [iconSources, setIconSources] = useState<{[key: string]: string}>({});
-  const [iconErrors, setIconErrors] = useState<{[key: string]: boolean}>({});
+  const [iconSources, setIconSources] = useState<Record<string, string>>({});
+  const [iconErrors, setIconErrors] = useState<Record<string, boolean>>({});
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  
+
   const theme = getThemeClasses(color);
 
+  const { data, loading, error } = useSearchMarkets(searchQuery, 1, 10);
+
+  const results = data?.markets || [];
+
   useEffect(() => {
-    if (searchQuery.trim()) {
-      const results = searchMarkets(searchQuery);
-      setSearchResults(results.slice(0, 8)); // Limit to 8 results
-      
-      // Initialize icon sources for new results (PNG first)
-      const newIconSources: {[key: string]: string} = {};
+    if (searchQuery.trim() && results.length > 0) {
+      const newIconSources: Record<string, string> = {};
       results.slice(0, 8).forEach(market => {
         newIconSources[market.id] = `/icons/${market.iconName.replace('.svg', '.png')}`;
       });
@@ -37,15 +37,13 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
       setIconErrors({});
       setSelectedIndex(-1);
     } else {
-      setSearchResults([]);
       setIconSources({});
       setIconErrors({});
       setSelectedIndex(-1);
     }
-  }, [searchQuery]);
+  }, [searchQuery, results]);
 
   const handleResultClick = useCallback((market: Market) => {
-    // Generate the same slug as MarketCard component
     const slug = market.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     router.push(`/instance/${slug}`);
     onClose();
@@ -54,24 +52,20 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
   const handleImageError = (marketId: string) => {
     if (!iconErrors[marketId]) {
       setIconErrors(prev => ({ ...prev, [marketId]: true }));
-      // Try SVG fallback by replacing .png with .svg
       const currentSrc = iconSources[marketId];
       const svgSrc = currentSrc.replace('.png', '.svg');
       setIconSources(prev => ({ ...prev, [marketId]: svgSrc }));
     }
   };
 
-  // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (searchResults.length === 0) return;
+      if (results.length === 0) return;
 
       switch (event.key) {
         case 'ArrowDown':
           event.preventDefault();
-          setSelectedIndex(prev => 
-            prev < searchResults.length - 1 ? prev + 1 : prev
-          );
+          setSelectedIndex(prev => prev < results.length - 1 ? prev + 1 : prev);
           break;
         case 'ArrowUp':
           event.preventDefault();
@@ -79,8 +73,8 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
           break;
         case 'Enter':
           event.preventDefault();
-          if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
-            handleResultClick(searchResults[selectedIndex]);
+          if (selectedIndex >= 0 && selectedIndex < results.length) {
+            handleResultClick(results[selectedIndex]);
           }
           break;
         case 'Escape':
@@ -92,9 +86,8 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [searchResults, selectedIndex, onClose, handleResultClick]);
+  }, [results, selectedIndex, onClose, handleResultClick]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
@@ -107,23 +100,55 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
+  if (loading) {
+    return (
+      <div className="p-4">
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <div className="text-center py-8">
+          <p className="text-red-400 mb-2">Search failed</p>
+          <p className="text-sm text-gray-400">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!searchQuery.trim()) {
+    return (
+      <div className="p-4">
+        <div className="text-center py-8">
+          <p className={`${theme.textSecondary} mb-2`}>Start typing to search markets</p>
+          <p className="text-sm text-gray-400">Search by title, description, or category</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="search-dropdown h-full overflow-y-auto">
-      {searchResults.length > 0 ? (
+      {results.length > 0 ? (
         <div className="py-2">
-          {searchResults.map((market, index) => (
+          {results.map((market, index) => (
             <button
               key={market.id}
               onClick={() => handleResultClick(market)}
               onMouseEnter={() => setSelectedIndex(index)}
               className={`w-full text-left px-4 py-3 transition-colors flex items-center space-x-3 ${
-                selectedIndex === index 
-                  ? `bg-gray-700/30` 
+                selectedIndex === index
+                  ? `bg-gray-700/30`
                   : `hover:bg-gray-700/20`
               }`}
             >
               <div className="flex-shrink-0">
-                <Image 
+                <Image
                   src={iconSources[market.id] || `/icons/${market.iconName.replace('.svg', '.png')}`}
                   alt="Market icon"
                   width={32}
@@ -139,21 +164,16 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
               </div>
               <div className="flex-shrink-0">
                 <div className={`text-sm font-semibold ${theme.primary}`}>
-                  {formatVolume(market.volume)}
+                  {/* {formatVolume(market.volume)} */}
                 </div>
               </div>
             </button>
           ))}
         </div>
-      ) : searchQuery.trim() ? (
-        <div className={`p-8 text-center ${theme.textSecondary}`}>
-          <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No markets found for &quot;{searchQuery}&quot;</p>
-        </div>
       ) : (
         <div className={`p-8 text-center ${theme.textSecondary}`}>
           <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>Start typing to search for markets...</p>
+          <p>No markets found for &quot;{searchQuery}&quot;</p>
         </div>
       )}
     </div>

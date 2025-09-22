@@ -7,17 +7,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import NormalDistributionChart from '@/components/NormalDistributionChart';
-import { markets, Market, formatDate } from '@/data/markets';
+import { Market, formatDate } from '@/data/markets';
+import { useMarket } from '@/hooks/useMarkets';
 import Navbar from '@/components/Navbar';
 import CategoryNav from '@/components/CategoryNav';
 
 const MarketInstancePage = () => {
   const params = useParams();
   const { color } = useThemeStore();
-  const [market, setMarket] = useState<Market | null>(null);
+  const [marketId, setMarketId] = useState<string | null>(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [iconSrc, setIconSrc] = useState('');
   const [hasError, setHasError] = useState(false);
+  
+  // Use the new API hook
+  const { data: market, loading, error } = useMarket(marketId);
   
   // Slider states for mean and std dev - dynamically set to market values for zero delta
   const [userMean, setUserMean] = useState(market?.market_mean || 0);
@@ -47,28 +51,30 @@ const MarketInstancePage = () => {
   
   const theme = getThemeClasses(color);
 
+  // First, we need to find the market ID from the slug
+  // For now, we'll use the slug as the ID since we don't have a slug-to-ID mapping
   useEffect(() => {
     if (params.slug) {
-      // Find market by matching slug with title
-      const foundMarket = markets.find(m => {
-        const slug = m.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        return slug === params.slug;
-      });
-      
-      if (foundMarket) {
-        setMarket(foundMarket);
-        setIsBookmarked(foundMarket.isBookmarked || false);
-        
-        // Set initial icon source - try PNG first, fallback to SVG
-        const pngSrc = `/icons/${foundMarket.iconName.replace('.svg', '.png')}`;
-        setIconSrc(pngSrc);
-        
-        // Initialize sliders to center positions for zero delta
-        setUserMean(foundMarket.market_mean);
-        setUserStdDev(foundMarket.market_standard_deviation);
-      }
+      // Convert slug back to a potential market ID
+      // This is a temporary solution - ideally we'd have a proper slug-to-ID mapping
+      setMarketId(params.slug as string);
     }
   }, [params.slug]);
+  
+  // Update component state when market data is loaded
+  useEffect(() => {
+    if (market) {
+      setIsBookmarked(market.isBookmarked || false);
+      
+      // Set initial icon source - try PNG first, fallback to SVG
+      const pngSrc = `/icons/${market.iconName.replace('.svg', '.png')}`;
+      setIconSrc(pngSrc);
+      
+      // Initialize sliders to center positions for zero delta
+      setUserMean(market.market_mean);
+      setUserStdDev(market.market_standard_deviation);
+    }
+  }, [market]);
 
   const handleImageError = () => {
     if (!hasError && market) {
@@ -82,14 +88,29 @@ const MarketInstancePage = () => {
     setIsBookmarked(!isBookmarked);
   };
 
-  if (!market) {
+  if (loading) {
+    return (
+      <div className={`min-h-screen ${theme.background} ${theme.text}`}>
+        <Navbar />
+        <CategoryNav />
+        <div className="flex items-center justify-center pt-32">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-current"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !market) {
     return (
       <div className={`min-h-screen ${theme.background} ${theme.text}`}>
         <Navbar />
         <CategoryNav />
         <div className="flex items-center justify-center pt-32">
           <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Market Not Found</h1>
+            <h1 className="text-2xl font-bold mb-4">
+              {error ? 'Error Loading Market' : 'Market Not Found'}
+            </h1>
+            {error && <p className="text-red-400 mb-4">{error}</p>}
             <Link href="/" className={`${theme.primary} hover:underline`}>
               Return to Markets
             </Link>
