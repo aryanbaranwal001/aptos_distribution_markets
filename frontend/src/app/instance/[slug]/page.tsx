@@ -270,6 +270,8 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
+                <hr className="border-t border-gray-500/20 mb-4" />
+
                 {/* Mean Slider */}
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-2">
