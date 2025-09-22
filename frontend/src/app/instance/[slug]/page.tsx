@@ -262,7 +262,7 @@ const MarketInstancePage = () => {
             {/* Right Container - Sidebar (1/4 width) */}
             <div className="lg:col-span-1">
               {/* Trading Panel - Single Container */}
-              <div className="rounded-lg border border-gray-500/20 p-4 h-full" style={{backgroundColor: '#1a1a1f'}}>
+              <div className="rounded-lg border border-gray-500/20 p-4 h-full flex flex-col" style={{backgroundColor: '#1a1a1f'}}>
                 {/* Trade Actions */}
                 <div className="mb-4">
                   <div className="flex gap-1 p-1 rounded-xl" style={{backgroundColor: '#2a2a2f'}}>
@@ -299,7 +299,8 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
-                {/* Tab Content */}
+                {/* Tab Content - Fixed Height Container */}
+                <div className="flex-1 overflow-y-auto">
                 {activeTab === 'trade' && (
                   <>
                     {/* Delta Values Display */}
@@ -490,27 +491,19 @@ const MarketInstancePage = () => {
                     <div className="mb-4">
                       <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">LP SHARE DEFINITION</h3>
                       <p className="text-xs text-gray-400 leading-relaxed">
-                        LP shares represent your proportional ownership of the liquidity pool. You earn trading fees 
-                        proportional to your share of the pool. Shares are minted when you add liquidity and burned when you remove it.
+                        LP shares represent your proportional ownership of the liquidity pool and you earn trading fees 
+                        proportional to your share.
                       </p>
                     </div>
 
                     <hr className="border-t border-gray-500/20 mb-4" />
 
                     {/* Liquidity Provider Risk */}
-                    <div className="mb-6">
+                    <div className="mb-4">
                       <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide text-yellow-400">LIQUIDITY PROVIDER RISK</h3>
-                      <div className="space-y-2">
-                        <p className="text-xs text-gray-400 leading-relaxed">
-                          • <strong>Impermanent Loss:</strong> Your position value may decrease relative to holding tokens directly
-                        </p>
-                        <p className="text-xs text-gray-400 leading-relaxed">
-                          • <strong>Market Risk:</strong> Prediction market outcomes can cause significant price movements
-                        </p>
-                        <p className="text-xs text-gray-400 leading-relaxed">
-                          • <strong>Smart Contract Risk:</strong> Protocol bugs or exploits could affect your funds
-                        </p>
-                      </div>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        Risk of impermanent loss, market volatility, and smart contract vulnerabilities. LP at your own discretion.
+                      </p>
                     </div>
 
                     {/* Add Liquidity Button */}
@@ -522,6 +515,7 @@ const MarketInstancePage = () => {
                     </button>
                   </>
                 )}
+                </div>
               </div>
             </div>
           </div>
