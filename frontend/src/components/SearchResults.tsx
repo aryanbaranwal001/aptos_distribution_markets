@@ -44,8 +44,7 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
   }, [searchQuery, results]);
 
   const handleResultClick = useCallback((market: Market) => {
-    const slug = market.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    router.push(`/instance/${slug}`);
+    router.push(`/instance/${market.id}`);
     onClose();
   }, [router, onClose]);
 
