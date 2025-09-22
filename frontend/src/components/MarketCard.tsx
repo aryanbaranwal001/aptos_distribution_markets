@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
-import { Market, formatVolume } from '@/data/markets';
+import { Market, formatVolume, formatDate, truncateAddress } from '@/data/markets';
 import BookmarkIcon from './BookmarkIcon';
 
 interface MarketCardProps {
@@ -57,7 +57,7 @@ const MarketCard = ({ market }: MarketCardProps) => {
             onError={handleImageError}
           />
         </div>
-        <Link href={`/${market.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
+        <Link href={`/instance/${market.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
           <h3 className={`text-lg font-semibold ${theme.text} hover:${theme.primary} hover:underline transition-all flex-1 cursor-pointer`}>
             {market.title}
           </h3>
@@ -82,29 +82,85 @@ const MarketCard = ({ market }: MarketCardProps) => {
         ))}
       </div>
 
-      {/* Bottom Section - Volume and Bookmark */}
-      <div className="flex items-center justify-between mt-auto -mb-2 sm:-mb-3 lg:-mb-4">
-        <div className="flex flex-col">
-          <span className={`text-xs ${theme.textSecondary} mb-1`}>Volume</span>
-          <span className={`text-lg font-semibold ${theme.primary}`}>
-            {formatVolume(market.volume)}
-          </span>
+      {/* Bottom Section - All Market Details */}
+      <div className="mt-auto">
+        {/* Desktop Layout - Single Row */}
+        <div className="hidden lg:flex items-center justify-between -mb-2">
+          <div className="flex flex-col">
+            <span className={`${theme.textSecondary} mb-1 text-xs`}>Contract</span>
+            <span className={`${theme.primary} font-mono text-sm font-bold`}>
+              {truncateAddress(market.address)}
+            </span>
+          </div>
+          <div className="flex flex-col text-center">
+            <span className={`${theme.textSecondary} mb-1 text-xs`}>Ends</span>
+            <span className={`${theme.primary} text-lg font-semibold`}>
+              {formatDate(market.endDate)}
+            </span>
+          </div>
+          <div className="flex flex-col text-center">
+            <span className={`text-xs ${theme.textSecondary} mb-1`}>Volume</span>
+            <span className={`text-lg font-semibold ${theme.primary}`}>
+              {formatVolume(market.volume)}
+            </span>
+          </div>
+          <button
+            onClick={handleBookmark}
+            className={`p-2 rounded-full transition-colors ${
+              isBookmarked
+                ? `${theme.textSecondary}`
+                : `${theme.textSecondary} hover:${theme.primary}`
+            }`}
+          >
+            <BookmarkIcon 
+              filled={isBookmarked} 
+              className="w-5 h-5"
+              themeColor={theme.primary}
+            />
+          </button>
         </div>
 
-        <button
-          onClick={handleBookmark}
-          className={`p-2 rounded-full transition-colors ${
-            isBookmarked
-              ? `${theme.textSecondary}`
-              : `${theme.textSecondary} hover:${theme.primary}`
-          }`}
-        >
-          <BookmarkIcon 
-            filled={isBookmarked} 
-            className="w-5 h-5"
-            themeColor={theme.primary}
-          />
-        </button>
+        {/* Mobile/Tablet Layout - Two Rows */}
+        <div className="lg:hidden">
+          <div className="flex items-center justify-between mb-3 text-sm">
+            <div className="flex flex-col">
+              <span className={`${theme.textSecondary} mb-1 text-xs`}>Contract</span>
+              <span className={`${theme.primary} font-mono text-sm font-bold`}>
+                {truncateAddress(market.address)}
+              </span>
+            </div>
+            <div className="flex flex-col text-right">
+              <span className={`${theme.textSecondary} mb-1 text-xs`}>Ends</span>
+              <span className={`${theme.primary} text-lg font-semibold`}>
+                {formatDate(market.endDate)}
+              </span>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between -mb-2 sm:-mb-3">
+            <div className="flex flex-col">
+              <span className={`text-xs ${theme.textSecondary} mb-1`}>Volume</span>
+              <span className={`text-lg font-semibold ${theme.primary}`}>
+                {formatVolume(market.volume)}
+              </span>
+            </div>
+
+            <button
+              onClick={handleBookmark}
+              className={`p-2 rounded-full transition-colors ${
+                isBookmarked
+                  ? `${theme.textSecondary}`
+                  : `${theme.textSecondary} hover:${theme.primary}`
+              }`}
+            >
+              <BookmarkIcon 
+                filled={isBookmarked} 
+                className="w-5 h-5"
+                themeColor={theme.primary}
+              />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
