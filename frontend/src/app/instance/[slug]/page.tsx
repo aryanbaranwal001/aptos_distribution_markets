@@ -20,10 +20,12 @@ const MarketInstancePage = () => {
   const [hasError, setHasError] = useState(false);
   
   // Slider states for mean and std dev - dynamically set to market values for zero delta
-  const [userMean, setUserMean] = useState(0);
-  const [userStdDev, setUserStdDev] = useState(0);
+  const [userMean, setUserMean] = useState(market?.market_mean || 0);
+  const [userStdDev, setUserStdDev] = useState(market?.market_standard_deviation || 0);
   const [activeTab, setActiveTab] = useState('trade');
   const [hoverValue, setHoverValue] = useState<number | null>(null);
+  const [aptAmount, setAptAmount] = useState<string>('');
+  const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5);
   
   // Calculate probability and cumulative values
   const calculateProbabilityAtPoint = (x: number) => {
@@ -412,14 +414,113 @@ const MarketInstancePage = () => {
                 )}
 
                 {activeTab === 'liquidity' && (
-                  <div className="text-center py-8">
-                    <div className={`${theme.textSecondary} text-sm mb-4`}>
-                      Add liquidity to earn fees
+                  <>
+                    {/* APT Amount Input */}
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="text-xs font-semibold">AMOUNT (APT)</label>
+                        <span className="text-xs text-gray-500">Balance: 12.45 APT</span>
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          value={aptAmount}
+                          onChange={(e) => setAptAmount(e.target.value)}
+                          placeholder="0.00"
+                          className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+                        />
+                        <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-blue-400 hover:text-blue-300">
+                          MAX
+                        </button>
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      Provide liquidity to this market and earn trading fees
+
+                    <hr className="border-t border-gray-500/20 mb-4" />
+
+                    {/* Slippage Tolerance */}
+                    <div className="mb-4">
+                      <label className="text-xs font-semibold mb-2 block">SLIPPAGE TOLERANCE</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[0.1, 0.2, 0.5, 1].map((value) => (
+                          <button
+                            key={value}
+                            onClick={() => setSlippageTolerance(value)}
+                            className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                              slippageTolerance === value
+                                ? `${theme.primaryBg} text-black`
+                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                            }`}
+                          >
+                            {value}%
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+
+                    <hr className="border-t border-gray-500/20 mb-4" />
+
+                    {/* Liquidity Position Summary */}
+                    <div className="mb-4">
+                      <h3 className="text-xs font-semibold mb-3 uppercase tracking-wide">POSITION SUMMARY</h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className={`${theme.textSecondary} text-xs`}>Expected LP Shares</span>
+                          <span className="font-mono text-xs">{aptAmount || '0.00'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className={`${theme.textSecondary} text-xs`}>Pool Share</span>
+                          <span className="font-mono text-xs">
+                            {aptAmount ? ((parseFloat(aptAmount) / (2500000 + parseFloat(aptAmount))) * 100).toFixed(4) : '0.0000'}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className={`${theme.textSecondary} text-xs`}>Current Pool Size</span>
+                          <span className="font-mono text-xs">{(market.volume / 1000000).toFixed(2)}M APT</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className={`${theme.textSecondary} text-xs`}>Est. APY</span>
+                          <span className="font-mono text-xs text-green-400">12.5%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <hr className="border-t border-gray-500/20 mb-4" />
+
+                    {/* LP Share Definition */}
+                    <div className="mb-4">
+                      <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">LP SHARE DEFINITION</h3>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        LP shares represent your proportional ownership of the liquidity pool. You earn trading fees 
+                        proportional to your share of the pool. Shares are minted when you add liquidity and burned when you remove it.
+                      </p>
+                    </div>
+
+                    <hr className="border-t border-gray-500/20 mb-4" />
+
+                    {/* Liquidity Provider Risk */}
+                    <div className="mb-6">
+                      <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide text-yellow-400">LIQUIDITY PROVIDER RISK</h3>
+                      <div className="space-y-2">
+                        <p className="text-xs text-gray-400 leading-relaxed">
+                          • <strong>Impermanent Loss:</strong> Your position value may decrease relative to holding tokens directly
+                        </p>
+                        <p className="text-xs text-gray-400 leading-relaxed">
+                          • <strong>Market Risk:</strong> Prediction market outcomes can cause significant price movements
+                        </p>
+                        <p className="text-xs text-gray-400 leading-relaxed">
+                          • <strong>Smart Contract Risk:</strong> Protocol bugs or exploits could affect your funds
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Add Liquidity Button */}
+                    <button 
+                      className={`w-full px-4 py-3 rounded-xl ${theme.primaryBg} text-black font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
+                      disabled={!aptAmount || parseFloat(aptAmount) <= 0}
+                    >
+                      Add Liquidity
+                    </button>
+                  </>
                 )}
               </div>
             </div>
