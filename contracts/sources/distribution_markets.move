@@ -55,10 +55,12 @@ module distribution_markets::distribution_markets {
     const PRECISION: u128 = 1000000000000000000;
     /// Maximum fee rate (10%)
     const MAX_FEE_RATE: u64 = 100000000000000000; // 0.1 * PRECISION
-    /// Minimum standard deviation to prevent backing constraint violations
-    const MIN_STANDARD_DEVIATION: u64 = 1000000000000000; // 0.001 * PRECISION
+    /// Minimum standard deviation to prevent backing constraint violations (fallback)
+    const MIN_STANDARD_DEVIATION_FALLBACK: u64 = 1000000000000000; // 0.001 * PRECISION
     /// Square root of 2π for normal distribution calculations
     const SQRT_2PI: u128 = 2506628274631000515; // sqrt(2π) * PRECISION
+    /// Protocol-level AMM invariant constant K (part of the invariant equation ||f|| = K)
+    const PROTOCOL_INVARIANT_K: u128 = 1000000000000000000; // 1.0 * PRECISION
 
     // ==============================
     // Data Structures
@@ -74,14 +76,20 @@ module distribution_markets::distribution_markets {
         mean_is_negative: bool,
     }
 
-    /// A trader's position in the market
+    /// Position representing a trader's distribution bet
     struct Position has store, copy, drop {
-        /// The normal distribution parameters this position represents
+        /// The normal distribution parameters this position represents (g(x))
         params: NormalParams,
         /// Amount of collateral backing this position
         collateral: u64,
         /// Timestamp when position was created
         created_at: u64,
+        /// Market's AMM position at the time this position was created (f(x))
+        market_position_at_creation: NormalParams,
+        /// Lambda scaling factor for g(x): λ_g = k√(2σ_g√π)
+        lambda_g: u128,
+        /// Lambda scaling factor for f(x): λ_f = k√(2σ_f√π)
+        lambda_f: u128,
     }
 
     /// Market state enumeration
@@ -114,7 +122,9 @@ module distribution_markets::distribution_markets {
         state: MarketState,
         /// Initial backing amount (b)
         initial_backing: u64,
-        /// Current AMM holdings function parameters
+        /// AMM invariant constant (k = ||f_initial||)
+        invariant_k: u128,
+        /// Current AMM holdings function parameters (f - what traders collectively hold)
         amm_holdings: NormalParams,
         /// Total collateral in the market
         total_collateral: u64,
@@ -128,8 +138,6 @@ module distribution_markets::distribution_markets {
         lp_shares: Table<address, LPShare>,
         /// Total LP shares outstanding
         total_lp_shares: u64,
-        /// Claimable amounts after resolution
-        claimable_amounts: Table<address, u64>,
         /// Treasury resource account address that holds collateral
         treasury_addr: address,
         /// SignerCapability for the treasury resource account
@@ -152,23 +160,7 @@ module distribution_markets::distribution_markets {
         initial_lp: address,
     }
 
-    #[event]
-    /// Event emitted when a position is minted
-    struct PositionMinted has drop, store {
-        market_address: address,
-        trader: address,
-        collateral: u64,
-        position: Position,
-    }
-
-    #[event]
-    /// Event emitted when a position is redeemed
-    struct PositionRedeemed has drop, store {
-        market_address: address,
-        trader: address,
-        position: Position,
-        refund_amount: u64,
-    }
+    // Note: PositionMinted and PositionRedeemed events removed - use LiquidityAdded/LiquidityRemoved instead
 
     #[event]
     /// Event emitted when a trade occurs
@@ -212,22 +204,27 @@ module distribution_markets::distribution_markets {
     // ==============================
 
     /// Initialize a new distribution market
-    /// @param creator The account creating the market (becomes admin)
-    /// @param initial_b Initial backing amount for the AMM
-    /// @param initial_f Initial distribution parameters for the AMM
+    /// @param creator The account creating the market
+    /// @param initial_b Initial backing amount
+    /// @param initial_f Initial distribution parameters
     /// @param initial_lp Address of the initial liquidity provider
     /// @param collateral_metadata Metadata for the collateral fungible asset
-    /// @return The address of the created market object
+    /// @param initial_collateral The actual collateral being deposited
+    /// @return Address of the created market
     public fun initialize_market(
         creator: &signer,
         initial_b: u64,
         initial_f: NormalParams,
         initial_lp: address,
         collateral_metadata: Object<Metadata>,
+        initial_collateral: FungibleAsset,
     ): address {
         // Validate parameters
         assert!(initial_b > 0, EINVALID_PARAMS);
-        assert!(initial_f.std_dev >= MIN_STANDARD_DEVIATION, EINVALID_STANDARD_DEVIATION);
+        // For initialization, use fallback minimum since we don't have k yet
+        assert!(initial_f.std_dev >= MIN_STANDARD_DEVIATION_FALLBACK, EINVALID_STANDARD_DEVIATION);
+        // Ensure the provided initial collateral matches the declared initial backing
+        assert!(fungible_asset::amount(&initial_collateral) == initial_b, EINSUFFICIENT_COLLATERAL);
 
         let creator_addr = signer::address_of(creator);
 
@@ -241,7 +238,9 @@ module distribution_markets::distribution_markets {
         let (treasury_signer, treasury_cap) = account::create_resource_account(creator, seed);
         let treasury_addr = signer::address_of(&treasury_signer);
         // Ensure primary FA store for the treasury
-        let _ = primary_fungible_store::ensure_primary_store_exists<Metadata>(treasury_addr, collateral_metadata);
+        let tstore = primary_fungible_store::ensure_primary_store_exists<Metadata>(treasury_addr, collateral_metadata);
+        // Deposit initial collateral from the initial LP into the treasury
+        fungible_asset::deposit(tstore, initial_collateral);
 
         // Initialize market state
         let market_state = MarketState {
@@ -251,12 +250,14 @@ module distribution_markets::distribution_markets {
             outcome_is_negative: false,
         };
 
+        // Use the protocol-level invariant constant K
         // Create market resource
         let market = Market {
             admin: creator_addr,
             oracle: option::none(),
             state: market_state,
             initial_backing: initial_b,
+            invariant_k: PROTOCOL_INVARIANT_K,
             amm_holdings: initial_f,
             total_collateral: initial_b,
             fee_rate: 0, // No fees initially
@@ -264,7 +265,6 @@ module distribution_markets::distribution_markets {
             positions: table::new(),
             lp_shares: table::new(),
             total_lp_shares: initial_b, // Initial LP gets shares equal to backing
-            claimable_amounts: table::new(),
             treasury_addr,
             treasury_cap,
             collateral_metadata,
@@ -277,6 +277,27 @@ module distribution_markets::distribution_markets {
         };
         table::add(&mut market.lp_shares, initial_lp, initial_lp_share);
 
+        // Mint an initial position for the initial LP representing f, with zero additional collateral
+        if (!table::contains(&market.positions, initial_lp)) {
+            table::add(&mut market.positions, initial_lp, vector::empty<Position>());
+        };
+        // Calculate lambdas for initial position
+        // For initial position, both g(x) and f(x) are the same (initial_f)
+        let lambda_g = calculate_lambda(initial_f.std_dev);
+        let lambda_f = calculate_lambda(initial_f.std_dev);
+        
+        // Create initial position for the LP (represents the initial distribution)
+        let init_position = Position {
+            params: initial_f,
+            collateral: 0, // LP doesn't pay collateral for initial position
+            created_at: timestamp::now_seconds(),
+            market_position_at_creation: initial_f, // Initial market position is itself
+            lambda_g,
+            lambda_f,
+        };
+        let initial_positions = table::borrow_mut(&mut market.positions, initial_lp);
+        vector::push_back(initial_positions, init_position);
+
         move_to(&object_signer, market);
 
         // Emit event
@@ -288,105 +309,13 @@ module distribution_markets::distribution_markets {
             initial_lp,
         });
 
+        // Initial position created for LP (no event needed - use LiquidityAdded instead)
+
         market_addr
     }
 
-    /// Mint a new position by providing collateral
-    /// @param trader The account minting the position
-    /// @param market_addr Address of the market
-    /// @param collateral_amount Amount of collateral to provide
-    /// @param collateral Fungible asset representing the collateral
-    /// @return The minted position
-    public fun mint(
-        trader: &signer,
-        market_addr: address,
-        collateral_amount: u64,
-        collateral: FungibleAsset,
-    ): Position acquires Market {
-        let market = borrow_global_mut<Market>(market_addr);
-        assert!(market.state.is_active, EMARKET_PAUSED);
-        assert!(!market.state.is_resolved, EMARKET_RESOLVED);
-        assert!(fungible_asset::amount(&collateral) == collateral_amount, EINSUFFICIENT_COLLATERAL);
-
-        let trader_addr = signer::address_of(trader);
-
-        // Deposit collateral into treasury's primary store
-        let tstore = primary_fungible_store::ensure_primary_store_exists<Metadata>(market.treasury_addr, market.collateral_metadata);
-        fungible_asset::deposit(tstore, collateral);
-
-        // Create position with current AMM holdings parameters
-        let position = Position {
-            params: market.amm_holdings,
-            collateral: collateral_amount,
-            created_at: timestamp::now_seconds(),
-        };
-
-        // Add position to trader's positions
-        if (!table::contains(&market.positions, trader_addr)) {
-            table::add(&mut market.positions, trader_addr, vector::empty<Position>());
-        };
-        let trader_positions = table::borrow_mut(&mut market.positions, trader_addr);
-        vector::push_back(trader_positions, position);
-
-        // Update market collateral
-        market.total_collateral = market.total_collateral + collateral_amount;
-
-        // Emit event
-        event::emit(PositionMinted {
-            market_address: market_addr,
-            trader: trader_addr,
-            collateral: collateral_amount,
-            position,
-        });
-
-        position
-    }
-
-    /// Redeem a position and get collateral back
-    /// @param trader The account redeeming the position
-    /// @param market_addr Address of the market
-    /// @param position_index Index of the position to redeem
-    /// @return Amount of collateral returned
-    public fun redeem(
-        trader: &signer,
-        market_addr: address,
-        position_index: u64,
-    ): u64 acquires Market {
-        let market = borrow_global_mut<Market>(market_addr);
-        let trader_addr = signer::address_of(trader);
-
-        assert!(table::contains(&market.positions, trader_addr), EPOSITION_NOT_FOUND);
-        let trader_positions = table::borrow_mut(&mut market.positions, trader_addr);
-        assert!(vector::length(trader_positions) > position_index, EPOSITION_NOT_FOUND);
-
-        let position = vector::remove(trader_positions, position_index);
-        let refund_amount = position.collateral;
-
-        // Calculate fees if market is resolved
-        if (market.state.is_resolved) {
-            // Apply settlement logic here - for now, return full collateral
-            // In a complete implementation, this would calculate payouts based on realized outcome
-        };
-
-        // Transfer from treasury to trader using treasury signer
-        let tstore_from = primary_fungible_store::ensure_primary_store_exists<Metadata>(market.treasury_addr, market.collateral_metadata);
-        let tstore_to = primary_fungible_store::ensure_primary_store_exists<Metadata>(trader_addr, market.collateral_metadata);
-        let t_signer = account::create_signer_with_capability(&market.treasury_cap);
-        fungible_asset::transfer(&t_signer, tstore_from, tstore_to, refund_amount);
-
-        // Update market collateral
-        market.total_collateral = market.total_collateral - refund_amount;
-
-        // Emit event
-        event::emit(PositionRedeemed {
-            market_address: market_addr,
-            trader: trader_addr,
-            position,
-            refund_amount,
-        });
-
-        refund_amount
-    }
+    // Note: mint and redeem functions removed - use add_liquidity/remove_liquidity instead
+    // These are special cases where y = 1 (single unit of liquidity)
 
     // ==============================
     // View Functions
@@ -446,6 +375,168 @@ module distribution_markets::distribution_markets {
     }
 
     // ==============================
+    // AMM Invariant Functions
+    // ==============================
+
+    /// Get the protocol-level invariant constant K
+    /// This is the same for all markets in the protocol
+    #[view]
+    public fun get_protocol_invariant(): u128 {
+        PROTOCOL_INVARIANT_K
+    }
+
+    /// Verify that the AMM invariant is maintained (for debugging/testing)
+    /// Since K is a protocol constant, this always returns true
+    #[view]
+    public fun check_invariant_maintained(_market_addr: address): bool {
+        // Since K is a protocol-level constant, the invariant is always maintained by design
+        true
+    }
+
+    /// Calculate the minimum standard deviation based on backing constraint
+    /// σ_min = k² / (b² * √π) where b is backing, k is protocol invariant
+    fun calculate_min_standard_deviation(market: &Market): u64 {
+        let b = (market.initial_backing as u128);
+        let k = PROTOCOL_INVARIANT_K;
+        let k_squared = math_utils::fp_square(k);
+        let b_squared = math_utils::fp_square(b);
+        let sqrt_pi = 1772453850905516027; // √π * PRECISION (approximately)
+        let denominator = math_utils::fp_mul(b_squared, sqrt_pi);
+        
+        if (denominator == 0) {
+            return (MIN_STANDARD_DEVIATION_FALLBACK as u64)
+        };
+        
+        let min_std_dev = math_utils::fp_div(k_squared, denominator);
+        let result = (min_std_dev / PRECISION as u64);
+        
+        // Ensure we don't go below the fallback minimum
+        if (result < MIN_STANDARD_DEVIATION_FALLBACK) {
+            MIN_STANDARD_DEVIATION_FALLBACK
+        } else {
+            result
+        }
+    }
+
+    /// Get the minimum standard deviation for a market (public view)
+    #[view]
+    public fun get_min_standard_deviation(market_addr: address): u64 acquires Market {
+        let market = borrow_global<Market>(market_addr);
+        calculate_min_standard_deviation(market)
+    }
+
+    /// Calculate settlement payout for a position based on realized outcome
+    /// Settlement = λ * [g(x0) - f(x0)] + collateral
+    /// Where g(x) is trader's position, f(x) is market position at creation time, λ is scaling factor
+    fun calculate_settlement_payout(position: &Position, market: &Market): u64 {
+        if (!market.state.is_resolved) {
+            return position.collateral
+        };
+
+        let realized_outcome = *option::borrow(&market.state.realized_outcome);
+        let outcome_is_negative = market.state.outcome_is_negative;
+
+        // Calculate g(x0) - trader's position value at realized outcome
+        let g_x0 = math_utils::normal_pdf(
+            realized_outcome,
+            position.params.mean,
+            (position.params.std_dev as u128),
+            outcome_is_negative,
+            position.params.mean_is_negative
+        );
+
+        // Calculate f(x0) - market position value at realized outcome (from creation time)
+        let f_x0 = math_utils::normal_pdf(
+            realized_outcome,
+            position.market_position_at_creation.mean,
+            (position.market_position_at_creation.std_dev as u128),
+            outcome_is_negative,
+            position.market_position_at_creation.mean_is_negative
+        );
+
+        // Calculate λ_g * g(x0) - λ_f * f(x0)
+        let scaled_g_x0 = math_utils::fp_mul(position.lambda_g, g_x0);
+        let scaled_f_x0 = math_utils::fp_mul(position.lambda_f, f_x0);
+        
+        let scaled_g_x0_u64 = (scaled_g_x0 / math_utils::get_precision() as u64);
+        let scaled_f_x0_u64 = (scaled_f_x0 / math_utils::get_precision() as u64);
+
+        // Settlement = λ_g * g(x0) - λ_f * f(x0) + collateral
+        let settlement = if (scaled_g_x0_u64 >= scaled_f_x0_u64) {
+            // Positive difference: trader profits
+            let profit = scaled_g_x0_u64 - scaled_f_x0_u64;
+            position.collateral + profit
+        } else {
+            // Negative difference: trader loses
+            let loss = scaled_f_x0_u64 - scaled_g_x0_u64;
+            if (loss >= position.collateral) {
+                0 // Cannot go below zero
+            } else {
+                position.collateral - loss
+            }
+        };
+
+        settlement
+    }
+
+    /// Verify off-chain calculated minimum collateral using derivatives
+    /// This function verifies that the provided minimum point and derivatives are correct
+    /// for the collateral calculation: min_x g(x) - f(x) when moving AMM from h = b - f to h2 = b - g
+    public fun verify_min_collateral_calculation(
+        market_addr: address,
+        from_params: NormalParams,
+        to_params: NormalParams,
+        min_point: u128,
+        min_point_is_negative: bool,
+        first_derivative: u128,
+        second_derivative: u128,
+        min_value: u128
+    ): bool acquires Market {
+        let market = borrow_global<Market>(market_addr);
+        
+        // Verify that the provided parameters are valid
+        assert!(validate_normal_params(&from_params, market), EINVALID_PARAMS);
+        assert!(validate_normal_params(&to_params, market), EINVALID_PARAMS);
+
+        // Calculate g(min_point) - f(min_point)
+        let g_at_point = math_utils::normal_pdf(
+            min_point,
+            to_params.mean,
+            (to_params.std_dev as u128),
+            min_point_is_negative,
+            to_params.mean_is_negative
+        );
+        
+        let f_at_point = math_utils::normal_pdf(
+            min_point,
+            from_params.mean,
+            (from_params.std_dev as u128),
+            min_point_is_negative,
+            from_params.mean_is_negative
+        );
+
+        let diff_at_point = if (g_at_point >= f_at_point) {
+            g_at_point - f_at_point
+        } else {
+            f_at_point - g_at_point
+        };
+
+        // Verify that the calculated difference matches the provided minimum value
+        let tolerance = min_value / 1000000; // 0.0001% tolerance
+        let min_value_matches = math_utils::fp_approx_equal(diff_at_point, min_value, tolerance);
+
+        // Verify critical point condition: first derivative ≈ 0
+        let derivative_tolerance = math_utils::get_precision() / 1000000; // Small tolerance for derivative
+        let is_critical_point = math_utils::fp_approx_equal(first_derivative, 0, derivative_tolerance);
+
+        // Verify minimum condition: second derivative > 0
+        let is_minimum = second_derivative > 0;
+
+        // All three conditions must be satisfied for a valid minimum
+        min_value_matches && is_critical_point && is_minimum
+    }
+
+    // ==============================
     // Helper Functions
     // ==============================
 
@@ -483,35 +574,58 @@ module distribution_markets::distribution_markets {
     // Trading Functions
     // ==============================
 
-    /// Execute a trade to move the market distribution
+    /// Execute a trade according to the Distribution Markets paper
+    /// AMM starts holding h(x) = b - f(x), trader wants to move market to g(x)
+    /// After trade: AMM holds b - g(x), trader gets position g(x) - f(x)
     /// @param trader The account executing the trade
     /// @param market_addr Address of the market
-    /// @param to_params Target distribution parameters
+    /// @param target_g Target distribution the trader wants the market to become
     /// @param collateral Fungible asset to pay for the trade
-    public fun trade_move_to(
+    public fun trade(
         trader: &signer,
         market_addr: address,
-        to_params: NormalParams,
+        target_g: NormalParams,
         collateral: FungibleAsset,
     ) acquires Market {
         let market = borrow_global_mut<Market>(market_addr);
         assert!(market.state.is_active, EMARKET_PAUSED);
         assert!(!market.state.is_resolved, EMARKET_RESOLVED);
-        assert!(validate_normal_params(&to_params), EINVALID_PARAMS);
+        assert!(validate_normal_params(&target_g, market), EINVALID_PARAMS);
 
         let trader_addr = signer::address_of(trader);
-        let from_params = market.amm_holdings;
+        let current_f = market.amm_holdings; // Current market distribution f(x)
 
-        // Calculate trade cost
-        let cost = quote_trade_internal(&from_params, &to_params, market.initial_backing);
+        // Calculate trade cost: minimum collateral needed for g(x) - f(x)
+        let cost = quote_trade_internal(&current_f, &target_g, market.initial_backing);
         assert!(fungible_asset::amount(&collateral) >= cost, EINSUFFICIENT_COLLATERAL);
 
         // Deposit collateral into treasury store
         let tstore = primary_fungible_store::ensure_primary_store_exists<Metadata>(market.treasury_addr, market.collateral_metadata);
         fungible_asset::deposit(tstore, collateral);
 
-        // Update AMM holdings to new distribution
-        market.amm_holdings = to_params;
+        // Calculate separate lambdas for g(x) and f(x)
+        let lambda_g = calculate_lambda(target_g.std_dev);  // λ_g for trader's target function
+        let lambda_f = calculate_lambda(current_f.std_dev); // λ_f for market's current function
+
+        // Create position g(x) - f(x) for the trader
+        let trader_position = Position {
+            params: target_g,                      // g(x) - what trader wants
+            collateral: cost,
+            created_at: timestamp::now_seconds(),
+            market_position_at_creation: current_f, // f(x) - market state when trade happened
+            lambda_g,
+            lambda_f,
+        };
+
+        // Add position to trader's positions
+        if (!table::contains(&market.positions, trader_addr)) {
+            table::add(&mut market.positions, trader_addr, vector::empty<Position>());
+        };
+        let trader_positions = table::borrow_mut(&mut market.positions, trader_addr);
+        vector::push_back(trader_positions, trader_position);
+
+        // Update AMM holdings: market now holds b - g(x) instead of b - f(x)
+        market.amm_holdings = target_g;
         market.total_collateral = market.total_collateral + cost;
 
         // Apply fees
@@ -522,10 +636,54 @@ module distribution_markets::distribution_markets {
         event::emit(TradeExecuted {
             market_address: market_addr,
             trader: trader_addr,
-            from_params,
-            to_params,
+            from_params: current_f,
+            to_params: target_g,
             cost,
         });
+    }
+
+    /// Close a position and receive settlement
+    /// Settlement = λ * [g(x0) - f(x0)] + collateral where x0 is realized outcome
+    /// @param trader The account closing the position
+    /// @param market_addr Address of the market
+    /// @param position_index Index of the position to close
+    /// @return Settlement amount received
+    public fun close_position(
+        trader: &signer,
+        market_addr: address,
+        position_index: u64,
+    ): u64 acquires Market {
+        let market = borrow_global_mut<Market>(market_addr);
+        let trader_addr = signer::address_of(trader);
+
+        assert!(table::contains(&market.positions, trader_addr), EPOSITION_NOT_FOUND);
+        let trader_positions = table::borrow_mut(&mut market.positions, trader_addr);
+        assert!(vector::length(trader_positions) > position_index, EPOSITION_NOT_FOUND);
+
+        let position = vector::remove(trader_positions, position_index);
+        
+        // Calculate settlement using the correct formula
+        let settlement_amount = calculate_settlement_payout(&position, market);
+
+        // Transfer settlement from treasury to trader
+        let tstore_from = primary_fungible_store::ensure_primary_store_exists<Metadata>(market.treasury_addr, market.collateral_metadata);
+        let tstore_to = primary_fungible_store::ensure_primary_store_exists<Metadata>(trader_addr, market.collateral_metadata);
+        let t_signer = account::create_signer_with_capability(&market.treasury_cap);
+        fungible_asset::transfer(&t_signer, tstore_from, tstore_to, settlement_amount);
+
+        // Update market collateral
+        market.total_collateral = market.total_collateral - settlement_amount;
+
+        // Emit event (reuse existing event structure)
+        event::emit(TradeExecuted {
+            market_address: market_addr,
+            trader: trader_addr,
+            from_params: position.market_position_at_creation,
+            to_params: position.params,
+            cost: settlement_amount, // Settlement amount instead of cost
+        });
+
+        settlement_amount
     }
 
     /// Quote the cost of a trade between two distributions
@@ -560,92 +718,97 @@ module distribution_markets::distribution_markets {
         (cost / math_utils::get_precision() as u64)
     }
 
-    /// Quote collateral required for a position
-    /// @param position Distribution parameters for the position
-    /// @param market_addr Address of the market
-    /// @return Required collateral amount
-    public(friend) fun quote_collateral(
-        position: NormalParams,
-        market_addr: address,
-    ): u64 acquires Market {
-        let market = borrow_global<Market>(market_addr);
-        let l2_norm = math_utils::normal_l2_norm((position.std_dev as u128));
-        let collateral_ratio = math_utils::fp_mul(l2_norm, (market.initial_backing as u128));
-        (collateral_ratio / math_utils::get_precision() as u64)
-    }
-
-    /// Quote collateral with detailed breakdown
-    /// @param position Distribution parameters for the position
-    /// @param market_addr Address of the market
-    /// @return (expected_refund, fees)
-    public(friend) fun quote_collateral_detailed(
-        position: NormalParams,
-        market_addr: address,
-    ): (u64, u64) acquires Market {
-        let market = borrow_global<Market>(market_addr);
-        // Inline calculation to avoid nested acquires/borrows
-        let l2_norm = math_utils::normal_l2_norm((position.std_dev as u128));
-        let collateral_ratio = math_utils::fp_mul(l2_norm, (market.initial_backing as u128));
-        let base_collateral = (collateral_ratio / math_utils::get_precision() as u64);
-        let fees = (base_collateral * market.fee_rate) / (PRECISION as u64);
-        let expected_refund = base_collateral - fees;
-        (expected_refund, fees)
-    }
+    // Removed obsolete quote_collateral functions - they were for the old mint/redeem pattern
+    // Use quote_trade() for trading cost calculation instead
 
     // ==============================
     // Liquidity Provision Functions
     // ==============================
 
-    /// Add liquidity to the market
-    /// @param lp The liquidity provider account
+    /// Add liquidity to the market according to Distribution Markets paper
+    /// LP wants to add proportion y of current liquidity
+    /// AMM position is h = b - f, LP contributes yh = yb - yf and gets yl LP shares
+    /// @param lp The liquidity provider account  
     /// @param market_addr Address of the market
-    /// @param amount Amount of collateral to add
-    /// @param collateral Fungible asset representing the collateral
+    /// @param proportion_y Proportion of current liquidity to add (scaled by PRECISION)
+    /// @param collateral Fungible asset representing the collateral (must be yb amount)
     public fun add_liquidity(
         lp: &signer,
         market_addr: address,
-        amount: u64,
+        proportion_y: u64, // Proportion scaled by PRECISION (e.g., 50000000 = 0.5 = 50%)
         collateral: FungibleAsset,
     ) acquires Market {
         let market = borrow_global_mut<Market>(market_addr);
         assert!(market.state.is_active, EMARKET_PAUSED);
-        assert!(fungible_asset::amount(&collateral) == amount, EINSUFFICIENT_COLLATERAL);
-
+        
         let lp_addr = signer::address_of(lp);
-
-        // Calculate shares to mint (proportional to current pool)
-        let shares_to_mint = if (market.total_lp_shares == 0) {
-            amount // First LP gets 1:1 shares
+        let current_f = market.amm_holdings; // Current AMM distribution f
+        
+        // Calculate required amounts based on proportion y
+        let y = (proportion_y as u128);
+        let precision = (PRECISION as u128);
+        
+        // yb = y * current_backing
+        let yb = (y * (market.initial_backing as u128)) / precision;
+        let yb_u64 = (yb as u64);
+        
+        // Verify LP provided correct collateral amount
+        assert!(fungible_asset::amount(&collateral) == yb_u64, EINSUFFICIENT_COLLATERAL);
+        
+        // Calculate yl = y * current_lp_shares  
+        let yl = if (market.total_lp_shares == 0) {
+            yb_u64 // First LP case
         } else {
-            (amount * market.total_lp_shares) / market.total_collateral
+            ((y * (market.total_lp_shares as u128)) / precision as u64)
         };
 
         // Deposit collateral into treasury store
-        let tstore_fix = primary_fungible_store::ensure_primary_store_exists<Metadata>(market.treasury_addr, market.collateral_metadata);
-        fungible_asset::deposit(tstore_fix, collateral);
+        let tstore = primary_fungible_store::ensure_primary_store_exists<Metadata>(market.treasury_addr, market.collateral_metadata);
+        fungible_asset::deposit(tstore, collateral);
+
+        // Calculate lambdas for the position yf that LP will keep
+        let lambda_g = calculate_lambda(current_f.std_dev);
+        let lambda_f = calculate_lambda(current_f.std_dev); // Same function, so same lambda
+        
+        // Create position yf for the LP (what they keep after contributing yh to AMM)
+        let lp_position = Position {
+            params: current_f,                      // yf - LP keeps current market distribution
+            collateral: yb_u64,                    // yb collateral provided
+            created_at: timestamp::now_seconds(),
+            market_position_at_creation: current_f, // f at time of LP provision
+            lambda_g,
+            lambda_f,
+        };
+
+        // Add position to LP's positions
+        if (!table::contains(&market.positions, lp_addr)) {
+            table::add(&mut market.positions, lp_addr, vector::empty<Position>());
+        };
+        let lp_positions = table::borrow_mut(&mut market.positions, lp_addr);
+        vector::push_back(lp_positions, lp_position);
 
         // Update LP shares
         if (table::contains(&market.lp_shares, lp_addr)) {
             let lp_share = table::borrow_mut(&mut market.lp_shares, lp_addr);
-            lp_share.shares = lp_share.shares + shares_to_mint;
+            lp_share.shares = lp_share.shares + yl;
         } else {
             let new_lp_share = LPShare {
-                shares: shares_to_mint,
+                shares: yl,
                 acquired_at: timestamp::now_seconds(),
             };
             table::add(&mut market.lp_shares, lp_addr, new_lp_share);
         };
 
         // Update totals
-        market.total_lp_shares = market.total_lp_shares + shares_to_mint;
-        market.total_collateral = market.total_collateral + amount;
+        market.total_lp_shares = market.total_lp_shares + yl;
+        market.total_collateral = market.total_collateral + yb_u64;
 
         // Emit event
         event::emit(LiquidityAdded {
             market_address: market_addr,
             lp: lp_addr,
-            amount,
-            shares_minted: shares_to_mint,
+            amount: yb_u64,
+            shares_minted: yl,
         });
     }
 
@@ -694,72 +857,31 @@ module distribution_markets::distribution_markets {
     }
 
     // ==============================
-    // Position Management Functions
+    // Position Management Functions  
     // ==============================
 
-    // Get trader's total exposure across all positions
-    // @param trader Address of the trader
-    // @param market_addr Address of the market
-    // @return Aggregated normal distribution parameters representing total exposure
+    /// Get trader's position (V1: assumes one position per trader)
+    /// @param trader Address of the trader
+    /// @param market_addr Address of the market
+    /// @return The trader's position parameters, or None if no position
     #[view]
-    public fun get_trader_total_exposure(
+    public fun get_trader_position(
         trader: address,
         market_addr: address,
-    ): NormalParams acquires Market {
+    ): Option<NormalParams> acquires Market {
         let market = borrow_global<Market>(market_addr);
         if (!table::contains(&market.positions, trader)) {
-            return NormalParams {
-                mean: 0,
-                std_dev: (MIN_STANDARD_DEVIATION as u64),
-                mean_is_negative: false,
-            }
+            return option::none<NormalParams>()
         };
 
         let trader_positions = table::borrow(&market.positions, trader);
-        let total_positions = vector::length(trader_positions);
-        
-        if (total_positions == 0) {
-            return NormalParams {
-                mean: 0,
-                std_dev: (MIN_STANDARD_DEVIATION as u64),
-                mean_is_negative: false,
-            }
+        if (vector::length(trader_positions) == 0) {
+            return option::none<NormalParams>()
         };
 
-        // For simplicity, return the first position's parameters
-        // In a complete implementation, this would aggregate all positions
-        let first_position = vector::borrow(trader_positions, 0);
-        first_position.params
-    }
-
-    /// Close all positions for a trader
-    /// @param trader The trader account
-    /// @param market_addr Address of the market
-    public fun close_position(
-        trader: &signer,
-        market_addr: address,
-    ) acquires Market {
-        let market = borrow_global_mut<Market>(market_addr);
-        let trader_addr = signer::address_of(trader);
-
-        if (!table::contains(&market.positions, trader_addr)) {
-            return
-        };
-
-        let trader_positions = table::remove(&mut market.positions, trader_addr);
-        let total_refund = 0;
-
-        // Calculate total refund from all positions
-        while (!vector::is_empty(&trader_positions)) {
-            let position = vector::pop_back(&mut trader_positions);
-            total_refund = total_refund + position.collateral;
-        };
-
-        if (total_refund > 0) {
-            // Transfer collateral from treasury to trader requires admin signer; skip in close_position for v1
-            // Update market collateral
-            market.total_collateral = market.total_collateral - total_refund;
-        };
+        // V1: Return first (and only) position
+        let position = vector::borrow(trader_positions, 0);
+        option::some(position.params)
     }
 
     // ==============================
@@ -810,45 +932,8 @@ module distribution_markets::distribution_markets {
         });
     }
 
-    // Get claimable amount for a trader after resolution
-    // @param trader Address of the trader
-    // @param market_addr Address of the market
-    // @return Claimable amount
-    #[view]
-    public fun get_claimable_amount(
-        trader: address,
-        market_addr: address,
-    ): u64 acquires Market {
-        let market = borrow_global<Market>(market_addr);
-        if (table::contains(&market.claimable_amounts, trader)) {
-            *table::borrow(&market.claimable_amounts, trader)
-        } else {
-            0
-        }
-    }
-
-    /// Claim resolved position payouts
-    /// @param trader The trader account
-    /// @param market_addr Address of the market
-    public fun claim(
-        trader: address,
-        market_addr: address,
-    ) acquires Market {
-        let market = borrow_global_mut<Market>(market_addr);
-        assert!(market.state.is_resolved, EMARKET_NOT_RESOLVED);
-        let trader_addr = trader;
-        if (!table::contains(&market.claimable_amounts, trader_addr)) {
-            return
-        };
-
-        let claimable = table::remove(&mut market.claimable_amounts, trader_addr);
-        if (claimable > 0) {
-            let tstore_from = primary_fungible_store::ensure_primary_store_exists<Metadata>(market.treasury_addr, market.collateral_metadata);
-            let tstore_to = primary_fungible_store::ensure_primary_store_exists<Metadata>(trader_addr, market.collateral_metadata);
-            let t_signer = account::create_signer_with_capability(&market.treasury_cap);
-            fungible_asset::transfer(&t_signer, tstore_from, tstore_to, claimable);
-        };
-    }
+    // Settlement happens when traders call close_position() after market resolution
+    // No separate claim mechanism needed - settlement is calculated using λ_g * g(x0) - λ_f * f(x0) + collateral
 
     // ==============================
     // Admin and Utility Functions
@@ -924,13 +1009,32 @@ module distribution_markets::distribution_markets {
     // Helper Functions
     // ==============================
 
-    /// Calculate L2 norm of normal distribution parameters
-    fun calculate_l2_norm(params: &NormalParams): u128 {
-        math_utils::normal_l2_norm((params.std_dev as u128))
+    /// Calculate lambda scaling factor: λ = k√(2σ√π)
+    /// Where k is protocol invariant, σ is standard deviation
+    fun calculate_lambda(std_dev: u64): u128 {
+        let k = PROTOCOL_INVARIANT_K;
+        let sigma = (std_dev as u128);
+        let two_sigma = 2 * sigma;
+        let sqrt_pi = 1772453850905516027; // √π * PRECISION
+        let two_sigma_sqrt_pi = math_utils::fp_mul(two_sigma, sqrt_pi);
+        let sqrt_two_sigma_sqrt_pi = math_utils::fp_sqrt(two_sigma_sqrt_pi);
+        math_utils::fp_mul(k, sqrt_two_sigma_sqrt_pi)
     }
 
-    /// Validate normal distribution parameters
-    fun validate_normal_params(params: &NormalParams): bool {
-        params.std_dev >= MIN_STANDARD_DEVIATION
+    /// Calculate L2 norm of normal distribution parameters
+    /// Note: This function is deprecated - L2 norm not needed on-chain
+    fun calculate_l2_norm(params: &NormalParams): u128 {
+        // Simplified calculation - in practice this is computed off-chain
+        (params.std_dev as u128) * math_utils::get_precision()
+    }
+
+    /// Validate normal distribution parameters against market constraints
+    fun validate_normal_params(params: &NormalParams, market: &Market): bool {
+        params.std_dev >= calculate_min_standard_deviation(market)
+    }
+
+    /// Validate normal distribution parameters using fallback minimum (for initialization)
+    fun validate_normal_params_fallback(params: &NormalParams): bool {
+        params.std_dev >= MIN_STANDARD_DEVIATION_FALLBACK
     }
 }

@@ -169,17 +169,7 @@ module distribution_markets::math_utils {
         fp_mul(coefficient, exp_term)
     }
 
-    /// Calculate the L2 norm of a normal distribution
-    /// For normal distribution: ||f||₂ = 1 / sqrt(2π * σ²)
-    public fun normal_l2_norm(std_dev: u128): u128 {
-        assert!(std_dev > 0, EINVALID_INPUT);
-        
-        let variance = fp_square(std_dev);
-        let two_pi_variance = fp_mul(2 * PRECISION, fp_mul(PRECISION * 314159265358979323 / 100000000000000000, variance)); // 2π approximation
-        let sqrt_two_pi_variance = fp_sqrt(two_pi_variance);
-        
-        fp_div(PRECISION, sqrt_two_pi_variance)
-    }
+    // Note: L2 norm calculation removed - not needed on-chain, K is set by initializer
 
     /// Calculate the inner product of two normal distributions (simplified)
     /// This is used for the AMM invariant calculations
@@ -215,24 +205,22 @@ module distribution_markets::math_utils {
     }
 
     /// Calculate the cost of moving from one distribution to another
-    /// Based on the L2 norm difference in the AMM
+    /// Simplified version - in practice this should be computed off-chain and verified
     public fun calculate_trade_cost(
         _from_mean: u128, from_std_dev: u128, _from_mean_is_negative: bool,
         _to_mean: u128, to_std_dev: u128, _to_mean_is_negative: bool,
         backing: u128
     ): u128 {
-        let from_norm = normal_l2_norm(from_std_dev);
-        let to_norm = normal_l2_norm(to_std_dev);
-        
-        // Cost is proportional to the change in L2 norm
-        let norm_diff = if (to_norm >= from_norm) {
-            to_norm - from_norm
+        // Simplified cost calculation based on standard deviation difference
+        // In practice, use off-chain calculation with derivative verification
+        let std_dev_diff = if (to_std_dev >= from_std_dev) {
+            (to_std_dev - from_std_dev) as u128
         } else {
-            from_norm - to_norm
+            (from_std_dev - to_std_dev) as u128
         };
         
-        // Scale by backing amount
-        fp_mul(norm_diff, backing)
+        // Scale by backing amount (simplified)
+        fp_mul(std_dev_diff * PRECISION, backing) / PRECISION
     }
 
     // ==============================
