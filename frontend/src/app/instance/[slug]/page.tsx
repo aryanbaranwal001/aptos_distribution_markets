@@ -91,284 +91,268 @@ const MarketInstancePage = () => {
           </Link>
         </div>
 
-        {/* Market Header */}
-        <div className="mb-8">
-          {/* Market Icon */}
-          <div className="flex justify-center mb-6">
-            <Image 
-              src={iconSrc}
-              alt="Market icon"
-              width={120}
-              height={120}
-              className="w-30 h-30 rounded-full"
-              onError={handleImageError}
-            />
-          </div>
-          
-          {/* Title and Description */}
-          <div className="text-center mb-6">
-            <div className="flex items-center justify-center space-x-4 mb-4">
-              <h1 className="text-3xl font-bold">{market.title}</h1>
-              <button
-                onClick={handleBookmark}
-                className={`p-2 rounded-full transition-colors ${
-                  isBookmarked
-                    ? `${theme.primaryBg} text-white`
-                    : `${theme.textSecondary} hover:${theme.primary}`
-                }`}
-              >
-                <Bookmark className={`w-6 h-6 ${isBookmarked ? 'fill-current' : ''}`} />
-              </button>
+        {/* Market Header - Outside Container */}
+        <div className="mb-6">
+          <div className="flex items-start space-x-6">
+            {/* Market Icon */}
+            <div className="flex-shrink-0">
+              <Image 
+                src={iconSrc}
+                alt="Market icon"
+                width={80}
+                height={80}
+                className="w-20 h-20 rounded-full"
+                onError={handleImageError}
+              />
             </div>
-            <p className={`${theme.textSecondary} text-lg leading-relaxed max-w-4xl mx-auto`}>
-              {market.description}
-            </p>
+            
+            {/* Title and Description */}
+            <div className="flex-1">
+              <div className="flex items-center space-x-4 mb-3">
+                <h1 className="text-3xl font-bold">{market.title}</h1>
+                <button
+                  onClick={handleBookmark}
+                  className={`p-2 rounded-full transition-colors ${
+                    isBookmarked
+                      ? `${theme.primaryBg} text-white`
+                      : `${theme.textSecondary} hover:${theme.primary}`
+                  }`}
+                >
+                  <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
+                </button>
+              </div>
+              <p className={`${theme.textSecondary} text-base leading-relaxed`}>
+                {market.description}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Market Stats Row */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.border}`}>
-            <div className={`text-sm ${theme.textSecondary}`}>Value (ECV)</div>
-            <div className="text-xl font-bold">{market.market_mean.toFixed(2)}</div>
-            <div className={`text-xs ${theme.textSecondary}`}>ECV</div>
-          </div>
-          <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.border}`}>
-            <div className={`text-sm ${theme.textSecondary}`}>Probability</div>
-            <div className="text-xl font-bold">0.0%</div>
-          </div>
-          <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.border}`}>
-            <div className={`text-sm ${theme.textSecondary}`}>Cumulative</div>
-            <div className="text-xl font-bold">100.0%</div>
-          </div>
-          <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.border}`}>
-            <div className={`text-sm ${theme.textSecondary}`}>Download</div>
-            <div className="text-xl">📥</div>
-          </div>
-        </div>
-
-        {/* Main Layout: Graph + Right Sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Column - Graph Area (3/4 width) */}
-          <div className="lg:col-span-3">
-            {/* Graph Placeholder */}
-            <div className={`p-8 rounded-lg border-2 border-dashed ${theme.border} ${theme.cardBg} h-96 mb-6`}>
-              <div className="text-center h-full flex flex-col justify-center">
-                <div className={`text-6xl mb-4 ${theme.textSecondary}`}>📊</div>
-                <h3 className={`text-xl font-semibold mb-2 ${theme.textSecondary}`}>Distribution Graph</h3>
-                <p className={`${theme.textSecondary}`}>Normal distribution curve will be displayed here</p>
-                <div className="mt-4 flex items-center justify-center">
-                  <span className={`text-sm ${theme.textSecondary}`}>Current Market vs Your Proposal visualization</span>
+        {/* Main Container */}
+        <div className={`rounded-lg border ${theme.border} ${theme.cardBg} p-6`}>
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            {/* Left Container - Graph and Data (3/4 width) */}
+            <div className="lg:col-span-3">
+              {/* Stats Row Above Graph */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <div className={`text-sm ${theme.textSecondary} mb-1`}>Value (ECV)</div>
+                  <div className="text-xl font-bold">{market.market_mean.toFixed(2)}</div>
+                  <div className={`text-xs ${theme.textSecondary}`}>ECV</div>
+                </div>
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <div className={`text-sm ${theme.textSecondary} mb-1`}>Probability</div>
+                  <div className="text-xl font-bold">0.0%</div>
+                </div>
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <div className={`text-sm ${theme.textSecondary} mb-1`}>Cumulative</div>
+                  <div className="text-xl font-bold">100.0%</div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Right Sidebar (1/4 width) */}
-          <div className="lg:col-span-1 space-y-4">
-            {/* Trade Buttons */}
-            <div className="flex flex-col space-y-2">
-              <button className={`px-4 py-2 rounded-lg ${theme.primaryBg} text-white font-semibold hover:opacity-90 transition-opacity`}>
-                Trade
-              </button>
-              <button className={`px-4 py-2 rounded-lg border ${theme.border} ${theme.cardBg} hover:${theme.hoverBg} transition-colors`}>
-                Positions
-              </button>
-              <button className={`px-4 py-2 rounded-lg border ${theme.border} ${theme.cardBg} hover:${theme.hoverBg} transition-colors`}>
-                Add Liquidity
-              </button>
-            </div>
-
-            {/* Proposed Values */}
-            <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.border}`}>
-              <div className="flex items-center space-x-2 mb-3">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <span className={`text-sm ${theme.textSecondary}`}>Proposed</span>
-                <span className="text-sm font-mono">Δμ: {deltaMu >= 0 ? '+' : ''}{deltaMu.toFixed(3)}</span>
-                <span className="text-sm font-mono">Δσ: {deltaSigma >= 0 ? '+' : ''}{deltaSigma.toFixed(3)}</span>
-              </div>
-            </div>
-
-            {/* Mean Slider */}
-            <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.border}`}>
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-sm font-semibold">MEAN (M)</label>
-                <span className="text-lg font-bold">{userMean.toFixed(2)}</span>
-              </div>
-              <div className="mb-2">
-                <input
-                  type="range"
-                  min={market.market_mean_min}
-                  max={market.market_mean_max}
-                  step={0.01}
-                  value={userMean}
-                  onChange={(e) => setUserMean(parseFloat(e.target.value))}
-                  className={`w-full h-2 rounded-lg appearance-none cursor-pointer slider-${color}`}
-                  style={{
-                    background: `linear-gradient(to right, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} 0%, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} ${((userMean - market.market_mean_min) / (market.market_mean_max - market.market_mean_min)) * 100}%, #374151 ${((userMean - market.market_mean_min) / (market.market_mean_max - market.market_mean_min)) * 100}%, #374151 100%)`
-                  }}
-                />
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className={theme.textSecondary}>{market.market_mean_min}</span>
-                <span className={theme.textSecondary}>{market.market_mean_max}</span>
-              </div>
-            </div>
-
-            {/* Standard Deviation Slider */}
-            <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.border}`}>
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-sm font-semibold">STD DEV (σ)</label>
-                <span className="text-lg font-bold">{userStdDev.toFixed(3)}</span>
-              </div>
-              <div className="mb-2">
-                <input
-                  type="range"
-                  min={market.market_standard_deviation_min}
-                  max={market.market_standard_deviation_max}
-                  step={0.001}
-                  value={userStdDev}
-                  onChange={(e) => setUserStdDev(parseFloat(e.target.value))}
-                  className={`w-full h-2 rounded-lg appearance-none cursor-pointer slider-${color}`}
-                  style={{
-                    background: `linear-gradient(to right, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} 0%, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} ${((userStdDev - market.market_standard_deviation_min) / (market.market_standard_deviation_max - market.market_standard_deviation_min)) * 100}%, #374151 ${((userStdDev - market.market_standard_deviation_min) / (market.market_standard_deviation_max - market.market_standard_deviation_min)) * 100}%, #374151 100%)`
-                  }}
-                />
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className={theme.textSecondary}>{market.market_standard_deviation_min}</span>
-                <span className={theme.textSecondary}>{market.market_standard_deviation_max}</span>
-              </div>
-              <div className={`text-xs ${theme.textSecondary} mt-1`}>
-                Min σ: {market.market_standard_deviation_min} (contract enforced)
-              </div>
-            </div>
-
-            {/* Collateral Required */}
-            <div className={`p-4 rounded-lg ${theme.cardBg} border ${theme.border}`}>
-              <h3 className="text-sm font-semibold mb-2">Collateral Required</h3>
-              <div className="text-2xl font-bold mb-1">1.22 <span className="text-sm font-normal">STRK</span></div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className={theme.textSecondary}>FEES (EST)</span>
-                  <span>0 STRK Ⓒ</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={theme.textSecondary}>MIN (1x)</span>
-                  <span>0.000000</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={theme.textSecondary}>ARG MIN σ</span>
-                  <span>243.352</span>
+              {/* Graph Container */}
+              <div className={`rounded-lg border ${theme.border} bg-white/5 p-8 h-96 mb-6`}>
+                <div className="text-center h-full flex flex-col justify-center">
+                  <div className={`text-6xl mb-4 ${theme.textSecondary}`}>📊</div>
+                  <h3 className={`text-xl font-semibold mb-2 ${theme.textSecondary}`}>Distribution Graph</h3>
+                  <p className={`${theme.textSecondary}`}>Normal distribution curve will be displayed here</p>
+                  <div className="mt-4 flex items-center justify-center">
+                    <span className={`text-sm ${theme.textSecondary}`}>Current Market vs Your Proposal visualization</span>
+                  </div>
                 </div>
               </div>
-              <div className={`text-xs ${theme.textSecondary} mt-2`}>
-                Collateral secures against maximum potential loss.
-              </div>
-            </div>
 
-            {/* Connect Wallet Button */}
-            <button className={`w-full px-4 py-3 rounded-lg ${theme.primaryBg} text-white font-semibold hover:opacity-90 transition-opacity`}>
-              Connect wallet to trade
-            </button>
-          </div>
-        </div>
-
-        {/* Bottom Section - Market Parameters */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Stiffness Section */}
-          <div className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg}`}>
-            <h3 className="text-lg font-semibold mb-4">STIFFNESS (LOCAL)</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className={theme.textSecondary}>S</span>
-                <span className="font-mono">{market.s}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className={theme.textSecondary}>μ per σ1</span>
-                <span className="font-mono">{market.mu_per_one}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className={theme.textSecondary}>σ per σ1</span>
-                <span className="font-mono">{market.sigma_per_one}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Cap & Scale Section */}
-          <div className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg}`}>
-            <h3 className="text-lg font-semibold mb-4">CAP & SCALE (λ)</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className={theme.textSecondary}>Peak p</span>
-                <span className="font-mono">{market.peak_p}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className={theme.textSecondary}>Headroom</span>
-                <span className="font-mono">{market.headroom} (79.2%)</span>
-              </div>
-              <div className="flex justify-between">
-                <span className={theme.textSecondary}>λ</span>
-                <span className="font-mono">{market.Lambda}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Lifecycle Section */}
-          <div className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg}`}>
-            <h3 className="text-lg font-semibold mb-4">LIFECYCLE</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className={theme.textSecondary}>Status</span>
-                <span className="text-green-500">Active</span>
-              </div>
-              <div className="flex justify-between">
-                <span className={theme.textSecondary}>Expires</span>
-                <span>{formatDate(market.endDate)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className={theme.textSecondary}>Created</span>
-                <span>{formatDate(market.startDate)}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Contracts & Actions Section */}
-          <div className={`p-6 rounded-lg border ${theme.border} ${theme.cardBg} md:col-span-2 lg:col-span-3`}>
-            <h3 className="text-lg font-semibold mb-4">CONTRACTS & ACTIONS</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className={theme.textSecondary}>Market</span>
-                  <span className="font-mono text-sm">{truncateAddress(market.address)}</span>
+              {/* Market Parameters Below Graph */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Stiffness Section */}
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <h3 className="text-sm font-semibold mb-3 uppercase tracking-wide">STIFFNESS (LOCAL)</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-sm`}>S</span>
+                      <span className="font-mono text-sm">{market.s}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-sm`}>μ per σ1</span>
+                      <span className="font-mono text-sm">{market.mu_per_one}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-sm`}>σ per σ1</span>
+                      <span className="font-mono text-sm">{market.sigma_per_one}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className={theme.textSecondary}>Oracle</span>
-                  <span className="font-mono text-sm">0x0000...7f00 Ⓒ</span>
+
+                {/* Cap & Scale Section */}
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <h3 className="text-sm font-semibold mb-3 uppercase tracking-wide">CAP & SCALE (λ)</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-sm`}>Peak p</span>
+                      <span className="font-mono text-sm">{market.peak_p}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-sm`}>Headroom</span>
+                      <span className="font-mono text-sm">{market.headroom} (79.2%)</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-sm`}>λ</span>
+                      <span className="font-mono text-sm">{market.Lambda}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className={theme.textSecondary}>Volume</span>
-                  <span className={theme.primary}>{formatVolume(market.volume)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={theme.textSecondary}>Categories</span>
-                  <div className="flex flex-wrap gap-1">
-                    {market.categories.slice(0, 2).map((category) => (
-                      <span
-                        key={category}
-                        className={`px-2 py-1 text-xs rounded-full ${theme.primaryBg} text-white`}
-                      >
-                        {category}
-                      </span>
-                    ))}
+
+                {/* Lifecycle Section */}
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <h3 className="text-sm font-semibold mb-3 uppercase tracking-wide">LIFECYCLE</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-sm`}>Status</span>
+                      <span className="text-green-500 text-sm">Active</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-sm`}>Expires</span>
+                      <span className="text-sm">{formatDate(market.endDate)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={`${theme.textSecondary} text-sm`}>Created</span>
+                      <span className="text-sm">{formatDate(market.startDate)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Right Container - Sidebar (1/4 width) */}
+            <div className="lg:col-span-1">
+              <div className="space-y-4">
+                
+                {/* Trade Actions Container */}
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <div className="flex flex-col space-y-2">
+                    <button className={`px-4 py-2 rounded-lg ${theme.primaryBg} text-white font-semibold hover:opacity-90 transition-opacity`}>
+                      Trade
+                    </button>
+                    <button className={`px-4 py-2 rounded-lg border ${theme.border} hover:bg-white/5 transition-colors`}>
+                      Positions
+                    </button>
+                    <button className={`px-4 py-2 rounded-lg border ${theme.border} hover:bg-white/5 transition-colors`}>
+                      Add Liquidity
+                    </button>
+                  </div>
+                </div>
+
+                {/* Proposed Values Container */}
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <span className={`text-sm ${theme.textSecondary}`}>Proposed</span>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-mono">Δμ:</span>
+                      <span className={`text-sm font-mono ${deltaMu >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {deltaMu >= 0 ? '+' : ''}{deltaMu.toFixed(3)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-mono">Δσ:</span>
+                      <span className={`text-sm font-mono ${deltaSigma >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {deltaSigma >= 0 ? '+' : ''}{deltaSigma.toFixed(3)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mean Slider Container */}
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-sm font-semibold">MEAN (M)</label>
+                    <span className="text-lg font-bold">{userMean.toFixed(2)}</span>
+                  </div>
+                  <div className="mb-2">
+                    <input
+                      type="range"
+                      min={market.market_mean_min}
+                      max={market.market_mean_max}
+                      step={0.01}
+                      value={userMean}
+                      onChange={(e) => setUserMean(parseFloat(e.target.value))}
+                      className={`w-full h-2 rounded-lg appearance-none cursor-pointer slider-${color}`}
+                      style={{
+                        background: `linear-gradient(to right, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} 0%, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} ${((userMean - market.market_mean_min) / (market.market_mean_max - market.market_mean_min)) * 100}%, #374151 ${((userMean - market.market_mean_min) / (market.market_mean_max - market.market_mean_min)) * 100}%, #374151 100%)`
+                      }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className={theme.textSecondary}>{market.market_mean_min}</span>
+                    <span className={theme.textSecondary}>{market.market_mean_max}</span>
+                  </div>
+                </div>
+
+                {/* Standard Deviation Slider Container */}
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-sm font-semibold">STD DEV (σ)</label>
+                    <span className="text-lg font-bold">{userStdDev.toFixed(3)}</span>
+                  </div>
+                  <div className="mb-2">
+                    <input
+                      type="range"
+                      min={market.market_standard_deviation_min}
+                      max={market.market_standard_deviation_max}
+                      step={0.001}
+                      value={userStdDev}
+                      onChange={(e) => setUserStdDev(parseFloat(e.target.value))}
+                      className={`w-full h-2 rounded-lg appearance-none cursor-pointer slider-${color}`}
+                      style={{
+                        background: `linear-gradient(to right, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} 0%, ${color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#f43f5e'} ${((userStdDev - market.market_standard_deviation_min) / (market.market_standard_deviation_max - market.market_standard_deviation_min)) * 100}%, #374151 ${((userStdDev - market.market_standard_deviation_min) / (market.market_standard_deviation_max - market.market_standard_deviation_min)) * 100}%, #374151 100%)`
+                      }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className={theme.textSecondary}>{market.market_standard_deviation_min}</span>
+                    <span className={theme.textSecondary}>{market.market_standard_deviation_max}</span>
+                  </div>
+                  <div className={`text-xs ${theme.textSecondary} mt-1`}>
+                    Min σ: {market.market_standard_deviation_min} (contract enforced)
+                  </div>
+                </div>
+
+                {/* Collateral Required Container */}
+                <div className={`p-4 rounded-lg border ${theme.border} bg-white/5`}>
+                  <h3 className="text-sm font-semibold mb-2">Collateral Required</h3>
+                  <div className="text-2xl font-bold mb-1">1.22 <span className="text-sm font-normal">STRK</span></div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className={theme.textSecondary}>FEES (EST)</span>
+                      <span>0 STRK Ⓒ</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={theme.textSecondary}>MIN (1x)</span>
+                      <span>0.000000</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={theme.textSecondary}>ARG MIN σ</span>
+                      <span>243.352</span>
+                    </div>
+                  </div>
+                  <div className={`text-xs ${theme.textSecondary} mt-2`}>
+                    Collateral secures against maximum potential loss.
+                  </div>
+                </div>
+
+                {/* Connect Wallet Button */}
+                <button className={`w-full px-4 py-3 rounded-lg ${theme.primaryBg} text-white font-semibold hover:opacity-90 transition-opacity`}>
+                  Connect wallet to trade
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+
       </main>
     </div>
   );
