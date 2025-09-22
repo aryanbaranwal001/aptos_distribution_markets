@@ -253,6 +253,26 @@ const MarketInstancePage = () => {
                   </div>
                 </div>
 
+                {/* Delta Values Display */}
+                <div className="mb-4 p-3 rounded-lg border border-gray-500/20" style={{backgroundColor: '#1a1a1f'}}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      <span className={`text-xs font-semibold ${theme.textSecondary}`}>PROPOSED</span>
+                    </div>
+                    <div className="flex items-center space-x-6">
+                      <div className="text-xs">
+                        <span className={`${theme.textSecondary}`}>Δμ:</span>
+                        <span className="font-mono text-white ml-1">{(userMean - market.market_mean).toFixed(3)}</span>
+                      </div>
+                      <div className="text-xs">
+                        <span className={`${theme.textSecondary}`}>Δσ:</span>
+                        <span className="font-mono text-white ml-1">{(userStdDev - market.market_standard_deviation).toFixed(3)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Mean Slider */}
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-2">
