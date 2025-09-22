@@ -128,14 +128,14 @@ const MarketInstancePage = () => {
         </div>
 
         {/* Main Container */}
-        <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-6">
+        <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-6 mb-12">
           {/* Two Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:h-auto">
             
             {/* Left Container - Graph and Data (3/4 width) */}
             <div className="lg:col-span-3">
               {/* Combined Stats, Graph and Market Parameters Container */}
-              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4">
+              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4 h-full flex flex-col">
                 {/* Stats Row - Inline Values */}
                 <div className="grid grid-cols-3 divide-x divide-gray-600/30 mb-4">
                   <div className="pr-4">
@@ -157,8 +157,8 @@ const MarketInstancePage = () => {
 
                 <hr className="border-t border-gray-600/30 mb-4" />
 
-                {/* Graph Section */}
-                <div className="p-8 h-96 mb-4">
+                {/* Graph Section - Flexible Height */}
+                <div className="p-8 flex-1 mb-4 min-h-[400px]">
                   <div className="text-center h-full flex flex-col justify-center">
                     <div className={`text-5xl mb-3 ${theme.textSecondary}`}>📊</div>
                     <h3 className={`text-lg font-semibold mb-2 ${theme.textSecondary}`}>Distribution Graph</h3>
@@ -236,17 +236,17 @@ const MarketInstancePage = () => {
             {/* Right Container - Sidebar (1/4 width) */}
             <div className="lg:col-span-1">
               {/* Trading Panel - Single Container */}
-              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4">
+              <div className="rounded-lg border border-gray-600/30 bg-gray-800/20 p-4 h-full">
                 {/* Trade Actions */}
                 <div className="mb-4">
-                  <div className="grid grid-cols-3 gap-1 p-1 rounded-lg bg-gray-700/30">
-                    <button className={`px-3 py-2 rounded-md ${theme.primaryBg} text-white text-sm font-semibold transition-all duration-200`}>
+                  <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-gray-700/30">
+                    <button className={`px-3 py-2 rounded-lg ${theme.primaryBg} text-white text-sm font-semibold transition-all duration-200`}>
                       Trade
                     </button>
-                    <button className="px-3 py-2 rounded-md hover:bg-gray-600/50 transition-all duration-200 text-sm text-gray-300">
+                    <button className="px-3 py-2 rounded-lg hover:bg-gray-600/50 transition-all duration-200 text-sm text-gray-300">
                       Positions
                     </button>
-                    <button className="px-3 py-2 rounded-md hover:bg-gray-600/50 transition-all duration-200 text-sm text-gray-300">
+                    <button className="px-3 py-2 rounded-lg hover:bg-gray-600/50 transition-all duration-200 text-sm text-gray-300">
                       Add Liquidity
                     </button>
                   </div>
