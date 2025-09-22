@@ -239,14 +239,14 @@ const MarketInstancePage = () => {
               <div className="rounded-lg border border-gray-500/20 p-4 h-full" style={{backgroundColor: '#1a1a1f'}}>
                 {/* Trade Actions */}
                 <div className="mb-4">
-                  <div className="grid grid-cols-3 gap-1 p-1 rounded-xl" style={{backgroundColor: '#2a2a2f'}}>
-                    <button className={`px-3 py-2 rounded-lg ${theme.primaryBg} text-white text-sm font-semibold transition-all duration-200`}>
+                  <div className="flex gap-1 p-1 rounded-xl" style={{backgroundColor: '#2a2a2f'}}>
+                    <button className={`flex-1 py-2 px-1 rounded-xl ${theme.primaryBg} text-white text-xs font-semibold transition-all duration-200`}>
                       Trade
                     </button>
-                    <button className="px-3 py-2 rounded-lg hover:bg-gray-600/50 transition-all duration-200 text-sm text-gray-300">
+                    <button className="flex-1 py-2 px-1 rounded-xl hover:bg-gray-600/50 transition-all duration-200 text-xs text-gray-300">
                       Positions
                     </button>
-                    <button className="px-3 py-2 rounded-lg hover:bg-gray-600/50 transition-all duration-200 text-sm text-gray-300">
+                    <button className="flex-1 py-2 px-1 rounded-xl hover:bg-gray-600/50 transition-all duration-200 text-xs text-gray-300">
                       Add Liquidity
                     </button>
                   </div>
@@ -347,7 +347,7 @@ const MarketInstancePage = () => {
                 <hr className="border-t border-gray-500/20 mb-4" />
 
                 {/* Connect Wallet Button */}
-                <button className={`w-full px-4 py-3 rounded-lg ${theme.primaryBg} text-white font-semibold hover:opacity-90 transition-opacity`}>
+                <button className={`w-full px-4 py-3 rounded-xl ${theme.primaryBg} text-white font-semibold hover:opacity-90 transition-opacity`}>
                   Connect wallet to trade
                 </button>
               </div>
