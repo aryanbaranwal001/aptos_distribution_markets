@@ -142,14 +142,16 @@ const MarketInstancePage = () => {
           <div className="flex items-start space-x-6">
             {/* Market Icon */}
             <div className="flex-shrink-0">
-              <Image 
-                src={iconSrc}
-                alt="Market icon"
-                width={80}
-                height={80}
-                className="w-20 h-20 rounded-full"
-                onError={handleImageError}
-              />
+              {iconSrc && (
+                <Image 
+                  src={iconSrc}
+                  alt="Market icon"
+                  width={80}
+                  height={80}
+                  className="w-20 h-20 rounded-full"
+                  onError={handleImageError}
+                />
+              )}
             </div>
             
             {/* Title and Description */}

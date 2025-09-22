@@ -15,7 +15,7 @@ const MarketCard = ({ market }: MarketCardProps) => {
   const { color } = useThemeStore();
   const [isBookmarked, setIsBookmarked] = useState(market.isBookmarked || false);
   // Start with PNG first, then fallback to SVG
-  const [iconSrc, setIconSrc] = useState(`/icons/${market.iconName.replace('.svg', '.png')}`);
+  const [iconSrc, setIconSrc] = useState(market.iconName ? `/icons/${market.iconName.replace('.svg', '.png')}` : '');
   const [hasError, setHasError] = useState(false);
   
   const theme = getThemeClasses(color);
@@ -48,14 +48,16 @@ const MarketCard = ({ market }: MarketCardProps) => {
       {/* Icon and Market Title */}
       <div className="flex items-start space-x-3 mb-3">
         <div className="flex-shrink-0">
-          <Image 
-            src={iconSrc}
-            alt="Market icon"
-            width={32}
-            height={32}
-            className="w-8 h-8 rounded-full"
-            onError={handleImageError}
-          />
+          {iconSrc && (
+            <Image 
+              src={iconSrc}
+              alt="Market icon"
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full"
+              onError={handleImageError}
+            />
+          )}
         </div>
         <Link href={`/instance/${market.id}`}>
           <h3 className={`text-lg font-semibold ${theme.text} hover:${theme.primary} hover:underline transition-all flex-1 cursor-pointer`}>

@@ -147,14 +147,16 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
               }`}
             >
               <div className="flex-shrink-0">
-                <Image
-                  src={iconSources[market.id] || `/icons/${market.iconName.replace('.svg', '.png')}`}
-                  alt="Market icon"
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 rounded-full"
-                  onError={() => handleImageError(market.id)}
-                />
+                {(iconSources[market.id] || (market.iconName && `/icons/${market.iconName.replace('.svg', '.png')}`)) && (
+                  <Image
+                    src={iconSources[market.id] || `/icons/${market.iconName.replace('.svg', '.png')}`}
+                    alt="Market icon"
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 rounded-full"
+                    onError={() => handleImageError(market.id)}
+                  />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className={`font-medium ${theme.text} truncate`}>
