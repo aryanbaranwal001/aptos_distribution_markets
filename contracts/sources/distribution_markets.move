@@ -542,7 +542,7 @@ module distribution_markets::distribution_markets {
 
     // Public helpers for constructing and reading params/state (useful for tests and clients)
 
-    public(friend) fun make_normal_params(mean: u128, std_dev: u64, mean_is_negative: bool): NormalParams {
+    public fun make_normal_params(mean: u128, std_dev: u64, mean_is_negative: bool): NormalParams {
         NormalParams { mean, std_dev, mean_is_negative }
     }
 
