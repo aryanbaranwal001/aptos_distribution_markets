@@ -691,7 +691,7 @@ module distribution_markets::distribution_markets {
     /// @param to_g Target distribution parameters
     /// @param market_addr Address of the market
     /// @return Cost of the trade
-    public(friend) fun quote_trade(
+    public fun quote_trade(
         from_f: NormalParams,
         to_g: NormalParams,
         market_addr: address,
