@@ -16,13 +16,15 @@ const ThemedIcon = ({ iconName, alt, size = 32, className = "" }: ThemedIconProp
 
   return (
     <div className={`${theme.primary} ${className}`} style={{ filter: 'brightness(0) saturate(100%) invert(1)' }}>
-      <Image 
-        src={`/icons/${iconName}`}
-        alt={alt}
-        width={size}
-        height={size}
-        className="w-full h-full"
-      />
+      {iconName && (
+        <Image 
+          src={`/icons/${iconName}`}
+          alt={alt}
+          width={size}
+          height={size}
+          className="w-full h-full"
+        />
+      )}
     </div>
   );
 };
