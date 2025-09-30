@@ -38,11 +38,11 @@ export default function Home() {
       {/* Landing Navbar */}
       <LandingNavbar />
 
-      {/* Content Overlay */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen">
+      {/* Content Overlay - Pointer events none to allow LiquidEther interaction */}
+      <div className="relative z-10 flex items-center justify-center min-h-screen pointer-events-none">
         <div className="text-center max-w-4xl mx-auto px-6 sm:px-12">
-          {/* Hero Content */}
-          <div className="backdrop-blur-sm bg-black/20 rounded-2xl p-8 sm:p-12 border border-white/10">
+          {/* Hero Content - Re-enable pointer events for interactive elements */}
+          <div className="backdrop-blur-sm bg-black/20 rounded-2xl p-8 sm:p-12 border border-white/10 pointer-events-auto">
             <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold ${theme.text} mb-6`}>
               Welcome to{' '}
               <span className={theme.primary}>Infi Markets</span>
