@@ -16,7 +16,7 @@ const CategoryNav = () => {
   
   // Determine current active category based on URL
   const getCurrentCategory = () => {
-    if (pathname === '/') return 'trending';
+    if (pathname === '/' || pathname === '/trending') return 'trending';
     const pathCategory = pathname?.slice(1); // Remove leading slash
     return categories.includes(pathCategory || '') ? pathCategory : 'trending';
   };
@@ -39,8 +39,8 @@ const CategoryNav = () => {
 
   const handleCategoryClick = (category: string) => {
     if (category === 'trending') {
-      // Trending goes to the home page
-      router.push('/');
+      // Trending goes to the trending page
+      router.push('/trending');
     } else {
       // Other categories go to their specific routes
       router.push(`/${category}`);

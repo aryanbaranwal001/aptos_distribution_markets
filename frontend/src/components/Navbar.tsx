@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Link from 'next/link';
 import { Search, Menu } from 'lucide-react';
 import { WalletSelector } from './WalletSelector';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
@@ -97,12 +98,12 @@ const Navbar = () => {
                     : 'opacity-0 translate-y-[-10px] scale-95 pointer-events-none'
                 } sm:right-0 xs:right-[-12px]`}>
                   <div className="py-2">
-                    <a
+                    <Link
                       href="/dashboard"
                       className={`block px-4 py-2 ${theme.textSecondary} hover:${theme.primary} hover:bg-gray-600/10 transition-colors`}
                     >
                       Dashboard
-                    </a>
+                    </Link>
                     <button
                       onClick={nextColor}
                       className={`w-full text-left px-4 py-2 ${theme.textSecondary} hover:${theme.primary} hover:bg-gray-600/10 transition-colors`}
