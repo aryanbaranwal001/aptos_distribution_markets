@@ -56,9 +56,9 @@ export default function Home() {
             <div className="flex justify-center pointer-events-none">
               <Link 
                 href="/trending"
-                className={`px-10 py-5 rounded-full font-semibold text-xl transition-all backdrop-blur-sm shadow-lg bg-white/5 hover:bg-white/10 border border-white/20 ${theme.primary} pointer-events-auto`}
+                className={`px-8 py-3 rounded-full font-semibold text-xl transition-all backdrop-blur-sm shadow-lg bg-white/5 hover:bg-white/10 border border-white/20 ${theme.primary} pointer-events-auto`}
               >
-                Explore Trending Markets
+                Explore Markets
               </Link>
             </div>
           </div>
