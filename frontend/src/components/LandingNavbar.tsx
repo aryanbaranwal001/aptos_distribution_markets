@@ -23,7 +23,7 @@ const LandingNavbar = () => {
             {/* Theme Toggle */}
             <button
               onClick={nextColor}
-              className={`px-4 py-2 rounded-lg border border-white/20 ${theme.text} hover:bg-white/10 transition-colors backdrop-blur-sm`}
+              className={`px-4 py-2 rounded-lg border border-white/15 ${theme.text} hover:bg-white/10 transition-colors`}
               title={`Current theme: ${color}`}
             >
               <span className="hidden sm:inline">Theme: </span>

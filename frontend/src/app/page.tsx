@@ -43,7 +43,7 @@ export default function Home() {
         <div className="text-center max-w-4xl mx-auto px-6 sm:px-12">
           {/* Hero Content - Allow mouse events to pass through background */}
           <div className=" pointer-events-none">
-            <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold ${theme.text} mb-6`}>
+            <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold ${theme.text} mb-10`}>
               Welcome to{' '}
               <span className={theme.primary}>Infi Markets</span>
             </h1>
