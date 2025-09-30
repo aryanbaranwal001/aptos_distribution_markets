@@ -52,33 +52,14 @@ export default function Home() {
               Trade on real-world events with cutting-edge technology.
             </p>
             
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8 pointer-events-auto">
+            {/* CTA Button */}
+            <div className="flex justify-center pointer-events-auto">
               <Link 
                 href="/trending"
-                className={`px-8 py-4 rounded-lg ${theme.primaryBg} text-black font-semibold text-lg hover:opacity-90 transition-all backdrop-blur-sm shadow-lg`}
+                className={`px-10 py-5 rounded-lg ${theme.primaryBg} text-black font-semibold text-xl hover:opacity-90 transition-all backdrop-blur-sm shadow-lg`}
               >
                 Explore Trending Markets
               </Link>
-              <Link 
-                href="/crypto"
-                className={`px-8 py-4 rounded-lg border-2 border-white/30 ${theme.text} font-semibold text-lg hover:bg-white/10 transition-all backdrop-blur-sm`}
-              >
-                Browse All Categories
-              </Link>
-            </div>
-
-            {/* Quick Links */}
-            <div className="flex flex-wrap justify-center gap-3 pointer-events-auto">
-              {['trending', 'crypto', 'politics', 'sports', 'tech', 'economy'].map((category) => (
-                <Link
-                  key={category}
-                  href={`/${category}`}
-                  className={`px-4 py-2 rounded-full border border-white/20 ${theme.text} hover:bg-white/10 transition-all capitalize backdrop-blur-sm text-sm`}
-                >
-                  {category}
-                </Link>
-              ))}
             </div>
           </div>
         </div>
