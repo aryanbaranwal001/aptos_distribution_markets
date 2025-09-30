@@ -8,7 +8,7 @@ const LandingNavbar = () => {
   const theme = getThemeClasses(color);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/20 border-b border-white/10">
+    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/20 border-b border-white/10 pointer-events-none">
       <div className="px-6 sm:px-12 lg:px-24">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -19,7 +19,7 @@ const LandingNavbar = () => {
           </div>
 
           {/* Right side - Wallet and Theme */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 pointer-events-auto">
             {/* Theme Toggle */}
             <button
               onClick={nextColor}
@@ -33,7 +33,9 @@ const LandingNavbar = () => {
             </button>
 
             {/* Wallet Selector */}
-            <WalletSelector />
+            <div className="pointer-events-auto">
+              <WalletSelector />
+            </div>
           </div>
         </div>
       </div>

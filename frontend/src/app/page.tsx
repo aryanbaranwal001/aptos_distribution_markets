@@ -41,8 +41,8 @@ export default function Home() {
       {/* Content Overlay - Pointer events none to allow LiquidEther interaction */}
       <div className="relative z-10 flex items-center justify-center min-h-screen pointer-events-none">
         <div className="text-center max-w-4xl mx-auto px-6 sm:px-12">
-          {/* Hero Content - Re-enable pointer events for interactive elements */}
-          <div className="backdrop-blur-sm bg-black/20 rounded-2xl p-8 sm:p-12 border border-white/10 pointer-events-auto">
+          {/* Hero Content - Allow mouse events to pass through background */}
+          <div className="backdrop-blur-sm bg-black/20 rounded-2xl p-8 sm:p-12 border border-white/10 pointer-events-none">
             <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold ${theme.text} mb-6`}>
               Welcome to{' '}
               <span className={theme.primary}>Infi Markets</span>
@@ -53,7 +53,7 @@ export default function Home() {
             </p>
             
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8 pointer-events-auto">
               <Link 
                 href="/trending"
                 className={`px-8 py-4 rounded-lg ${theme.primaryBg} text-black font-semibold text-lg hover:opacity-90 transition-all backdrop-blur-sm shadow-lg`}
@@ -69,7 +69,7 @@ export default function Home() {
             </div>
 
             {/* Quick Links */}
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="flex flex-wrap justify-center gap-3 pointer-events-auto">
               {['trending', 'crypto', 'politics', 'sports', 'tech', 'economy'].map((category) => (
                 <Link
                   key={category}
