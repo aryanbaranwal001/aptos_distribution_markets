@@ -14,8 +14,8 @@ interface MarketCardProps {
 const MarketCard = ({ market }: MarketCardProps) => {
   const { color } = useThemeStore();
   const [isBookmarked, setIsBookmarked] = useState(market.isBookmarked || false);
-  // Start with PNG first, then fallback to SVG
-  const [iconSrc, setIconSrc] = useState(market.iconName ? `/icons/${market.iconName.replace('.svg', '.png')}` : '');
+  // Use PNG directly
+  const [iconSrc, setIconSrc] = useState(market.iconName ? `/icons/${market.iconName.replace('.svg', '.png')}` : '/icons/default.png');
   const [hasError, setHasError] = useState(false);
   
   const theme = getThemeClasses(color);
@@ -34,9 +34,8 @@ const MarketCard = ({ market }: MarketCardProps) => {
   const handleImageError = () => {
     if (!hasError) {
       setHasError(true);
-      // Try SVG fallback by replacing .png with .svg
-      const svgSrc = iconSrc.replace('.png', '.svg');
-      setIconSrc(svgSrc);
+      // Use default icon when PNG fails to load
+      setIconSrc('/icons/default.png');
     }
   };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -25,13 +25,18 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
 
   const { data, loading, error } = useSearchMarkets(searchQuery, 1, 10);
 
-  const results = data?.markets || [];
+  // Memoize results to prevent infinite re-renders
+  const results = useMemo(() => data?.markets || [], [data?.markets]);
 
   useEffect(() => {
     if (searchQuery.trim() && results.length > 0) {
       const newIconSources: Record<string, string> = {};
       results.slice(0, 8).forEach(market => {
-        newIconSources[market.id] = `/icons/${market.iconName.replace('.svg', '.png')}`;
+        if (market.iconName) {
+          // Use PNG directly, no SVG fallback needed
+          const iconName = market.iconName.replace('.svg', '.png');
+          newIconSources[market.id] = `/icons/${iconName}`;
+        }
       });
       setIconSources(newIconSources);
       setIconErrors({});
@@ -51,9 +56,8 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
   const handleImageError = (marketId: string) => {
     if (!iconErrors[marketId]) {
       setIconErrors(prev => ({ ...prev, [marketId]: true }));
-      const currentSrc = iconSources[marketId];
-      const svgSrc = currentSrc.replace('.png', '.svg');
-      setIconSources(prev => ({ ...prev, [marketId]: svgSrc }));
+      // Set to default icon when PNG fails to load
+      setIconSources(prev => ({ ...prev, [marketId]: '/icons/default.png' }));
     }
   };
 
@@ -147,16 +151,14 @@ const SearchResults = ({ onClose }: SearchResultsProps) => {
               }`}
             >
               <div className="flex-shrink-0">
-                {(iconSources[market.id] || (market.iconName && `/icons/${market.iconName.replace('.svg', '.png')}`)) && (
-                  <Image
-                    src={iconSources[market.id] || `/icons/${market.iconName.replace('.svg', '.png')}`}
-                    alt="Market icon"
-                    width={32}
-                    height={32}
-                    className="w-8 h-8 rounded-full"
-                    onError={() => handleImageError(market.id)}
-                  />
-                )}
+                <Image
+                  src={iconSources[market.id] || (market.iconName ? `/icons/${market.iconName.replace('.svg', '.png')}` : '/icons/default.png')}
+                  alt="Market icon"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full"
+                  onError={() => handleImageError(market.id)}
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <div className={`font-medium ${theme.text} truncate`}>

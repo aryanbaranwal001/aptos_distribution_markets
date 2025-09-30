@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import NormalDistributionChart from '@/components/NormalDistributionChart';
-import { Market, formatDate } from '@/data/markets';
+import { formatDate } from '@/data/markets';
 import { useMarket } from '@/hooks/useMarkets';
 import Navbar from '@/components/Navbar';
 import CategoryNav from '@/components/CategoryNav';
@@ -66,8 +66,8 @@ const MarketInstancePage = () => {
     if (market) {
       setIsBookmarked(market.isBookmarked || false);
       
-      // Set initial icon source - try PNG first, fallback to SVG
-      const pngSrc = `/icons/${market.iconName.replace('.svg', '.png')}`;
+      // Set initial icon source - use PNG directly
+      const pngSrc = market.iconName ? `/icons/${market.iconName.replace('.svg', '.png')}` : '/icons/default.png';
       setIconSrc(pngSrc);
       
       // Initialize sliders to center positions for zero delta
@@ -77,10 +77,10 @@ const MarketInstancePage = () => {
   }, [market]);
 
   const handleImageError = () => {
-    if (!hasError && market) {
+    if (!hasError) {
       setHasError(true);
-      const svgSrc = iconSrc.replace('.png', '.svg');
-      setIconSrc(svgSrc);
+      // Use default icon when PNG fails to load
+      setIconSrc('/icons/default.png');
     }
   };
 

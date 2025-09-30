@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAppStore } from '@/store/appStore';
 import { useMarkets } from '@/hooks/useMarkets';
 import MarketCard from './MarketCard';
@@ -14,14 +14,17 @@ const MarketGrid = () => {
   
   const theme = getThemeClasses(color);
   
-  // Use the new API hook
-  const { data, loading, error } = useMarkets({
+  // Memoize the params object to prevent infinite re-renders
+  const marketsParams = useMemo(() => ({
     category: activeCategory === 'all' ? undefined : activeCategory,
     page,
     limit,
     sort: 'volume',
-    order: 'desc'
-  });
+    order: 'desc' as const
+  }), [activeCategory, page, limit]);
+  
+  // Use the new API hook
+  const { data, loading, error } = useMarkets(marketsParams);
   
   const markets = data?.markets || [];
   const pagination = data?.pagination;
