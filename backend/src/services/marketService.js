@@ -87,7 +87,7 @@ class MarketService {
         let filteredMarkets = [...mockMarkets];
 
         // Apply category filter
-        if (category && category !== 'trending') {
+        if (category) {
           filteredMarkets = filteredMarkets.filter(market => 
             market.categories.includes(category)
           );
@@ -123,7 +123,7 @@ class MarketService {
           let query = db.collection(COLLECTIONS.MARKETS_MINIMAL);
 
           // Apply category filter
-          if (category && category !== 'trending') {
+          if (category) {
             query = query.where('categories', 'array-contains', category);
           }
 
@@ -170,7 +170,7 @@ class MarketService {
           let filteredMarkets = [...mockMarkets];
 
           // Apply category filter
-          if (category && category !== 'trending') {
+          if (category) {
             filteredMarkets = filteredMarkets.filter(market => 
               market.categories.includes(category)
             );

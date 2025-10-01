@@ -1,4 +1,5 @@
 const { db, COLLECTIONS } = require('../src/config/firebase');
+const http = require('http');
 
 // Test all API endpoints and functionality
 async function verifySystem() {

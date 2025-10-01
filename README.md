@@ -121,8 +121,13 @@ Complete market data with all statistical parameters for detailed views.
 #### `markets_minimal`
 Optimized market data for listing views with essential fields only.
 
+#### `categories`
+Category metadata and statistics.
+
 ### Mock Data
 For development without Firebase, the backend uses mock data with sample Bitcoin and Election prediction markets.
+
+> **📋 Complete Firebase Documentation**: See [FIREBASE_DETAILED.md](./FIREBASE_DETAILED.md) for comprehensive Firebase integration details, API patterns, troubleshooting, and maintenance procedures.
 
 ## 🎨 Frontend Features
 
