@@ -134,7 +134,7 @@ const MarketInstancePage = () => {
       
       {/* Market Content */}
       <main className={`pt-16 transition-all duration-300 ${
-        isChatOpen ? 'px-6 max-w-5xl' : 'px-4 max-w-7xl'
+        isChatOpen ? 'px-6 max-w-7xl' : 'px-4 max-w-7xl'
       } mx-auto`}>
         {/* Back Button */}
         <div className="mb-6">
