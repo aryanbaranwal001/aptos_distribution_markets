@@ -479,17 +479,16 @@ module distribution_markets::distribution_markets {
         settlement
     }
 
-    /// Verify off-chain calculated minimum collateral using derivatives
-    /// This function verifies that the provided minimum point and derivatives are correct
-    /// for the collateral calculation: min_x g(x) - f(x) when moving AMM from h = b - f to h2 = b - g
+    /// Verify off-chain calculated minimum collateral using nearby point comparison
+    /// This function verifies that the provided minimum point and value are correct
+    /// by checking that points at x0 ± σ/2 have higher values than the claimed minimum
+    /// for the collateral calculation: min_x |g(x) - f(x)| when moving AMM from h = b - f to h2 = b - g
     public fun verify_min_collateral_calculation(
         market_addr: address,
         from_params: NormalParams,
         to_params: NormalParams,
         min_point: u128,
         min_point_is_negative: bool,
-        first_derivative: u128,
-        second_derivative: u128,
         min_value: u128
     ): bool acquires Market {
         let market = borrow_global<Market>(market_addr);
@@ -498,7 +497,7 @@ module distribution_markets::distribution_markets {
         assert!(validate_normal_params(&from_params, market), EINVALID_PARAMS);
         assert!(validate_normal_params(&to_params, market), EINVALID_PARAMS);
 
-        // Calculate g(min_point) - f(min_point)
+        // Calculate g(min_point) - f(min_point) to verify the claimed minimum value
         let g_at_point = math_utils::normal_pdf(
             min_point,
             to_params.mean,
@@ -525,15 +524,78 @@ module distribution_markets::distribution_markets {
         let tolerance = min_value / 1000000; // 0.0001% tolerance
         let min_value_matches = math_utils::fp_approx_equal(diff_at_point, min_value, tolerance);
 
-        // Verify critical point condition: first derivative ≈ 0
-        let derivative_tolerance = math_utils::get_precision() / 1000000; // Small tolerance for derivative
-        let is_critical_point = math_utils::fp_approx_equal(first_derivative, 0, derivative_tolerance);
+        // Use average standard deviation for the offset calculation
+        let avg_std_dev = ((to_params.std_dev + from_params.std_dev) / 2 as u128);
+        let offset = avg_std_dev / 2; // σ/2 offset
 
-        // Verify minimum condition: second derivative > 0
-        let is_minimum = second_derivative > 0;
+        // Calculate test points: x0 + σ/2 and x0 - σ/2
+        let (point_plus, point_plus_is_negative) = if (min_point_is_negative) {
+            if (min_point >= offset) {
+                (min_point - offset, true) // More negative
+            } else {
+                (offset - min_point, false) // Crosses to positive
+            }
+        } else {
+            (min_point + offset, false) // More positive
+        };
 
-        // All three conditions must be satisfied for a valid minimum
-        min_value_matches && is_critical_point && is_minimum
+        let (point_minus, point_minus_is_negative) = if (min_point_is_negative) {
+            (min_point + offset, true) // Less negative
+        } else {
+            if (min_point >= offset) {
+                (min_point - offset, false) // Less positive
+            } else {
+                (offset - min_point, true) // Crosses to negative
+            }
+        };
+
+        // Calculate |g(x) - f(x)| at x0 + σ/2
+        let g_at_plus = math_utils::normal_pdf(
+            point_plus,
+            to_params.mean,
+            (to_params.std_dev as u128),
+            point_plus_is_negative,
+            to_params.mean_is_negative
+        );
+        let f_at_plus = math_utils::normal_pdf(
+            point_plus,
+            from_params.mean,
+            (from_params.std_dev as u128),
+            point_plus_is_negative,
+            from_params.mean_is_negative
+        );
+        let diff_at_plus = if (g_at_plus >= f_at_plus) {
+            g_at_plus - f_at_plus
+        } else {
+            f_at_plus - g_at_plus
+        };
+
+        // Calculate |g(x) - f(x)| at x0 - σ/2
+        let g_at_minus = math_utils::normal_pdf(
+            point_minus,
+            to_params.mean,
+            (to_params.std_dev as u128),
+            point_minus_is_negative,
+            to_params.mean_is_negative
+        );
+        let f_at_minus = math_utils::normal_pdf(
+            point_minus,
+            from_params.mean,
+            (from_params.std_dev as u128),
+            point_minus_is_negative,
+            from_params.mean_is_negative
+        );
+        let diff_at_minus = if (g_at_minus >= f_at_minus) {
+            g_at_minus - f_at_minus
+        } else {
+            f_at_minus - g_at_minus
+        };
+
+        // Verify that both nearby points have higher values than the claimed minimum
+        let nearby_points_higher = (diff_at_plus >= min_value) && (diff_at_minus >= min_value);
+
+        // All conditions must be satisfied for a valid minimum
+        min_value_matches && nearby_points_higher
     }
 
     // ==============================
