@@ -126,12 +126,16 @@ function transformMarketData(market) {
     mu_per_one: market.mu_per_one,
     sigma_per_one: market.sigma_per_one,
     x_axis_field_name: market.x_axis_field_name,
-    x_axis_short_form: market.x_axis_short_form
+    x_axis_short_form: market.x_axis_short_form,
+    aicontext: market.aicontext || "" // Include AI context for chat functionality
   };
 
   // Minimal market data (for list views)
   const minimalData = {
-    ...baseData
+    ...baseData,
+    // Include some key fields for search and filtering
+    market_mean: market.market_mean,
+    market_standard_deviation: market.market_standard_deviation
   };
 
   return { fullData, minimalData };

@@ -1,5 +1,5 @@
 const { db, COLLECTIONS } = require('../config/firebase');
-const { getCachedData, setCachedData } = require('../config/cache');
+const { getCachedData, setCachedData, CACHE_KEYS, cache } = require('../config/cache');
 
 // Mock data for development when Firebase is not available
 const mockMarkets = [
@@ -248,12 +248,12 @@ class MarketService {
         console.log('📝 Using mock data for single market');
         market = mockMarkets.find(m => m.id === id);
       } else {
-        // Try minimal collection first
-        let doc = await db.collection(COLLECTIONS.MARKETS_MINIMAL).doc(id).get();
+        // Try full collection first for complete data including AI context
+        let doc = await db.collection(COLLECTIONS.MARKETS_FULL).doc(id).get();
         
         if (!doc.exists) {
-          // Try full collection
-          doc = await db.collection(COLLECTIONS.MARKETS_FULL).doc(id).get();
+          // Fallback to minimal collection
+          doc = await db.collection(COLLECTIONS.MARKETS_MINIMAL).doc(id).get();
         }
 
         if (doc.exists) {

@@ -7,6 +7,10 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed": "node scripts/seedDatabase.js",
+    "seed:latest": "node scripts/seedFromJSON.js",
+    "seed:all": "node scripts/seedAllMarkets.js",
+    "verify": "node scripts/verifyDatabase.js",
+    "verify:system": "node scripts/verifySystem.js",
     "test": "jest",
     "lint": "eslint src/"
   },
@@ -31,6 +35,7 @@
     "joi": "^17.11.0",
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
+    "node-fetch": "^3.3.2",
     "openai": "^4.104.0"
   },
   "devDependencies": {
