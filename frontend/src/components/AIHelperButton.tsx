@@ -15,17 +15,14 @@ export default function AIHelperButton({ onToggleChat, isChatOpen }: AIHelperBut
   const theme = getThemeClasses(color);
 
   const handleClick = () => {
-    console.log('🤖 AI Helper button clicked! Current state:', isChatOpen);
     onToggleChat();
   };
 
   const handleMouseEnter = () => {
-    console.log('🤖 AI Helper button hovered!');
     setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    console.log('🤖 AI Helper button hover ended');
     setIsHovered(false);
   };
 

@@ -530,14 +530,6 @@ const MarketInstancePage = () => {
 
                     <hr className="border-t border-gray-500/20 mb-2" />
 
-                    {/* Liquidity Provider Risk */}
-                    <div className="mb-2">
-                      <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide text-yellow-400">LIQUIDITY PROVIDER RISK</h3>
-                      <p className="text-xs text-gray-400 leading-relaxed">
-                        Risk of impermanent loss, market volatility, and smart contract vulnerabilities.
-                      </p>
-                    </div>
-
                     {/* Add Liquidity Button */}
                     <button 
                       className={`w-full px-4 py-3 rounded-xl ${theme.primaryBg} text-black font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
