@@ -1,14 +1,23 @@
 const OpenAI = require('openai');
 
-// Initialize OpenAI client with OpenRouter configuration
-const openai = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.OPEN_ROUTER_API_KEY,
-  defaultHeaders: {
-    'HTTP-Referer': 'https://aptos-distribution-markets.com',
-    'X-Title': 'Aptos Distribution Markets',
-  },
-});
+// Function to create OpenAI client with OpenRouter configuration
+const createOpenAIClient = () => {
+  // Use OPENAI_API_KEY (which contains the OpenRouter key) since that's what you have in .env
+  const apiKey = process.env.OPENAI_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY is not configured');
+  }
+  
+  return new OpenAI({
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey: apiKey,
+    defaultHeaders: {
+      'HTTP-Referer': 'https://aptos-distribution-markets.com',
+      'X-Title': 'Aptos Distribution Markets',
+    },
+  });
+};
 
 class ChatController {
   async chat(req, res, next) {
@@ -57,7 +66,8 @@ Please provide helpful, accurate information about this market. Be concise but i
         content: message
       });
 
-      // Call OpenRouter API
+      // Create OpenAI client and call OpenRouter API
+      const openai = createOpenAIClient();
       const completion = await openai.chat.completions.create({
         model: 'deepseek/deepseek-chat-v3.1:free',
         messages: messages,
