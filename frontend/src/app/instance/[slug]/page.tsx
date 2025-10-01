@@ -131,9 +131,14 @@ const MarketInstancePage = () => {
       <CategoryNav />
       
       {/* Market Content */}
-      <main className={`pt-16 transition-all duration-300 ${
-        isChatOpen ? 'px-6 max-w-7xl mr-96' : 'px-4 max-w-7xl'
-      } mx-auto`}>
+      <main 
+        className="pt-16 px-4 max-w-7xl transition-all duration-300"
+        style={{
+          marginLeft: 'auto',
+          marginRight: isChatOpen ? 'calc(384px + auto)' : 'auto',
+          transform: isChatOpen ? 'translateX(-192px)' : 'translateX(0)', // Half of chat width to center
+        }}
+      >
         {/* Back Button */}
         <div className="mb-6">
           <Link href="/" className={`inline-flex items-center space-x-2 p-2 rounded-lg ${theme.hoverBg} transition-colors`}>
