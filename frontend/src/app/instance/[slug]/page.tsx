@@ -11,6 +11,8 @@ import { formatDate } from '@/data/markets';
 import { useMarket } from '@/hooks/useMarkets';
 import Navbar from '@/components/Navbar';
 import CategoryNav from '@/components/CategoryNav';
+import AIHelperButton from '@/components/AIHelperButton';
+import AIChatSidebar from '@/components/AIChatSidebar';
 
 const MarketInstancePage = () => {
   const params = useParams();
@@ -19,6 +21,7 @@ const MarketInstancePage = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [iconSrc, setIconSrc] = useState('');
   const [hasError, setHasError] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   
   // Use the new API hook
   const { data: market, loading, error } = useMarket(marketId);
@@ -128,7 +131,9 @@ const MarketInstancePage = () => {
       <CategoryNav />
       
       {/* Market Content */}
-      <main className="pt-16 px-4 max-w-7xl mx-auto">
+      <main className={`pt-16 px-4 max-w-7xl mx-auto transition-all duration-300 ${
+        isChatOpen ? 'mr-96' : 'mr-0'
+      }`}>
         {/* Back Button */}
         <div className="mb-6">
           <Link href="/" className={`inline-flex items-center space-x-2 p-2 rounded-lg ${theme.hoverBg} transition-colors`}>
@@ -547,6 +552,19 @@ const MarketInstancePage = () => {
       
       {/* Bottom Spacer */}
       <div className="h-20"></div>
+      
+      {/* AI Chat Sidebar */}
+      <AIChatSidebar 
+        isOpen={isChatOpen} 
+        marketId={marketId || ''} 
+        aiContext={market?.aicontext || ''} 
+      />
+      
+      {/* AI Helper Button */}
+      <AIHelperButton 
+        onToggleChat={() => setIsChatOpen(!isChatOpen)} 
+        isChatOpen={isChatOpen} 
+      />
     </div>
   );
 };

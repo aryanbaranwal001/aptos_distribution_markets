@@ -1,5 +1,6 @@
 const express = require('express');
 const marketRoutes = require('./marketRoutes');
+const chatRoutes = require('./chatRoutes');
 
 const router = express.Router();
 
@@ -15,5 +16,6 @@ router.get('/health', (req, res) => {
 
 // API routes
 router.use('/markets', marketRoutes);
+router.use('/chat', chatRoutes);
 
 module.exports = router;

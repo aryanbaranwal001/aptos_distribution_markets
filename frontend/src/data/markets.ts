@@ -24,6 +24,7 @@ export interface Market {
   sigma_per_one: number;
   x_axis_field_name: string;
   x_axis_short_form: string;
+  aicontext: string;
 }
 
 export const markets: Market[] = [
@@ -51,7 +52,8 @@ export const markets: Market[] = [
     mu_per_one: 0.83,
     sigma_per_one: 0.21,
     x_axis_field_name: "APT Price (USD)",
-    x_axis_short_form: "APT Price"
+    x_axis_short_form: "APT Price",
+    aicontext: "This is a distribution market for Aptos (APT) token price prediction. APT is the native token of the Aptos blockchain, a Layer 1 blockchain focused on safety and scalability. The market is asking whether APT will reach $8 by the end of December 2025. Current factors affecting APT price include: blockchain adoption, developer ecosystem growth, DeFi protocols built on Aptos, institutional partnerships, and overall crypto market sentiment. The distribution shows the probability of different price outcomes, with users able to trade on their predictions about APT's future value."
   },
 
   {
@@ -78,7 +80,8 @@ export const markets: Market[] = [
     mu_per_one: 0.75,
     sigma_per_one: 0.15,
     x_axis_field_name: "Bitcoin Price (USD)",
-    x_axis_short_form: "BTC Price"
+    x_axis_short_form: "BTC Price",
+    aicontext: "This is a distribution market predicting whether Bitcoin (BTC) will reach $100,000 by the end of 2024. Bitcoin is the world's first and largest cryptocurrency by market cap. Key factors influencing Bitcoin's price include: institutional adoption, regulatory developments, macroeconomic conditions, inflation hedging demand, mining dynamics, and market sentiment. The $100k target represents a significant psychological and technical milestone. Users can trade on different probability outcomes for Bitcoin reaching this price level within the specified timeframe."
   },
   {
     id: "3",
@@ -104,7 +107,8 @@ export const markets: Market[] = [
     mu_per_one: 0.52,
     sigma_per_one: 0.12,
     x_axis_field_name: "Probability of Victory",
-    x_axis_short_form: "Win Prob"
+    x_axis_short_form: "Win Prob",
+    aicontext: ""
   },
   {
     id: "4",
@@ -130,7 +134,8 @@ export const markets: Market[] = [
     mu_per_one: 0.28,
     sigma_per_one: 0.15,
     x_axis_field_name: "Announcement Probability",
-    x_axis_short_form: "Announce Prob"
+    x_axis_short_form: "Announce Prob",
+    aicontext: ""
   },
   {
     id: "5",
@@ -156,7 +161,8 @@ export const markets: Market[] = [
     mu_per_one: 0.35,
     sigma_per_one: 0.18,
     x_axis_field_name: "Release Probability",
-    x_axis_short_form: "Release Prob"
+    x_axis_short_form: "Release Prob",
+    aicontext: ""
   },
   {
     id: "6",
@@ -182,7 +188,8 @@ export const markets: Market[] = [
     mu_per_one: 0.75,
     sigma_per_one: 0.20,
     x_axis_field_name: "Units Sold",
-    x_axis_short_form: "Units"
+    x_axis_short_form: "Units",
+    aicontext: ""
   },
 
   {
@@ -209,7 +216,8 @@ export const markets: Market[] = [
     mu_per_one: 0.71,
     sigma_per_one: 0.18,
     x_axis_field_name: "Number of Cities",
-    x_axis_short_form: "Cities"
+    x_axis_short_form: "Cities",
+    aicontext: ""
   },
 
   // New Markets
@@ -237,7 +245,8 @@ export const markets: Market[] = [
     mu_per_one: 0.48,
     sigma_per_one: 0.16,
     x_axis_field_name: "Beat Probability",
-    x_axis_short_form: "Beat Prob"
+    x_axis_short_form: "Beat Prob",
+    aicontext: ""
   },
   {
     id: "11",
@@ -263,7 +272,8 @@ export const markets: Market[] = [
     mu_per_one: 0.32,
     sigma_per_one: 0.18,
     x_axis_field_name: "Recession Probability",
-    x_axis_short_form: "Recession Prob"
+    x_axis_short_form: "Recession Prob",
+    aicontext: ""
   },
 
   // Politics Markets
@@ -291,7 +301,8 @@ export const markets: Market[] = [
     mu_per_one: 0.45,
     sigma_per_one: 0.19,
     x_axis_field_name: "Election Probability",
-    x_axis_short_form: "Election Prob"
+    x_axis_short_form: "Election Prob",
+    aicontext: ""
   },
   {
     id: "13",
@@ -317,7 +328,8 @@ export const markets: Market[] = [
     mu_per_one: 0.85,
     sigma_per_one: 0.084,
     x_axis_field_name: "Seat Percentage",
-    x_axis_short_form: "Seats %"
+    x_axis_short_form: "Seats %",
+    aicontext: ""
   },
 
   // Sports Markets
@@ -345,7 +357,8 @@ export const markets: Market[] = [
     mu_per_one: 0.18,
     sigma_per_one: 0.12,
     x_axis_field_name: "Win Probability",
-    x_axis_short_form: "Win Prob"
+    x_axis_short_form: "Win Prob",
+    aicontext: ""
   },
   {
     id: "15",
@@ -371,7 +384,8 @@ export const markets: Market[] = [
     mu_per_one: 0.15,
     sigma_per_one: 0.08,
     x_axis_field_name: "Championship Probability",
-    x_axis_short_form: "Champ Prob"
+    x_axis_short_form: "Champ Prob",
+    aicontext: ""
   },
 
   // Crypto Markets
@@ -399,7 +413,8 @@ export const markets: Market[] = [
     mu_per_one: 0.64,
     sigma_per_one: 0.16,
     x_axis_field_name: "Staking Rate (%)",
-    x_axis_short_form: "Staking %"
+    x_axis_short_form: "Staking %",
+    aicontext: ""
   },
   {
     id: "17",
@@ -425,7 +440,8 @@ export const markets: Market[] = [
     mu_per_one: 0.38,
     sigma_per_one: 0.16,
     x_axis_field_name: "Bull Run Probability",
-    x_axis_short_form: "Bull Run Prob"
+    x_axis_short_form: "Bull Run Prob",
+    aicontext: ""
   },
 
   // Earnings Markets
@@ -453,7 +469,8 @@ export const markets: Market[] = [
     mu_per_one: 0.87,
     sigma_per_one: 0.059,
     x_axis_field_name: "Revenue (Billion USD)",
-    x_axis_short_form: "Revenue"
+    x_axis_short_form: "Revenue",
+    aicontext: ""
   },
   {
     id: "19",
@@ -479,7 +496,8 @@ export const markets: Market[] = [
     mu_per_one: 0.66,
     sigma_per_one: 0.15,
     x_axis_field_name: "Growth Rate (%)",
-    x_axis_short_form: "Growth %"
+    x_axis_short_form: "Growth %",
+    aicontext: ""
   },
 
   // Geopolitics Markets
@@ -507,7 +525,8 @@ export const markets: Market[] = [
     mu_per_one: 0.72,
     sigma_per_one: 0.11,
     x_axis_field_name: "Stability Probability",
-    x_axis_short_form: "Stability Prob"
+    x_axis_short_form: "Stability Prob",
+    aicontext: ""
   },
   {
     id: "21",
@@ -533,7 +552,8 @@ export const markets: Market[] = [
     mu_per_one: 0.25,
     sigma_per_one: 0.14,
     x_axis_field_name: "Resolution Probability",
-    x_axis_short_form: "Resolution Prob"
+    x_axis_short_form: "Resolution Prob",
+    aicontext: ""
   },
 
   // Tech Markets
@@ -561,7 +581,8 @@ export const markets: Market[] = [
     mu_per_one: 0.38,
     sigma_per_one: 0.17,
     x_axis_field_name: "Target Achievement Probability",
-    x_axis_short_form: "Target Prob"
+    x_axis_short_form: "Target Prob",
+    aicontext: ""
   },
   {
     id: "23",
@@ -587,7 +608,8 @@ export const markets: Market[] = [
     mu_per_one: 0.22,
     sigma_per_one: 0.13,
     x_axis_field_name: "ROI Probability",
-    x_axis_short_form: "ROI Prob"
+    x_axis_short_form: "ROI Prob",
+    aicontext: ""
   },
 
   // World Markets
@@ -615,7 +637,8 @@ export const markets: Market[] = [
     mu_per_one: 0.35,
     sigma_per_one: 0.16,
     x_axis_field_name: "Achievement Probability",
-    x_axis_short_form: "Achievement Prob"
+    x_axis_short_form: "Achievement Prob",
+    aicontext: ""
   },
   {
     id: "25",
@@ -641,7 +664,8 @@ export const markets: Market[] = [
     mu_per_one: 0.42,
     sigma_per_one: 0.18,
     x_axis_field_name: "Membership Probability",
-    x_axis_short_form: "Membership Prob"
+    x_axis_short_form: "Membership Prob",
+    aicontext: ""
   },
 
   // Economy Markets
@@ -669,7 +693,8 @@ export const markets: Market[] = [
     mu_per_one: 0.74,
     sigma_per_one: 0.11,
     x_axis_field_name: "Interest Rate (%)",
-    x_axis_short_form: "Rate %"
+    x_axis_short_form: "Rate %",
+    aicontext: ""
   },
 
 

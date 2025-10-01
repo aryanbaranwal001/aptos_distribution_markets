@@ -24,7 +24,8 @@
     "joi": "^17.11.0",
     "express-validator": "^7.0.1",
     "node-cache": "^5.1.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "openai": "^4.20.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
