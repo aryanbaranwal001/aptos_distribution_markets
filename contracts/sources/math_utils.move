@@ -31,38 +31,66 @@ module distribution_markets::math_utils {
     // ==============================
 
     /// Multiply two fixed-point numbers
+    #[view]
     public fun fp_mul(a: u128, b: u128): u128 {
-        (a * b) / PRECISION
+        // Use 256-bit arithmetic to prevent overflow
+        let a_256 = (a as u256);
+        let b_256 = (b as u256);
+        let precision_256 = (PRECISION as u256);
+        
+        let result_256 = (a_256 * b_256) / precision_256;
+        
+        // Check if result fits in u128
+        assert!(result_256 <= (340282366920938463463374607431768211455 as u256), EOVERFLOW);
+        
+        (result_256 as u128)
     }
 
     /// Divide two fixed-point numbers
+    #[view]
     public fun fp_div(a: u128, b: u128): u128 {
         assert!(b != 0, EDIVISION_BY_ZERO);
-        (a * PRECISION) / b
+        
+        // Use 256-bit arithmetic to prevent overflow
+        let a_256 = (a as u256);
+        let precision_256 = (PRECISION as u256);
+        let b_256 = (b as u256);
+        
+        let result_256 = (a_256 * precision_256) / b_256;
+        
+        // Check if result fits in u128
+        assert!(result_256 <= (340282366920938463463374607431768211455 as u256), EOVERFLOW);
+        
+        (result_256 as u128)
     }
 
     /// Add two fixed-point numbers
+    #[view]
     public fun fp_add(a: u128, b: u128): u128 {
         a + b
     }
 
     /// Subtract two fixed-point numbers (a - b)
+    #[view]
     public fun fp_sub(a: u128, b: u128): u128 {
         assert!(a >= b, EOVERFLOW);
         a - b
     }
 
     /// Square a fixed-point number
+    #[view]
     public fun fp_square(a: u128): u128 {
         fp_mul(a, a)
     }
 
     /// Convert regular integer to fixed-point
+    #[view]
     public fun to_fixed_point(a: u64): u128 {
         (a as u128) * PRECISION
     }
 
     /// Convert fixed-point to regular integer (truncating decimals)
+    #[view]
     public fun from_fixed_point(a: u128): u64 {
         (a / PRECISION as u64)
     }
@@ -72,6 +100,7 @@ module distribution_markets::math_utils {
     // ==============================
 
     /// Calculate square root using Newton's method (fixed-point)
+    #[view]
     public fun fp_sqrt(x: u128): u128 {
         if (x == 0) return 0;
         
@@ -144,6 +173,7 @@ module distribution_markets::math_utils {
 
     /// Calculate the probability density function of normal distribution
     /// PDF(x) = (1 / (σ * sqrt(2π))) * e^(-0.5 * ((x - μ) / σ)²)
+    #[view]
     public fun normal_pdf(x: u128, mean: u128, std_dev: u128, x_is_negative: bool, mean_is_negative: bool): u128 {
         assert!(std_dev > 0, EINVALID_INPUT);
         
@@ -228,6 +258,7 @@ module distribution_markets::math_utils {
     // ==============================
 
     /// Get the precision constant
+    #[view]
     public fun get_precision(): u128 {
         PRECISION
     }

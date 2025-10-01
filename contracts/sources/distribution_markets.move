@@ -160,7 +160,6 @@ module distribution_markets::distribution_markets {
         initial_lp: address,
     }
 
-    // Note: PositionMinted and PositionRedeemed events removed - use LiquidityAdded/LiquidityRemoved instead
 
     #[event]
     /// Event emitted when a trade occurs
@@ -314,9 +313,6 @@ module distribution_markets::distribution_markets {
         market_addr
     }
 
-    // Note: mint and redeem functions removed - use add_liquidity/remove_liquidity instead
-    // These are special cases where y = 1 (single unit of liquidity)
-
     // ==============================
     // View Functions
     // ==============================
@@ -379,7 +375,7 @@ module distribution_markets::distribution_markets {
     // ==============================
 
     /// Get the protocol-level invariant constant K
-    /// This is the same for all markets in the protocol
+    /// This is the same for all markets in the protocol - Done
     #[view]
     public fun get_protocol_invariant(): u128 {
         PROTOCOL_INVARIANT_K
