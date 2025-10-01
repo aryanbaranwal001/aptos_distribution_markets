@@ -18,7 +18,7 @@ app.use(helmet());
 // CORS configuration
 app.use(cors({
   origin: '*',
-  credentials: true,
+  credentials: false,
   optionsSuccessStatus: 200
 }));
 
@@ -65,11 +65,12 @@ app.use(notFound);
 app.use(errorHandler);
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 API Base URL: ${process.env.API_BASE_URL || '/api/v1'}`);
   console.log(`🌐 CORS Origin: ${process.env.CORS_ORIGIN || 'http://localhost:3000'}`);
+  console.log(`🌍 Network access: http://10.81.15.31:${PORT}`);
 });
 
 module.exports = app;

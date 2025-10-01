@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { useThemeStore } from '../store/themeStore';
 
@@ -11,7 +11,24 @@ interface AIHelperButtonProps {
 
 export default function AIHelperButton({ onToggleChat, isChatOpen }: AIHelperButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [showWaveAnimation, setShowWaveAnimation] = useState(true);
   const { color } = useThemeStore();
+
+  // Stop wave animation after 5 seconds on page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWaveAnimation(false);
+    }, 5000); // 5 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Reset hover state when chat opens/closes to prevent tooltip from showing
+  useEffect(() => {
+    if (isChatOpen) {
+      setIsHovered(false);
+    }
+  }, [isChatOpen]);
 
   const handleClick = () => {
     onToggleChat();
@@ -57,8 +74,8 @@ export default function AIHelperButton({ onToggleChat, isChatOpen }: AIHelperBut
       {!isChatOpen && (
         <button
           onClick={handleClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={!isChatOpen ? handleMouseEnter : undefined}
+          onMouseLeave={!isChatOpen ? handleMouseLeave : undefined}
           className={`
             relative w-14 h-14 rounded-full shadow-lg transition-all duration-300 ease-in-out
             hover:scale-110 hover:shadow-xl
@@ -87,8 +104,8 @@ export default function AIHelperButton({ onToggleChat, isChatOpen }: AIHelperBut
         </button>
       )}
 
-      {/* Pulse animation when not hovered and chat is closed */}
-      {!isHovered && !isChatOpen && (
+      {/* Pulse animation when not hovered and chat is closed - only for first 5 seconds */}
+      {!isHovered && !isChatOpen && showWaveAnimation && (
         <div 
           className="absolute inset-0 w-14 h-14 rounded-full opacity-30 animate-ping pointer-events-none"
           style={{
