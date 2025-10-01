@@ -82,11 +82,12 @@ export default function AIChatSidebar({ isOpen, marketId, aiContext }: AIChatSid
     <div className={`fixed right-0 w-96 flex flex-col z-30 transform transition-transform duration-300 ease-in-out ${
       isOpen ? 'translate-x-0' : 'translate-x-full'
     }`} style={{
-      top: '128px', // Below navbar (64px) + category nav (64px)
-      height: 'calc(100vh - 128px)',
+      top: '132px', // Below navbar (64px) + category nav (64px) + 4px gap for border
+      height: 'calc(100vh - 132px)',
       backgroundColor: '#1a1b1e',
       borderLeft: '1px solid #2a2b2e',
-      boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.3)'
+      boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.3)',
+      borderTopLeftRadius: '8px'
     }}>
       {/* Header */}
       <div className="p-4" style={{ borderBottom: '1px solid #2a2b2e' }}>
