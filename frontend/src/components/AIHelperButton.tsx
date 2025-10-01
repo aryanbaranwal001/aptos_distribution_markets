@@ -14,40 +14,79 @@ export default function AIHelperButton({ onToggleChat, isChatOpen }: AIHelperBut
   const { color } = useThemeStore();
   const theme = getThemeClasses(color);
 
+  const handleClick = () => {
+    console.log('🤖 AI Helper button clicked! Current state:', isChatOpen);
+    onToggleChat();
+  };
+
+  const handleMouseEnter = () => {
+    console.log('🤖 AI Helper button hovered!');
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    console.log('🤖 AI Helper button hover ended');
+    setIsHovered(false);
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-50">
       {/* Tooltip */}
       {isHovered && !isChatOpen && (
-        <div className={`absolute bottom-16 right-0 px-3 py-2 rounded-lg ${theme.cardBg} ${theme.border} border shadow-lg whitespace-nowrap transition-all duration-200 opacity-100`}>
-          <div className={`text-sm ${theme.text}`}>
+        <div 
+          className="absolute bottom-16 right-0 px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 shadow-xl whitespace-nowrap"
+          style={{ 
+            animation: 'fadeIn 0.2s ease-in-out',
+          }}
+        >
+          <div className="text-sm text-white font-medium">
             AI Market Assistant
           </div>
-          <div className={`text-xs ${theme.textSecondary} mt-1`}>
+          <div className="text-xs text-gray-300 mt-1">
             Get insights about this market
           </div>
-          {/* Arrow */}
-          <div className={`absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-600`}></div>
+          {/* Arrow pointing down */}
+          <div 
+            className="absolute top-full right-4 w-0 h-0"
+            style={{
+              borderLeft: '6px solid transparent',
+              borderRight: '6px solid transparent',
+              borderTop: '6px solid #1f2937'
+            }}
+          ></div>
         </div>
       )}
 
       {/* Main Button */}
       <button
-        onClick={() => {
-          console.log('AI Helper button clicked, current state:', isChatOpen);
-          onToggleChat();
-        }}
-        onMouseEnter={() => {
-          console.log('AI Helper button hovered');
-          setIsHovered(true);
-        }}
-        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         className={`
-          w-14 h-14 rounded-full shadow-lg transition-all duration-300 ease-in-out
-          bg-blue-500 hover:bg-blue-600
+          relative w-14 h-14 rounded-full shadow-lg transition-all duration-300 ease-in-out
+          ${theme.primaryBg} ${theme.primaryHover}
           hover:scale-110 hover:shadow-xl
           flex items-center justify-center
+          focus:outline-none focus:ring-4 focus:ring-opacity-50
           ${isChatOpen ? 'rotate-180' : 'rotate-0'}
         `}
+        style={{
+          backgroundColor: color === 'green' ? '#11b881' : 
+                          color === 'orange' ? '#e59500' : 
+                          color === 'coral' ? '#ef2d56' : '#11b881'
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = 
+            color === 'green' ? '#0f9d6f' : 
+            color === 'orange' ? '#cc8500' : 
+            color === 'coral' ? '#d92548' : '#0f9d6f';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = 
+            color === 'green' ? '#11b881' : 
+            color === 'orange' ? '#e59500' : 
+            color === 'coral' ? '#ef2d56' : '#11b881';
+        }}
       >
         {isChatOpen ? (
           <X className="w-6 h-6 text-white" />
@@ -56,10 +95,25 @@ export default function AIHelperButton({ onToggleChat, isChatOpen }: AIHelperBut
         )}
       </button>
 
-      {/* Pulse animation when not hovered */}
+      {/* Pulse animation when not hovered and chat is closed */}
       {!isHovered && !isChatOpen && (
-        <div className={`absolute inset-0 w-14 h-14 rounded-full ${theme.primaryBg} opacity-30 animate-ping`}></div>
+        <div 
+          className="absolute inset-0 w-14 h-14 rounded-full opacity-30 animate-ping pointer-events-none"
+          style={{
+            backgroundColor: color === 'green' ? '#11b881' : 
+                            color === 'orange' ? '#e59500' : 
+                            color === 'coral' ? '#ef2d56' : '#11b881'
+          }}
+        ></div>
       )}
+
+      {/* Add CSS for fadeIn animation */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
