@@ -1,26 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React from 'react';
 import { Search, X } from 'lucide-react';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useAppStore } from '@/store/appStore';
-import { searchMarkets, Market } from '@/data/markets';
+import { useSearchMarkets } from '@/hooks/useMarkets';
+import { Market } from '@/data/markets';
 
 const SearchModal = () => {
   const { color } = useThemeStore();
   const { isSearchOpen, setSearchOpen, searchQuery, setSearchQuery } = useAppStore();
-  const [searchResults, setSearchResults] = useState<Market[]>([]);
+  const { data: searchData, loading } = useSearchMarkets(searchQuery, 1, 8);
   
   const theme = getThemeClasses(color);
-
-  useEffect(() => {
-    if (searchQuery.trim()) {
-      const results = searchMarkets(searchQuery);
-      setSearchResults(results.slice(0, 8)); // Limit to 8 results
-    } else {
-      setSearchResults([]);
-    }
-  }, [searchQuery]);
+  const searchResults = searchData?.markets || [];
 
   const handleClose = () => {
     setSearchOpen(false);
@@ -65,7 +58,12 @@ const SearchModal = () => {
 
         {/* Search Results */}
         <div className="max-h-96 overflow-y-auto">
-          {searchResults.length > 0 ? (
+          {loading && searchQuery.trim() ? (
+            <div className={`p-8 text-center ${theme.textSecondary}`}>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-4"></div>
+              <p>Searching...</p>
+            </div>
+          ) : searchResults.length > 0 ? (
             <div className="py-2">
               {searchResults.map((market) => (
                 <button

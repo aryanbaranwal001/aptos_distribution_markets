@@ -1,12 +1,6 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1';
 
-// Import mock data for fallback
-import { 
-  markets as mockMarkets, 
-  categories as mockCategories, 
-  getMarketsByCategory as getMockMarketsByCategory, 
-  searchMarkets as searchMockMarkets 
-} from '../data/markets';
+// Removed mock data imports - frontend now fetches from database only
 
 // API response types
 export interface ApiResponse<T> {
@@ -43,31 +37,26 @@ import { Market } from '../data/markets';
 
 class ApiService {
   private async fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options?.headers,
-        },
-        ...options,
-      });
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+      ...options,
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-
-      const data: ApiResponse<T> = await response.json();
-      
-      if (!data.success) {
-        throw new Error(data.message || 'API request failed');
-      }
-
-      return data.data;
-    } catch (error) {
-      console.warn('API Error, falling back to mock data:', error);
-      throw error; // Let individual methods handle fallback
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
+
+    const data: ApiResponse<T> = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || 'API request failed');
+    }
+
+    return data.data;
   }
 
   // Get markets with filtering, pagination, and sorting
@@ -78,53 +67,23 @@ class ApiService {
     sort?: string;
     order?: 'asc' | 'desc';
   } = {}): Promise<MarketsResponse> {
-    try {
-      const searchParams = new URLSearchParams();
-      
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          searchParams.append(key, value.toString());
-        }
-      });
+    const searchParams = new URLSearchParams();
+    
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        searchParams.append(key, value.toString());
+      }
+    });
 
-      const queryString = searchParams.toString();
-      const endpoint = `/markets${queryString ? `?${queryString}` : ''}`;
-      
-      return await this.fetchApi<MarketsResponse>(endpoint);
-    } catch {
-      // Fallback to mock data
-      const { category, page = 1, limit = 20 } = params;
-      const filteredMarkets = category ? getMockMarketsByCategory(category) : mockMarkets;
-      
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedMarkets = filteredMarkets.slice(startIndex, endIndex);
-      
-      return {
-        markets: paginatedMarkets,
-        pagination: {
-          currentPage: page,
-          totalPages: Math.ceil(filteredMarkets.length / limit),
-          totalCount: filteredMarkets.length,
-          hasNextPage: endIndex < filteredMarkets.length,
-          hasPrevPage: page > 1
-        }
-      };
-    }
+    const queryString = searchParams.toString();
+    const endpoint = `/markets${queryString ? `?${queryString}` : ''}`;
+    
+    return await this.fetchApi<MarketsResponse>(endpoint);
   }
 
   // Get single market by ID
   async getMarketById(id: string): Promise<Market> {
-    try {
-      return await this.fetchApi<Market>(`/markets/${id}`);
-    } catch {
-      // Fallback to mock data
-      const market = mockMarkets.find(m => m.id === id);
-      if (!market) {
-        throw new Error('Market not found');
-      }
-      return market;
-    }
+    return await this.fetchApi<Market>(`/markets/${id}`);
   }
 
   // Search markets
@@ -133,37 +92,15 @@ class ApiService {
     page?: number;
     limit?: number;
   }): Promise<SearchResponse> {
-    try {
-      const searchParams = new URLSearchParams();
-      
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          searchParams.append(key, value.toString());
-        }
-      });
+    const searchParams = new URLSearchParams();
+    
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        searchParams.append(key, value.toString());
+      }
+    });
 
-      return await this.fetchApi<SearchResponse>(`/markets/search?${searchParams.toString()}`);
-    } catch {
-      // Fallback to mock data
-      const { q, page = 1, limit = 20 } = params;
-      const searchResults = searchMockMarkets(q);
-      
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedResults = searchResults.slice(startIndex, endIndex);
-      
-      return {
-        markets: paginatedResults,
-        pagination: {
-          currentPage: page,
-          totalPages: Math.ceil(searchResults.length / limit),
-          totalCount: searchResults.length,
-          hasNextPage: endIndex < searchResults.length,
-          hasPrevPage: page > 1
-        },
-        searchQuery: q
-      };
-    }
+    return await this.fetchApi<SearchResponse>(`/markets/search?${searchParams.toString()}`);
   }
 
   // Get markets by category
@@ -190,12 +127,7 @@ class ApiService {
 
   // Get all categories
   async getCategories(): Promise<string[]> {
-    try {
-      return await this.fetchApi<string[]>('/markets/categories');
-    } catch {
-      // Fallback to mock data
-      return mockCategories;
-    }
+    return await this.fetchApi<string[]>('/markets/categories');
   }
 
   // Get market statistics

@@ -1,46 +1,49 @@
 'use client';
 
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
-import { categories } from '@/data/markets';
 import { useRouter, usePathname } from 'next/navigation';
+import { useAppStore } from '@/store/appStore';
+import { CATEGORIES, CATEGORY_LABELS, isValidCategory } from '@/constants/categories';
+import { useEffect } from 'react';
 
 const CategoryNav = () => {
   const { color } = useThemeStore();
   const router = useRouter();
   const pathname = usePathname();
+  const { activeCategory, setActiveCategory } = useAppStore();
   
   const theme = getThemeClasses(color);
+  
+  // Use shared category constants
+  const categories = CATEGORIES;
   
   // Check if we're on an instance page
   const isInstancePage = pathname?.startsWith('/instance/');
   
-  // Determine current active category based on URL
-  const getCurrentCategory = () => {
-    if (pathname === '/') return 'trending';
-    const pathCategory = pathname?.slice(1); // Remove leading slash
-    return categories.includes(pathCategory || '') ? pathCategory : 'trending';
-  };
-  
-  const activeCategory = getCurrentCategory();
+  // Update store immediately when URL changes
+  useEffect(() => {
+    // Determine current active category based on URL
+    const getCurrentCategory = () => {
+      if (pathname === '/' || pathname === '/trending') return 'trending';
+      const pathCategory = pathname?.slice(1); // Remove leading slash
+      return pathCategory && isValidCategory(pathCategory) ? pathCategory : 'trending';
+    };
+    
+    const urlCategory = getCurrentCategory();
+    // Always update store to match URL, regardless of current state
+    setActiveCategory(urlCategory);
+  }, [pathname, setActiveCategory]);
 
-  const categoryLabels: Record<string, string> = {
-    trending: 'Trending',
-    new: 'New',
-    politics: 'Politics',
-    sports: 'Sports',
-    crypto: 'Crypto',
-    earnings: 'Earnings',
-    geopolitics: 'Geopolitics',
-    tech: 'Tech',
-    world: 'World',
-    economy: 'Economy',
-    elections: 'Elections',
-  };
+  // Use shared category labels
+  const categoryLabels = CATEGORY_LABELS;
 
   const handleCategoryClick = (category: string) => {
+    // Immediately update store before navigation to prevent glitches
+    setActiveCategory(category);
+    
     if (category === 'trending') {
-      // Trending goes to the home page
-      router.push('/');
+      // Trending goes to the trending page
+      router.push('/trending');
     } else {
       // Other categories go to their specific routes
       router.push(`/${category}`);
@@ -61,7 +64,7 @@ const CategoryNav = () => {
                   : `${theme.textSecondary} hover:${theme.primary}`
               }`}
             >
-              {categoryLabels[category]}
+              {categoryLabels[category] || category}
             </button>
           ))}
         </div>

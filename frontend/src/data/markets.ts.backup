@@ -30,7 +30,7 @@ export interface Market {
 export const markets: Market[] = [
   {
     id: "1",
-    title: "Will Aptos APT reach $8 by end of December 2025?",
+    title: "Will Aptos APT reach $100 by end of December 2025?",
     description: "Distribution market on Aptos APT token price considering chain's adoption of innovative projects, developer activity, and overall crypto market conditions.",
     volume: 1850000,
     categories: ["trending","crypto", "tech"],
@@ -53,7 +53,7 @@ export const markets: Market[] = [
     sigma_per_one: 0.21,
     x_axis_field_name: "APT Price (USD)",
     x_axis_short_form: "APT Price",
-    aicontext: "This is a distribution market for Aptos (APT) token price prediction. APT is the native token of the Aptos blockchain, a Layer 1 blockchain focused on safety and scalability. The market is asking whether APT will reach $8 by the end of December 2025. Current factors affecting APT price include: blockchain adoption, developer ecosystem growth, DeFi protocols built on Aptos, institutional partnerships, and overall crypto market sentiment. The distribution shows the probability of different price outcomes, with users able to trade on their predictions about APT's future value. Make sure you only give answers in text, no md formating or anything like that. Strictly keep your response concise"
+    aicontext: "This is a distribution market for Aptos (APT) token price prediction. APT is the native token of the Aptos blockchain, a Layer 1 blockchain focused on safety and scalability. The market is asking whether APT will reach $100 by the end of December 2025. Current factors affecting APT price include: blockchain adoption, developer ecosystem growth, DeFi protocols built on Aptos, institutional partnerships, and overall crypto market sentiment. The distribution shows the probability of different price outcomes, with users able to trade on their predictions about APT's future value. Make sure you only give answers in text, no md formating or anything like that. Strictly keep your response concise"
   },
 
   {

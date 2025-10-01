@@ -28,7 +28,23 @@ export const useThemeStore = create<ThemeState>()(
   )
 );
 
-export const getThemeClasses = (color: ThemeColor) => {
+interface ThemeClasses {
+  background: string;
+  text: string;
+  textSecondary: string;
+  cardBg: string;
+  searchBg: string;
+  border: string;
+  searchBorder: string;
+  hoverBg: string;
+  primary: string;
+  primaryBg: string;
+  primaryHover: string;
+  accent: string;
+  liquidEther: string[];
+}
+
+export const getThemeClasses = (color: ThemeColor): ThemeClasses => {
   const baseClasses = {
     background: 'bg-[#0a0b0d]',
     text: 'text-[#fffffa]',
@@ -47,6 +63,7 @@ export const getThemeClasses = (color: ThemeColor) => {
       primaryHover: 'hover:bg-[#0f9d6f]',
       border: 'border-[#11b881]',
       accent: 'accent-[#11b881]',
+      liquidEther: ['#11b881', '#22d394', '#33e6a7'],
     },
     orange: {
       primary: 'text-[#e59500]',
@@ -54,6 +71,7 @@ export const getThemeClasses = (color: ThemeColor) => {
       primaryHover: 'hover:bg-[#cc8500]',
       border: 'border-[#e59500]',
       accent: 'accent-[#e59500]',
+      liquidEther: ['#e59500', '#ff9f1a', '#ffb347'],
     },
     coral: {
       primary: 'text-[#ef2d56]',
@@ -61,6 +79,7 @@ export const getThemeClasses = (color: ThemeColor) => {
       primaryHover: 'hover:bg-[#d92548]',
       border: 'border-[#ef2d56]',
       accent: 'accent-[#ef2d56]',
+      liquidEther: ['#ef2d56', '#ff4d7a', '#ff6b9d'],
     },
   };
 

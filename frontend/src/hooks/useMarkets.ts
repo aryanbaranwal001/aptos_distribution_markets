@@ -19,17 +19,20 @@ export const useMarkets = (params: {
       try {
         setLoading(true);
         setError(null);
+        // Clear previous data when category changes to prevent stale data display
+        setData(null);
         const result = await apiService.getMarkets(params);
         setData(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch markets');
+        setData(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchMarkets();
-  }, [params.category, params.page, params.limit, params.sort, params.order]);
+  }, [params]);
 
   return { data, loading, error, refetch: () => setLoading(true) };
 };
@@ -100,7 +103,7 @@ export const useSearchMarkets = (query: string, page: number = 1, limit: number 
   return { data, loading, error };
 };
 
-// Hook for fetching categories
+// Hook for fetching categories - no caching, fresh data every time
 export const useCategories = () => {
   const [data, setData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,7 +124,7 @@ export const useCategories = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, []); // Fetch once per component mount - no caching between mounts
 
   return { data, loading, error };
 };

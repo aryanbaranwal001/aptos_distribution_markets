@@ -209,7 +209,7 @@ const NormalDistributionChart: React.FC<NormalDistributionChartProps> = ({
             const rect = chart.canvas.getBoundingClientRect();
             const x = (event.native as MouseEvent).clientX - rect.left;
             const dataX = chart.scales.x.getValueForPixel(x);
-            onHover(dataX ?? null);
+            onHover(typeof dataX === 'number' ? dataX : null);
           }
         } else {
           onHover(null);

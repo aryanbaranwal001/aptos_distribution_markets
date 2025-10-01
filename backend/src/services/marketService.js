@@ -1,5 +1,5 @@
 const { db, COLLECTIONS } = require('../config/firebase');
-const { getCachedData, setCachedData } = require('../config/cache');
+// Removed caching - fresh data fetched every time
 
 // Mock data for development when Firebase is not available
 const mockMarkets = [
@@ -69,15 +69,6 @@ class MarketService {
     } = options;
 
     try {
-      // Create cache key
-      const cacheKey = `markets_${category || 'all'}_${page}_${limit}_${sort}_${order}`;
-      
-      // Check cache first
-      const cachedData = getCachedData(cacheKey);
-      if (cachedData) {
-        return cachedData;
-      }
-
       let markets = [];
       let totalCount = 0;
 
@@ -87,7 +78,7 @@ class MarketService {
         let filteredMarkets = [...mockMarkets];
 
         // Apply category filter
-        if (category && category !== 'trending') {
+        if (category) {
           filteredMarkets = filteredMarkets.filter(market => 
             market.categories.includes(category)
           );
@@ -123,7 +114,7 @@ class MarketService {
           let query = db.collection(COLLECTIONS.MARKETS_MINIMAL);
 
           // Apply category filter
-          if (category && category !== 'trending') {
+          if (category) {
             query = query.where('categories', 'array-contains', category);
           }
 
@@ -170,7 +161,7 @@ class MarketService {
           let filteredMarkets = [...mockMarkets];
 
           // Apply category filter
-          if (category && category !== 'trending') {
+          if (category) {
             filteredMarkets = filteredMarkets.filter(market => 
               market.categories.includes(category)
             );
@@ -216,9 +207,6 @@ class MarketService {
         }
       };
 
-      // Cache the result
-      setCachedData(cacheKey, result);
-
       return result;
     } catch (error) {
       console.error('Error fetching markets:', error);
@@ -234,13 +222,6 @@ class MarketService {
   // Get single market with full details
   async getMarketById(id) {
     try {
-      // Check cache first
-      const cacheKey = `market_${id}`;
-      const cachedData = getCachedData(cacheKey);
-      if (cachedData) {
-        return cachedData;
-      }
-
       let market = null;
 
       // Use mock data if Firebase is not available
@@ -248,12 +229,12 @@ class MarketService {
         console.log('📝 Using mock data for single market');
         market = mockMarkets.find(m => m.id === id);
       } else {
-        // Try minimal collection first
-        let doc = await db.collection(COLLECTIONS.MARKETS_MINIMAL).doc(id).get();
+        // Try full collection first for complete data including AI context
+        let doc = await db.collection(COLLECTIONS.MARKETS_FULL).doc(id).get();
         
         if (!doc.exists) {
-          // Try full collection
-          doc = await db.collection(COLLECTIONS.MARKETS_FULL).doc(id).get();
+          // Fallback to minimal collection
+          doc = await db.collection(COLLECTIONS.MARKETS_MINIMAL).doc(id).get();
         }
 
         if (doc.exists) {
@@ -268,9 +249,6 @@ class MarketService {
         return null;
       }
 
-      // Cache the result
-      setCachedData(cacheKey, market);
-
       return market;
     } catch (error) {
       console.error('Error fetching market by ID:', error);
@@ -281,13 +259,6 @@ class MarketService {
   // Search markets
   async searchMarkets(searchQuery, page = 1, limit = 20) {
     try {
-      // Check cache first
-      const cacheKey = `search_${searchQuery}_${page}_${limit}`;
-      const cachedData = getCachedData(cacheKey);
-      if (cachedData) {
-        return cachedData;
-      }
-
       let allMarkets = [];
 
       // Use mock data if Firebase is not available
@@ -332,9 +303,6 @@ class MarketService {
         }
       };
 
-      // Cache the result
-      setCachedData(cacheKey, result);
-
       return result;
     } catch (error) {
       console.error('Error searching markets:', error);
@@ -349,13 +317,6 @@ class MarketService {
 
   // Get all available categories
   async getCategories() {
-    // Check cache first
-    const cacheKey = CACHE_KEYS.CATEGORIES;
-    const cachedResult = cache.get(cacheKey);
-    if (cachedResult) {
-      return cachedResult;
-    }
-
     try {
       // Get unique categories from markets
       const snapshot = await db.collection(COLLECTIONS.MARKETS_MINIMAL)
@@ -371,9 +332,6 @@ class MarketService {
       });
 
       const categories = Array.from(categoriesSet).sort();
-
-      // Cache the result for longer time as categories don't change often
-      cache.set(cacheKey, categories, 1800); // 30 minutes
 
       return categories;
     } catch (error) {
