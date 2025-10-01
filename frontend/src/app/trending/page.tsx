@@ -19,7 +19,7 @@ export default function TrendingPage() {
       <Navbar />
       <CategoryNav />
       <main className="pt-16">
-        <MarketGrid />
+        <MarketGrid key="trending" />
       </main>
     </div>
   );

@@ -38,7 +38,7 @@ export default function CategoryPage() {
       <Navbar />
       <CategoryNav />
       <main className="pt-16">
-        <MarketGrid />
+        <MarketGrid key={category} />
       </main>
     </div>
   );

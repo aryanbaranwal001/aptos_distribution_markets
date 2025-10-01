@@ -2,12 +2,15 @@
 
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { useRouter, usePathname } from 'next/navigation';
+import { useAppStore } from '@/store/appStore';
 import { CATEGORIES, CATEGORY_LABELS, isValidCategory } from '@/constants/categories';
+import { useEffect } from 'react';
 
 const CategoryNav = () => {
   const { color } = useThemeStore();
   const router = useRouter();
   const pathname = usePathname();
+  const { activeCategory, setActiveCategory } = useAppStore();
   
   const theme = getThemeClasses(color);
   
@@ -17,14 +20,23 @@ const CategoryNav = () => {
   // Check if we're on an instance page
   const isInstancePage = pathname?.startsWith('/instance/');
   
-  // Determine current active category based on URL
-  const getCurrentCategory = () => {
-    if (pathname === '/' || pathname === '/trending') return 'trending';
-    const pathCategory = pathname?.slice(1); // Remove leading slash
-    return pathCategory && isValidCategory(pathCategory) ? pathCategory : 'trending';
-  };
-  
-  const activeCategory = getCurrentCategory();
+  // Update store when URL changes
+  useEffect(() => {
+    // Determine current active category based on URL
+    const getCurrentCategory = () => {
+      if (pathname === '/' || pathname === '/trending') return 'trending';
+      const pathCategory = pathname?.slice(1); // Remove leading slash
+      return pathCategory && isValidCategory(pathCategory) ? pathCategory : 'trending';
+    };
+    
+    const urlCategory = getCurrentCategory();
+    console.log('CategoryNav: URL changed to:', pathname, 'detected category:', urlCategory, 'current store category:', activeCategory);
+    
+    if (urlCategory !== activeCategory) {
+      console.log('CategoryNav: Updating store category from', activeCategory, 'to', urlCategory);
+      setActiveCategory(urlCategory);
+    }
+  }, [pathname, activeCategory, setActiveCategory]);
 
   // Use shared category labels
   const categoryLabels = CATEGORY_LABELS;

@@ -29,6 +29,13 @@ const MarketGrid = () => {
   const markets = data?.markets || [];
   const pagination = data?.pagination;
 
+  // Debug logging to track category changes
+  useEffect(() => {
+    console.log('MarketGrid: activeCategory changed to:', activeCategory);
+    console.log('MarketGrid: marketsParams:', marketsParams);
+    console.log('MarketGrid: markets count:', markets.length);
+  }, [activeCategory, marketsParams, markets.length]);
+
   // Reset page when category changes
   useEffect(() => {
     setPage(1);
