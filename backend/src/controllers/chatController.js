@@ -3,7 +3,7 @@ const OpenAI = require('openai');
 // Initialize OpenAI client with OpenRouter configuration
 const openai = new OpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.OPENROUTER_API_KEY,
+  apiKey: process.env.OPEN_ROUTER_API_KEY,
   defaultHeaders: {
     'HTTP-Referer': 'https://aptos-distribution-markets.com',
     'X-Title': 'Aptos Distribution Markets',
