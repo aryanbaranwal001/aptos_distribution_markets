@@ -27,35 +27,35 @@ export interface Market {
 }
 
 export const markets: Market[] = [
-  // Trending Markets
   {
     id: "1",
-    title: "Global Inflation Peak in 2024",
-    description: "Market predicting when global inflation rates will reach their peak in 2024, analyzing central bank policies and economic indicators.",
-    volume: 3100000,
-    categories: ["trending", "economy"],
-    iconName: "inflation.svg",
-    address: "0x5e6f7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12",
-    startDate: "2024-01-10T14:00:00Z",
-    endDate: "2024-12-31T23:59:59Z",
-    market_mean: 4.2,
-    market_mean_min: 2.8,
-    market_mean_max: 5.6,
-    market_standard_deviation: 1.1,
-    market_standard_deviation_min: 0.7,
-    market_standard_deviation_max: 1.5,
-    min_sigma: 2.1,
-    Lambda: 1.1,
-    peak_p: 0.48,
-    headroom: 0.52,
-    s: 1.0,
-    mu_per_one: 0.42,
-    sigma_per_one: 0.11,
-    x_axis_field_name: "Inflation Rate (%)",
-    x_axis_short_form: "Inflation %"
+    title: "Will Aptos APT reach $8 by end of December 2025?",
+    description: "Distribution market on Aptos APT token price considering chain's adoption of innovative projects, developer activity, and overall crypto market conditions.",
+    volume: 1850000,
+    categories: ["trending","crypto", "tech"],
+    iconName: "aptos.svg",
+    address: "0xa0bcdef1234567890abcdef1234567890abcdef1234567890abcdef123456789",
+    startDate: "2024-10-01T00:00:00Z",
+    endDate: "2025-12-31T23:59:59Z",
+    market_mean: 12.5,
+    market_mean_min: 8.0,
+    market_mean_max: 17.0,
+    market_standard_deviation: 3.2,
+    market_standard_deviation_min: 2.0,
+    market_standard_deviation_max: 4.4,
+    min_sigma: 2.0,
+    Lambda: 0.95,
+    peak_p: 0.55,
+    headroom: 0.45,
+    s: 1.15,
+    mu_per_one: 0.83,
+    sigma_per_one: 0.21,
+    x_axis_field_name: "APT Price (USD)",
+    x_axis_short_form: "APT Price"
   },
+
   {
-    id: "23",
+    id: "2",
     title: "Will Bitcoin reach $100,000 by end of 2024?",
     description: "Prediction market on Bitcoin's price trajectory considering current market conditions, institutional adoption, and regulatory developments.",
     volume: 2500000,
@@ -81,7 +81,7 @@ export const markets: Market[] = [
     x_axis_short_form: "BTC Price"
   },
   {
-    id: "2",
+    id: "3",
     title: "US Presidential Election 2024 Winner",
     description: "Betting market on the outcome of the 2024 United States Presidential Election with real-time odds based on polling data and campaign performance.",
     volume: 15000000,
@@ -107,7 +107,33 @@ export const markets: Market[] = [
     x_axis_short_form: "Win Prob"
   },
   {
-    id: "3",
+    id: "4",
+    title: "SpaceX Mars Mission Timeline",
+    description: "Betting market on SpaceX announcing a crewed Mars mission date within the next 2 years, based on current development progress.",
+    volume: 2700000,
+    categories: ["trending", "tech", "world"],
+    iconName: "spacex.svg",
+    address: "0x6f7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234",
+    startDate: "2024-03-01T11:00:00Z",
+    endDate: "2026-03-01T23:59:59Z",
+    market_mean: 0.28,
+    market_mean_min: 0.10,
+    market_mean_max: 0.46,
+    market_standard_deviation: 0.15,
+    market_standard_deviation_min: 0.08,
+    market_standard_deviation_max: 0.22,
+    min_sigma: 1.9,
+    Lambda: 0.7,
+    peak_p: 0.32,
+    headroom: 0.68,
+    s: 1.4,
+    mu_per_one: 0.28,
+    sigma_per_one: 0.15,
+    x_axis_field_name: "Announcement Probability",
+    x_axis_short_form: "Announce Prob"
+  },
+  {
+    id: "5",
     title: "Will OpenAI release GPT-5 in 2024?",
     description: "Market predicting the release timeline of OpenAI's next major language model, considering development cycles and company announcements.",
     volume: 800000,
@@ -133,7 +159,7 @@ export const markets: Market[] = [
     x_axis_short_form: "Release Prob"
   },
   {
-    id: "22",
+    id: "6",
     title: "Apple Vision Pro Market Adoption Rate",
     description: "Prediction market on Apple Vision Pro achieving 1 million units sold by end of 2024, considering pricing and consumer adoption patterns.",
     volume: 1900000,
@@ -160,33 +186,7 @@ export const markets: Market[] = [
   },
 
   {
-    id: "24",
-    title: "SpaceX Mars Mission Timeline",
-    description: "Betting market on SpaceX announcing a crewed Mars mission date within the next 2 years, based on current development progress.",
-    volume: 2700000,
-    categories: ["trending", "tech", "world"],
-    iconName: "spacex.svg",
-    address: "0x6f7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234",
-    startDate: "2024-03-01T11:00:00Z",
-    endDate: "2026-03-01T23:59:59Z",
-    market_mean: 0.28,
-    market_mean_min: 0.10,
-    market_mean_max: 0.46,
-    market_standard_deviation: 0.15,
-    market_standard_deviation_min: 0.08,
-    market_standard_deviation_max: 0.22,
-    min_sigma: 1.9,
-    Lambda: 0.7,
-    peak_p: 0.32,
-    headroom: 0.68,
-    s: 1.4,
-    mu_per_one: 0.28,
-    sigma_per_one: 0.15,
-    x_axis_field_name: "Announcement Probability",
-    x_axis_short_form: "Announce Prob"
-  },
-  {
-    id: "25",
+    id: "8",
     title: "FIFA World Cup 2026 Host Cities",
     description: "Prediction market on which additional cities will be selected as FIFA World Cup 2026 venues beyond the already announced locations.",
     volume: 1600000,
@@ -211,62 +211,10 @@ export const markets: Market[] = [
     x_axis_field_name: "Number of Cities",
     x_axis_short_form: "Cities"
   },
-  {
-    id: "26",
-    title: "Cryptocurrency Market Cap Milestone",
-    description: "Market predicting if the total cryptocurrency market cap will exceed $3 trillion by the end of 2024, considering adoption and regulation.",
-    volume: 4200000,
-    categories: ["trending", "crypto", "economy"],
-    iconName: "crypto.svg",
-    address: "0x890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567",
-    startDate: "2024-01-20T13:00:00Z",
-    endDate: "2024-12-31T23:59:59Z",
-    market_mean: 2.8,
-    market_mean_min: 1.6,
-    market_mean_max: 4.0,
-    market_standard_deviation: 0.6,
-    market_standard_deviation_min: 0.3,
-    market_standard_deviation_max: 0.9,
-    min_sigma: 2.0,
-    Lambda: 1.0,
-    peak_p: 0.58,
-    headroom: 0.42,
-    s: 1.1,
-    mu_per_one: 0.93,
-    sigma_per_one: 0.20,
-    x_axis_field_name: "Market Cap (Trillion USD)",
-    x_axis_short_form: "Market Cap"
-  },
-  {
-    id: "27",
-    title: "Climate Change COP29 Outcomes",
-    description: "Prediction market on key outcomes from the COP29 climate summit, including new emission reduction commitments and funding agreements.",
-    volume: 2300000,
-    categories: ["trending", "world", "geopolitics"],
-    iconName: "climate.svg",
-    address: "0x90abcdef1234567890abcdef1234567890abcdef1234567890abcdef12345678",
-    startDate: "2024-05-01T10:00:00Z",
-    endDate: "2024-11-30T23:59:59Z",
-    market_mean: 0.62,
-    market_mean_min: 0.40,
-    market_mean_max: 0.84,
-    market_standard_deviation: 0.14,
-    market_standard_deviation_min: 0.09,
-    market_standard_deviation_max: 0.19,
-    min_sigma: 2.1,
-    Lambda: 1.3,
-    peak_p: 0.68,
-    headroom: 0.32,
-    s: 0.8,
-    mu_per_one: 0.62,
-    sigma_per_one: 0.14,
-    x_axis_field_name: "Success Probability",
-    x_axis_short_form: "Success Prob"
-  },
 
   // New Markets
   {
-    id: "4",
+    id: "10",
     title: "Tesla Q4 2024 Earnings Beat Expectations?",
     description: "Prediction on whether Tesla will exceed analyst expectations for Q4 2024 earnings, factoring in production numbers and market demand.",
     volume: 1200000,
@@ -292,7 +240,7 @@ export const markets: Market[] = [
     x_axis_short_form: "Beat Prob"
   },
   {
-    id: "5",
+    id: "11",
     title: "Will there be a recession in 2025?",
     description: "Economic prediction market analyzing various indicators including inflation, employment rates, and central bank policies.",
     volume: 3500000,
@@ -320,7 +268,7 @@ export const markets: Market[] = [
 
   // Politics Markets
   {
-    id: "6",
+    id: "12",
     title: "UK General Election Date Prediction",
     description: "Market predicting when the next UK General Election will be called, considering political developments and parliamentary dynamics.",
     volume: 950000,
@@ -346,7 +294,7 @@ export const markets: Market[] = [
     x_axis_short_form: "Election Prob"
   },
   {
-    id: "7",
+    id: "13",
     title: "EU Parliament Composition 2024",
     description: "Prediction market on the political composition of the European Parliament following the 2024 elections.",
     volume: 1800000,
@@ -374,7 +322,7 @@ export const markets: Market[] = [
 
   // Sports Markets
   {
-    id: "8",
+    id: "14",
     title: "FIFA World Cup 2026 Winner",
     description: "Long-term betting market on which national team will win the 2026 FIFA World Cup, considering current team strengths and development.",
     volume: 5200000,
@@ -400,7 +348,7 @@ export const markets: Market[] = [
     x_axis_short_form: "Win Prob"
   },
   {
-    id: "9",
+    id: "15",
     title: "NBA Championship 2024-25 Season",
     description: "Prediction market for the NBA Championship winner of the 2024-25 season, updated with team performance and player trades.",
     volume: 4100000,
@@ -428,7 +376,7 @@ export const markets: Market[] = [
 
   // Crypto Markets
   {
-    id: "10",
+    id: "16",
     title: "Ethereum 2.0 Staking Rewards Rate",
     description: "Market predicting the average staking rewards rate for Ethereum 2.0 validators over the next 12 months.",
     volume: 1600000,
@@ -454,7 +402,7 @@ export const markets: Market[] = [
     x_axis_short_form: "Staking %"
   },
   {
-    id: "11",
+    id: "17",
     title: "Next Crypto Bull Run Timeline",
     description: "Prediction market on when the next major cryptocurrency bull run will begin, based on market cycles and adoption metrics.",
     volume: 2200000,
@@ -482,7 +430,7 @@ export const markets: Market[] = [
 
   // Earnings Markets
   {
-    id: "12",
+    id: "18",
     title: "Apple Q1 2025 Revenue Forecast",
     description: "Market predicting Apple's Q1 2025 revenue figures, considering iPhone sales, services growth, and market conditions.",
     volume: 1800000,
@@ -508,7 +456,7 @@ export const markets: Market[] = [
     x_axis_short_form: "Revenue"
   },
   {
-    id: "13",
+    id: "19",
     title: "Amazon AWS Growth Rate 2024",
     description: "Prediction on Amazon Web Services annual growth rate for 2024, factoring in cloud adoption and competition.",
     volume: 1400000,
@@ -536,7 +484,7 @@ export const markets: Market[] = [
 
   // Geopolitics Markets
   {
-    id: "14",
+    id: "20",
     title: "China-Taiwan Relations Stability",
     description: "Market assessing the likelihood of maintaining peaceful relations between China and Taiwan over the next 12 months.",
     volume: 2800000,
@@ -562,7 +510,7 @@ export const markets: Market[] = [
     x_axis_short_form: "Stability Prob"
   },
   {
-    id: "15",
+    id: "21",
     title: "Russia-Ukraine Conflict Resolution",
     description: "Prediction market on potential resolution timelines for the ongoing conflict, considering diplomatic efforts and military developments.",
     volume: 4500000,
@@ -590,7 +538,7 @@ export const markets: Market[] = [
 
   // Tech Markets
   {
-    id: "16",
+    id: "22",
     title: "Apple Vision Pro Sales Target",
     description: "Market predicting whether Apple will meet its Vision Pro sales targets for 2024, considering adoption rates and market reception.",
     volume: 1100000,
@@ -616,7 +564,7 @@ export const markets: Market[] = [
     x_axis_short_form: "Target Prob"
   },
   {
-    id: "17",
+    id: "23",
     title: "Meta's Metaverse Investment ROI",
     description: "Prediction on when Meta's metaverse investments will show positive returns, based on user adoption and revenue generation.",
     volume: 900000,
@@ -644,7 +592,7 @@ export const markets: Market[] = [
 
   // World Markets
   {
-    id: "18",
+    id: "24",
     title: "Global Climate Goals Achievement",
     description: "Market predicting the likelihood of achieving key global climate targets set for 2030, considering current progress and policies.",
     volume: 3200000,
@@ -670,7 +618,7 @@ export const markets: Market[] = [
     x_axis_short_form: "Achievement Prob"
   },
   {
-    id: "19",
+    id: "25",
     title: "Next Country to Join BRICS",
     description: "Prediction market on which country will be the next to join the BRICS economic alliance, considering geopolitical alignments.",
     volume: 1700000,
@@ -698,7 +646,7 @@ export const markets: Market[] = [
 
   // Economy Markets
   {
-    id: "20",
+    id: "26",
     title: "Federal Reserve Interest Rate 2024",
     description: "Market predicting the Federal Reserve's interest rate decisions throughout 2024, considering inflation and economic indicators.",
     volume: 6200000,
@@ -723,32 +671,8 @@ export const markets: Market[] = [
     x_axis_field_name: "Interest Rate (%)",
     x_axis_short_form: "Rate %"
   },
-  {
-    id: "21",
-    title: "Global Inflation Peak Timing",
-    description: "Prediction on when global inflation rates will peak and begin to decline, analyzing various economic factors and central bank policies.",
-    volume: 2900000,
-    categories: ["economy", "world"],
-    iconName: "global-inflation.svg",
-    address: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-    startDate: "2024-01-01T00:00:00Z",
-    endDate: "2025-06-30T23:59:59Z",
-    market_mean: 0.48,
-    market_mean_min: 0.25,
-    market_mean_max: 0.71,
-    market_standard_deviation: 0.17,
-    market_standard_deviation_min: 0.11,
-    market_standard_deviation_max: 0.23,
-    min_sigma: 2.0,
-    Lambda: 1.0,
-    peak_p: 0.52,
-    headroom: 0.48,
-    s: 1.0,
-    mu_per_one: 0.48,
-    sigma_per_one: 0.17,
-    x_axis_field_name: "Peak Timing Probability",
-    x_axis_short_form: "Peak Prob"
-  }
+
+
 ];
 
 export const categories = [
