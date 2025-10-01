@@ -29,17 +29,25 @@ const MarketGrid = () => {
   const markets = data?.markets || [];
   const pagination = data?.pagination;
 
-  // Debug logging to track category changes
-  useEffect(() => {
-    console.log('MarketGrid: activeCategory changed to:', activeCategory);
-    console.log('MarketGrid: marketsParams:', marketsParams);
-    console.log('MarketGrid: markets count:', markets.length);
-  }, [activeCategory, marketsParams, markets.length]);
 
-  // Reset page when category changes
+  // Reset page and clear data when category changes to prevent glitches
   useEffect(() => {
     setPage(1);
   }, [activeCategory]);
+
+  // Add a loading state specifically for category changes
+  const [categoryLoading, setCategoryLoading] = useState(false);
+  const [lastCategory, setLastCategory] = useState(activeCategory);
+
+  useEffect(() => {
+    if (lastCategory !== activeCategory) {
+      setCategoryLoading(true);
+      setLastCategory(activeCategory);
+      // Clear loading after a short delay to ensure smooth transition
+      const timer = setTimeout(() => setCategoryLoading(false), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [activeCategory, lastCategory]);
 
   const categoryLabels: Record<string, string> = {
     trending: 'Trending',
@@ -55,7 +63,7 @@ const MarketGrid = () => {
     elections: 'Elections',
   };
 
-  if (loading) {
+  if (loading || categoryLoading) {
     return (
       <div className="px-12 sm:px-24 lg:px-48 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

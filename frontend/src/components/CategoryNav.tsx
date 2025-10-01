@@ -20,7 +20,7 @@ const CategoryNav = () => {
   // Check if we're on an instance page
   const isInstancePage = pathname?.startsWith('/instance/');
   
-  // Update store when URL changes
+  // Update store immediately when URL changes
   useEffect(() => {
     // Determine current active category based on URL
     const getCurrentCategory = () => {
@@ -30,18 +30,17 @@ const CategoryNav = () => {
     };
     
     const urlCategory = getCurrentCategory();
-    console.log('CategoryNav: URL changed to:', pathname, 'detected category:', urlCategory, 'current store category:', activeCategory);
-    
-    if (urlCategory !== activeCategory) {
-      console.log('CategoryNav: Updating store category from', activeCategory, 'to', urlCategory);
-      setActiveCategory(urlCategory);
-    }
-  }, [pathname, activeCategory, setActiveCategory]);
+    // Always update store to match URL, regardless of current state
+    setActiveCategory(urlCategory);
+  }, [pathname, setActiveCategory]);
 
   // Use shared category labels
   const categoryLabels = CATEGORY_LABELS;
 
   const handleCategoryClick = (category: string) => {
+    // Immediately update store before navigation to prevent glitches
+    setActiveCategory(category);
+    
     if (category === 'trending') {
       // Trending goes to the trending page
       router.push('/trending');

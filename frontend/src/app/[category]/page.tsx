@@ -6,12 +6,10 @@ import { notFound } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import CategoryNav from '@/components/CategoryNav';
 import MarketGrid from '@/components/MarketGrid';
-import { useAppStore } from '@/store/appStore';
 import { isValidCategory } from '@/constants/categories';
 
 export default function CategoryPage() {
   const params = useParams();
-  const { setActiveCategory } = useAppStore();
   const category = params.category as string;
 
   // Check if category is valid, if not show 404
@@ -21,12 +19,8 @@ export default function CategoryPage() {
     }
   }, [category]);
 
-  // Set the active category when the page loads
-  useEffect(() => {
-    if (category && isValidCategory(category)) {
-      setActiveCategory(category);
-    }
-  }, [category, setActiveCategory]);
+  // Note: CategoryNav now handles setting the active category based on URL
+  // No need to set it here to avoid conflicts
 
   // Don't render anything if category is invalid (will be handled by notFound())
   if (!category || !isValidCategory(category)) {

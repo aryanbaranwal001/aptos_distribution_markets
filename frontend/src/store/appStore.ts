@@ -9,11 +9,16 @@ interface AppState {
   setSearchQuery: (query: string) => void;
 }
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>((set, get) => ({
   activeCategory: 'trending',
   isSearchOpen: false,
   searchQuery: '',
-  setActiveCategory: (category) => set({ activeCategory: category }),
+  setActiveCategory: (category) => {
+    // Only update if category actually changed to prevent unnecessary re-renders
+    if (get().activeCategory !== category) {
+      set({ activeCategory: category });
+    }
+  },
   setSearchOpen: (isOpen) => set({ isSearchOpen: isOpen }),
   setSearchQuery: (query) => set({ searchQuery: query }),
 }));

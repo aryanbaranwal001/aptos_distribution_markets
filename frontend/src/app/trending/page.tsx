@@ -1,18 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import CategoryNav from '@/components/CategoryNav';
 import MarketGrid from '@/components/MarketGrid';
-import { useAppStore } from '@/store/appStore';
 
 export default function TrendingPage() {
-  const { setActiveCategory } = useAppStore();
-
-  // Set trending as the active category
-  useEffect(() => {
-    setActiveCategory('trending');
-  }, [setActiveCategory]);
+  // Note: CategoryNav now handles setting the active category based on URL
+  // No need to set it here to avoid conflicts
 
   return (
     <div className="min-h-screen">

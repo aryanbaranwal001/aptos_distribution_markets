@@ -19,17 +19,20 @@ export const useMarkets = (params: {
       try {
         setLoading(true);
         setError(null);
+        // Clear previous data when category changes to prevent stale data display
+        setData(null);
         const result = await apiService.getMarkets(params);
         setData(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch markets');
+        setData(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchMarkets();
-  }, [params.category, params.page, params.limit, params.sort, params.order]);
+  }, [params]);
 
   return { data, loading, error, refetch: () => setLoading(true) };
 };
