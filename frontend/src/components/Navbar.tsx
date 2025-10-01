@@ -72,7 +72,7 @@ const Navbar = () => {
               {/* Demo Button */}
               <Link
                 href="/instance/1"
-                className={`px-4 py-2 rounded-lg border transition-all duration-200 ${theme.border} ${theme.textSecondary} hover:bg-red-500/15 whitespace-nowrap`}
+                className={`px-4 py-2 rounded-2xl transition-all border-2 ${theme.border} ${theme.textSecondary} hover:bg-gray-500/25 whitespace-nowrap`}
               >
                 Demo
               </Link>
