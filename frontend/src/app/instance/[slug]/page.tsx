@@ -126,15 +126,13 @@ const MarketInstancePage = () => {
   // Calculate deltas for display (removed unused variable)
 
   return (
-    <div className={`min-h-screen ${theme.background} ${theme.text} transition-all duration-300 ${
-      isChatOpen ? 'pr-96' : 'pr-0'
-    }`}>
+    <div className={`min-h-screen ${theme.background} ${theme.text}`}>
       <Navbar />
       <CategoryNav />
       
       {/* Market Content */}
       <main className={`pt-16 transition-all duration-300 ${
-        isChatOpen ? 'px-6 max-w-7xl' : 'px-4 max-w-7xl'
+        isChatOpen ? 'px-6 max-w-7xl mr-96' : 'px-4 max-w-7xl'
       } mx-auto`}>
         {/* Back Button */}
         <div className="mb-6">
