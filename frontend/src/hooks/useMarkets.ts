@@ -100,7 +100,7 @@ export const useSearchMarkets = (query: string, page: number = 1, limit: number 
   return { data, loading, error };
 };
 
-// Hook for fetching categories
+// Hook for fetching categories - no caching, fresh data every time
 export const useCategories = () => {
   const [data, setData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,7 +121,7 @@ export const useCategories = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, []); // Fetch once per component mount - no caching between mounts
 
   return { data, loading, error };
 };

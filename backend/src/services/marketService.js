@@ -1,5 +1,5 @@
 const { db, COLLECTIONS } = require('../config/firebase');
-const { getCachedData, setCachedData, CACHE_KEYS, cache } = require('../config/cache');
+// Removed caching - fresh data fetched every time
 
 // Mock data for development when Firebase is not available
 const mockMarkets = [
@@ -69,15 +69,6 @@ class MarketService {
     } = options;
 
     try {
-      // Create cache key
-      const cacheKey = `markets_${category || 'all'}_${page}_${limit}_${sort}_${order}`;
-      
-      // Check cache first
-      const cachedData = getCachedData(cacheKey);
-      if (cachedData) {
-        return cachedData;
-      }
-
       let markets = [];
       let totalCount = 0;
 
@@ -216,9 +207,6 @@ class MarketService {
         }
       };
 
-      // Cache the result
-      setCachedData(cacheKey, result);
-
       return result;
     } catch (error) {
       console.error('Error fetching markets:', error);
@@ -234,13 +222,6 @@ class MarketService {
   // Get single market with full details
   async getMarketById(id) {
     try {
-      // Check cache first
-      const cacheKey = `market_${id}`;
-      const cachedData = getCachedData(cacheKey);
-      if (cachedData) {
-        return cachedData;
-      }
-
       let market = null;
 
       // Use mock data if Firebase is not available
@@ -268,9 +249,6 @@ class MarketService {
         return null;
       }
 
-      // Cache the result
-      setCachedData(cacheKey, market);
-
       return market;
     } catch (error) {
       console.error('Error fetching market by ID:', error);
@@ -281,13 +259,6 @@ class MarketService {
   // Search markets
   async searchMarkets(searchQuery, page = 1, limit = 20) {
     try {
-      // Check cache first
-      const cacheKey = `search_${searchQuery}_${page}_${limit}`;
-      const cachedData = getCachedData(cacheKey);
-      if (cachedData) {
-        return cachedData;
-      }
-
       let allMarkets = [];
 
       // Use mock data if Firebase is not available
@@ -332,9 +303,6 @@ class MarketService {
         }
       };
 
-      // Cache the result
-      setCachedData(cacheKey, result);
-
       return result;
     } catch (error) {
       console.error('Error searching markets:', error);
@@ -349,13 +317,6 @@ class MarketService {
 
   // Get all available categories
   async getCategories() {
-    // Check cache first
-    const cacheKey = CACHE_KEYS.CATEGORIES;
-    const cachedResult = cache.get(cacheKey);
-    if (cachedResult) {
-      return cachedResult;
-    }
-
     try {
       // Get unique categories from markets
       const snapshot = await db.collection(COLLECTIONS.MARKETS_MINIMAL)
@@ -371,9 +332,6 @@ class MarketService {
       });
 
       const categories = Array.from(categoriesSet).sort();
-
-      // Cache the result for longer time as categories don't change often
-      cache.set(cacheKey, categories, 1800); // 30 minutes
 
       return categories;
     } catch (error) {
