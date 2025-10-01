@@ -23,6 +23,13 @@ export default function AIHelperButton({ onToggleChat, isChatOpen }: AIHelperBut
     return () => clearTimeout(timer);
   }, []);
 
+  // Reset hover state when chat opens/closes to prevent tooltip from showing
+  useEffect(() => {
+    if (isChatOpen) {
+      setIsHovered(false);
+    }
+  }, [isChatOpen]);
+
   const handleClick = () => {
     onToggleChat();
   };
@@ -67,8 +74,8 @@ export default function AIHelperButton({ onToggleChat, isChatOpen }: AIHelperBut
       {!isChatOpen && (
         <button
           onClick={handleClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={!isChatOpen ? handleMouseEnter : undefined}
+          onMouseLeave={!isChatOpen ? handleMouseLeave : undefined}
           className={`
             relative w-14 h-14 rounded-full shadow-lg transition-all duration-300 ease-in-out
             hover:scale-110 hover:shadow-xl
