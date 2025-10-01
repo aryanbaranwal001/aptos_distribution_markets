@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Loader2, X } from 'lucide-react';
 import { useThemeStore, getThemeClasses } from '../store/themeStore';
 
 interface Message {
@@ -15,9 +15,10 @@ interface AIChatSidebarProps {
   isOpen: boolean;
   marketId: string;
   aiContext: string;
+  onClose: () => void;
 }
 
-export default function AIChatSidebar({ isOpen, marketId, aiContext }: AIChatSidebarProps) {
+export default function AIChatSidebar({ isOpen, marketId, aiContext, onClose }: AIChatSidebarProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ export default function AIChatSidebar({ isOpen, marketId, aiContext }: AIChatSid
   const { color } = useThemeStore();
   const theme = getThemeClasses(color);
 
-  console.log('AIChatSidebar render - isOpen:', isOpen, 'marketId:', marketId);
+  // console.log('AIChatSidebar render - isOpen:', isOpen, 'marketId:', marketId);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -91,9 +92,17 @@ export default function AIChatSidebar({ isOpen, marketId, aiContext }: AIChatSid
     }}>
       {/* Header */}
       <div className="p-4" style={{ borderBottom: '1px solid #2a2b2e' }}>
-        <div className="flex items-center gap-2">
-          <Bot className={`w-5 h-5 ${theme.primary}`} />
-          <h3 className={`font-semibold ${theme.text}`}>AI Market Assistant</h3>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Bot className={`w-5 h-5 ${theme.primary}`} />
+            <h3 className={`font-semibold ${theme.text}`}>AI Market Assistant</h3>
+          </div>
+          <button
+            onClick={onClose}
+            className={`p-1.5 rounded-lg ${theme.hoverBg} ${theme.textSecondary} hover:${theme.text} transition-colors`}
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
         <p className={`text-sm ${theme.textSecondary} mt-1`}>
           Ask me anything about this market

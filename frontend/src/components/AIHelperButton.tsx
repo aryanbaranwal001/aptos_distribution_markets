@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageCircle, X } from 'lucide-react';
-import { useThemeStore, getThemeClasses } from '../store/themeStore';
+import { MessageCircle } from 'lucide-react';
+import { useThemeStore } from '../store/themeStore';
 
 interface AIHelperButtonProps {
   onToggleChat: () => void;
@@ -12,7 +12,6 @@ interface AIHelperButtonProps {
 export default function AIHelperButton({ onToggleChat, isChatOpen }: AIHelperButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
   const { color } = useThemeStore();
-  const theme = getThemeClasses(color);
 
   const handleClick = () => {
     onToggleChat();
@@ -54,43 +53,39 @@ export default function AIHelperButton({ onToggleChat, isChatOpen }: AIHelperBut
         </div>
       )}
 
-      {/* Main Button */}
-      <button
-        onClick={handleClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className={`
-          relative w-14 h-14 rounded-full shadow-lg transition-all duration-300 ease-in-out
-          ${theme.primaryBg} ${theme.primaryHover}
-          hover:scale-110 hover:shadow-xl
-          flex items-center justify-center
-          focus:outline-none focus:ring-4 focus:ring-opacity-50
-          ${isChatOpen ? 'rotate-180' : 'rotate-0'}
-        `}
+      {/* Main Button - Only show when chat is closed */}
+      {!isChatOpen && (
+        <button
+          onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className={`
+            relative w-14 h-14 rounded-full shadow-lg transition-all duration-300 ease-in-out
+            hover:scale-110 hover:shadow-xl
+            flex items-center justify-center
+            focus:outline-none
+          `}
         style={{
           backgroundColor: color === 'green' ? '#11b881' : 
                           color === 'orange' ? '#e59500' : 
                           color === 'coral' ? '#ef2d56' : '#11b881'
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = 
-            color === 'green' ? '#0f9d6f' : 
-            color === 'orange' ? '#cc8500' : 
-            color === 'coral' ? '#d92548' : '#0f9d6f';
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = 
-            color === 'green' ? '#11b881' : 
-            color === 'orange' ? '#e59500' : 
-            color === 'coral' ? '#ef2d56' : '#11b881';
-        }}
-      >
-        {isChatOpen ? (
-          <X className="w-6 h-6 text-white" />
-        ) : (
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = 
+              color === 'green' ? '#0f9d6f' : 
+              color === 'orange' ? '#cc8500' : 
+              color === 'coral' ? '#d92548' : '#0f9d6f';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 
+              color === 'green' ? '#11b881' : 
+              color === 'orange' ? '#e59500' : 
+              color === 'coral' ? '#ef2d56' : '#11b881';
+          }}
+        >
           <MessageCircle className="w-6 h-6 text-white" />
-        )}
-      </button>
+        </button>
+      )}
 
       {/* Pulse animation when not hovered and chat is closed */}
       {!isHovered && !isChatOpen && (

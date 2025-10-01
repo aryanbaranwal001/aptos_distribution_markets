@@ -555,6 +555,7 @@ const MarketInstancePage = () => {
         isOpen={isChatOpen} 
         marketId={marketId || ''} 
         aiContext={market?.aicontext || ''} 
+        onClose={() => setIsChatOpen(false)}
       />
       
       {/* AI Helper Button */}
