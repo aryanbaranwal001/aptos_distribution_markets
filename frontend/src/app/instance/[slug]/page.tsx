@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import NormalDistributionChart from '@/components/NormalDistributionChart';
-import { formatDate } from '@/data/markets';
+import { formatDate } from '@/utils/formatters';
 import { useMarket } from '@/hooks/useMarkets';
 import Navbar from '@/components/Navbar';
 import CategoryNav from '@/components/CategoryNav';

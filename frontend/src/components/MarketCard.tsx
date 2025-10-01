@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
-import { Market, formatVolume, formatDate, truncateAddress } from '@/data/markets';
+import { Market } from '@/data/markets';
+import { formatVolume, formatDate, truncateAddress } from '@/utils/formatters';
 import BookmarkIcon from './BookmarkIcon';
 
 interface MarketCardProps {

@@ -1,13 +1,14 @@
 'use client';
 
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
-import { categories } from '@/data/markets';
+import { useCategories } from '@/hooks/useMarkets';
 import { useRouter, usePathname } from 'next/navigation';
 
 const CategoryNav = () => {
   const { color } = useThemeStore();
   const router = useRouter();
   const pathname = usePathname();
+  const { data: categories = [], loading } = useCategories();
   
   const theme = getThemeClasses(color);
   
@@ -22,6 +23,23 @@ const CategoryNav = () => {
   };
   
   const activeCategory = getCurrentCategory();
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className={`sticky top-16 z-40 ${theme.background} border-b ${theme.border}`}>
+        <div className="px-12 sm:px-24 lg:px-48">
+          <div className="flex items-center justify-center space-x-8 py-2">
+            <div className="animate-pulse flex space-x-8">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className={`h-6 w-16 ${theme.cardBg} rounded`}></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const categoryLabels: Record<string, string> = {
     trending: 'Trending',
