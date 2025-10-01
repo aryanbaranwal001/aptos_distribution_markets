@@ -141,9 +141,9 @@ const MarketInstancePage = () => {
       >
         {/* Back Button */}
         <div className="mb-4">
-          <Link href="/" className={`inline-flex items-center space-x-1.5 p-1.5 rounded-lg ${theme.hoverBg} transition-colors`}>
+          <Link href="/" className={`inline-flex items-center space-x-1.5 p-1.5 mt-8 rounded-lg ${theme.hoverBg} transition-colors`}>
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Back to Markets</span>
+            <span className="text-lg">Back to Markets</span>
           </Link>
         </div>
 
