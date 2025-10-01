@@ -14,6 +14,8 @@ module distribution_markets::math_utils {
     const E: u128 = 2718281828459045235; // e * PRECISION
     /// Natural logarithm of 2
     const LN_2: u128 = 693147180559945309; // ln(2) * PRECISION
+    /// Maximum value for u128
+    const MAX_U128: u256 = 340282366920938463463374607431768211455;
 
     // ==============================
     // Error Codes
@@ -41,7 +43,7 @@ module distribution_markets::math_utils {
         let result_256 = (a_256 * b_256) / precision_256;
         
         // Check if result fits in u128
-        assert!(result_256 <= (340282366920938463463374607431768211455 as u256), EOVERFLOW);
+        assert!(result_256 <= MAX_U128, EOVERFLOW);
         
         (result_256 as u128)
     }
@@ -59,7 +61,7 @@ module distribution_markets::math_utils {
         let result_256 = (a_256 * precision_256) / b_256;
         
         // Check if result fits in u128
-        assert!(result_256 <= (340282366920938463463374607431768211455 as u256), EOVERFLOW);
+        assert!(result_256 <= MAX_U128, EOVERFLOW);
         
         (result_256 as u128)
     }
