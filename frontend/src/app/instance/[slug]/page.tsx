@@ -131,9 +131,7 @@ const MarketInstancePage = () => {
       <CategoryNav />
       
       {/* Market Content */}
-      <main className={`pt-16 px-4 max-w-7xl mx-auto transition-all duration-300 ${
-        isChatOpen ? 'mr-96' : 'mr-0'
-      }`}>
+      <main className="pt-16 px-4 max-w-7xl mx-auto">
         {/* Back Button */}
         <div className="mb-6">
           <Link href="/" className={`inline-flex items-center space-x-2 p-2 rounded-lg ${theme.hoverBg} transition-colors`}>
