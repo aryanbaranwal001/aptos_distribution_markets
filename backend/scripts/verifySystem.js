@@ -1,3 +1,7 @@
+const path = require('path');
+require('dotenv').config({
+  path: path.resolve(__dirname, '../.env') // adjust the relative path to your .env
+});
 const { db, COLLECTIONS } = require('../src/config/firebase');
 const http = require('http');
 

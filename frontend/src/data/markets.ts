@@ -30,7 +30,7 @@ export interface Market {
 export const markets: Market[] = [
   {
     id: "1",
-    title: "Will Aptos APT reach $8 by end of December 2025?",
+    title: "Will Aptos APT reach $10 by end of December 2025?",
     description: "Distribution market on Aptos APT token price considering chain's adoption of innovative projects, developer activity, and overall crypto market conditions.",
     volume: 1850000,
     categories: ["trending","crypto", "tech"],
@@ -193,7 +193,7 @@ export const markets: Market[] = [
   },
 
   {
-    id: "8",
+    id: "7",
     title: "FIFA World Cup 2026 Host Cities",
     description: "Prediction market on which additional cities will be selected as FIFA World Cup 2026 venues beyond the already announced locations.",
     volume: 1600000,
@@ -222,7 +222,7 @@ export const markets: Market[] = [
 
   // New Markets
   {
-    id: "10",
+    id: "8",
     title: "Tesla Q4 2024 Earnings Beat Expectations?",
     description: "Prediction on whether Tesla will exceed analyst expectations for Q4 2024 earnings, factoring in production numbers and market demand.",
     volume: 1200000,
@@ -249,7 +249,7 @@ export const markets: Market[] = [
     aicontext: ""
   },
   {
-    id: "11",
+    id: "9",
     title: "Will there be a recession in 2025?",
     description: "Economic prediction market analyzing various indicators including inflation, employment rates, and central bank policies.",
     volume: 3500000,
@@ -278,7 +278,7 @@ export const markets: Market[] = [
 
   // Politics Markets
   {
-    id: "12",
+    id: "10",
     title: "UK General Election Date Prediction",
     description: "Market predicting when the next UK General Election will be called, considering political developments and parliamentary dynamics.",
     volume: 950000,
@@ -305,7 +305,7 @@ export const markets: Market[] = [
     aicontext: ""
   },
   {
-    id: "13",
+    id: "11",
     title: "EU Parliament Composition 2024",
     description: "Prediction market on the political composition of the European Parliament following the 2024 elections.",
     volume: 1800000,
@@ -334,7 +334,7 @@ export const markets: Market[] = [
 
   // Sports Markets
   {
-    id: "14",
+    id: "12",
     title: "FIFA World Cup 2026 Winner",
     description: "Long-term betting market on which national team will win the 2026 FIFA World Cup, considering current team strengths and development.",
     volume: 5200000,
@@ -361,7 +361,7 @@ export const markets: Market[] = [
     aicontext: ""
   },
   {
-    id: "15",
+    id: "13",
     title: "NBA Championship 2024-25 Season",
     description: "Prediction market for the NBA Championship winner of the 2024-25 season, updated with team performance and player trades.",
     volume: 4100000,
@@ -390,7 +390,7 @@ export const markets: Market[] = [
 
   // Crypto Markets
   {
-    id: "16",
+    id: "14",
     title: "Ethereum 2.0 Staking Rewards Rate",
     description: "Market predicting the average staking rewards rate for Ethereum 2.0 validators over the next 12 months.",
     volume: 1600000,
@@ -417,7 +417,7 @@ export const markets: Market[] = [
     aicontext: ""
   },
   {
-    id: "17",
+    id: "15",
     title: "Next Crypto Bull Run Timeline",
     description: "Prediction market on when the next major cryptocurrency bull run will begin, based on market cycles and adoption metrics.",
     volume: 2200000,
@@ -446,7 +446,7 @@ export const markets: Market[] = [
 
   // Earnings Markets
   {
-    id: "18",
+    id: "16",
     title: "Apple Q1 2025 Revenue Forecast",
     description: "Market predicting Apple's Q1 2025 revenue figures, considering iPhone sales, services growth, and market conditions.",
     volume: 1800000,
@@ -473,7 +473,7 @@ export const markets: Market[] = [
     aicontext: ""
   },
   {
-    id: "19",
+    id: "17",
     title: "Amazon AWS Growth Rate 2024",
     description: "Prediction on Amazon Web Services annual growth rate for 2024, factoring in cloud adoption and competition.",
     volume: 1400000,
@@ -502,7 +502,7 @@ export const markets: Market[] = [
 
   // Geopolitics Markets
   {
-    id: "20",
+    id: "18",
     title: "China-Taiwan Relations Stability",
     description: "Market assessing the likelihood of maintaining peaceful relations between China and Taiwan over the next 12 months.",
     volume: 2800000,
@@ -529,7 +529,7 @@ export const markets: Market[] = [
     aicontext: ""
   },
   {
-    id: "21",
+    id: "19",
     title: "Russia-Ukraine Conflict Resolution",
     description: "Prediction market on potential resolution timelines for the ongoing conflict, considering diplomatic efforts and military developments.",
     volume: 4500000,
@@ -558,7 +558,7 @@ export const markets: Market[] = [
 
   // Tech Markets
   {
-    id: "22",
+    id: "20",
     title: "Apple Vision Pro Sales Target",
     description: "Market predicting whether Apple will meet its Vision Pro sales targets for 2024, considering adoption rates and market reception.",
     volume: 1100000,
@@ -585,7 +585,7 @@ export const markets: Market[] = [
     aicontext: ""
   },
   {
-    id: "23",
+    id: "21",
     title: "Meta's Metaverse Investment ROI",
     description: "Prediction on when Meta's metaverse investments will show positive returns, based on user adoption and revenue generation.",
     volume: 900000,
@@ -614,7 +614,7 @@ export const markets: Market[] = [
 
   // World Markets
   {
-    id: "24",
+    id: "22",
     title: "Global Climate Goals Achievement",
     description: "Market predicting the likelihood of achieving key global climate targets set for 2030, considering current progress and policies.",
     volume: 3200000,
@@ -641,7 +641,7 @@ export const markets: Market[] = [
     aicontext: ""
   },
   {
-    id: "25",
+    id: "23",
     title: "Next Country to Join BRICS",
     description: "Prediction market on which country will be the next to join the BRICS economic alliance, considering geopolitical alignments.",
     volume: 1700000,
@@ -670,7 +670,7 @@ export const markets: Market[] = [
 
   // Economy Markets
   {
-    id: "26",
+    id: "24",
     title: "Federal Reserve Interest Rate 2024",
     description: "Market predicting the Federal Reserve's interest rate decisions throughout 2024, considering inflation and economic indicators.",
     volume: 6200000,
