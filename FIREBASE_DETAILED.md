@@ -141,6 +141,8 @@ This document provides comprehensive documentation for the Firebase integration 
 
 ### Firebase Configuration (`/backend/src/config/firebase.js`)
 
+**Flexible Configuration with Multiple Methods:**
+
 ```javascript
 const admin = require('firebase-admin');
 require('dotenv').config();
@@ -155,33 +157,63 @@ const initializeFirebase = () => {
 
     let serviceAccount = null;
 
-    // Try to load service account from file first
-    if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY_FILE) {
+    // Method 1: Try individual environment variables first (most flexible)
+    if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+      try {
+        serviceAccount = {
+          type: "service_account",
+          project_id: process.env.FIREBASE_PROJECT_ID,
+          private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+          private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+          client_email: process.env.FIREBASE_CLIENT_EMAIL,
+          client_id: process.env.FIREBASE_CLIENT_ID,
+          auth_uri: process.env.FIREBASE_AUTH_URI || "https://accounts.google.com/o/oauth2/auth",
+          token_uri: process.env.FIREBASE_TOKEN_URI || "https://oauth2.googleapis.com/token",
+          auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL || "https://www.googleapis.com/oauth2/v1/certs",
+          client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL
+        };
+        console.log('🔑 Loaded Firebase credentials from individual environment variables');
+      } catch (envError) {
+        console.warn('⚠️  Could not construct service account from individual env vars:', envError.message);
+      }
+    }
+
+    // Method 2: Try complete JSON from environment variable
+    if (!serviceAccount && process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+      try {
+        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+        console.log('🔑 Loaded Firebase credentials from JSON environment variable');
+      } catch (parseError) {
+        console.warn('⚠️  Could not parse Firebase key from environment:', parseError.message);
+      }
+    }
+
+    // Method 3: Fallback to service account file (least preferred)
+    if (!serviceAccount && process.env.FIREBASE_SERVICE_ACCOUNT_KEY_FILE) {
       try {
         const fs = require('fs');
         const path = require('path');
         const keyPath = path.resolve(process.env.FIREBASE_SERVICE_ACCOUNT_KEY_FILE);
-        serviceAccount = JSON.parse(fs.readFileSync(keyPath, 'utf8'));
-        console.log('📄 Loaded Firebase credentials from file');
+        
+        // Check if file exists before trying to read
+        if (fs.existsSync(keyPath)) {
+          serviceAccount = JSON.parse(fs.readFileSync(keyPath, 'utf8'));
+          console.log('📄 Loaded Firebase credentials from file');
+        } else {
+          console.warn('⚠️  Firebase service account file not found:', keyPath);
+        }
       } catch (fileError) {
         console.warn('⚠️  Could not load Firebase key file:', fileError.message);
-      }
-    }
-
-    // Fallback to environment variable
-    if (!serviceAccount && process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-      try {
-        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-        console.log('🔑 Loaded Firebase credentials from environment variable');
-      } catch (parseError) {
-        console.warn('⚠️  Could not parse Firebase key from environment:', parseError.message);
       }
     }
 
     // Check if we have Firebase credentials
     if (!serviceAccount) {
       console.warn('⚠️  Firebase credentials not found. Running in mock mode for development.');
-      console.warn('   Set FIREBASE_SERVICE_ACCOUNT_KEY_FILE or FIREBASE_SERVICE_ACCOUNT_KEY environment variable.');
+      console.warn('   Configure Firebase using one of these methods:');
+      console.warn('   1. Individual env vars: FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL');
+      console.warn('   2. JSON env var: FIREBASE_SERVICE_ACCOUNT_KEY');
+      console.warn('   3. File path: FIREBASE_SERVICE_ACCOUNT_KEY_FILE');
       return;
     }
     
@@ -226,13 +258,27 @@ module.exports = {
 };
 ```
 
+**Configuration Priority Order:**
+1. **Individual Environment Variables** (Most Flexible) - Recommended for production
+2. **Complete JSON Environment Variable** - Good for containerized deployments  
+3. **Service Account File** - Fallback for local development only
+
 ### Environment Configuration
 
 #### Backend `.env` Variables
+
+**Method 1: Individual Environment Variables (Recommended)**
 ```bash
-# Firebase Configuration
-FIREBASE_SERVICE_ACCOUNT_KEY_FILE=./aptos-distribution-markets-firebase-adminsdk-fbsvc-0e39444f1c.json
+# Firebase Configuration - Individual Variables (Most Flexible)
 FIREBASE_PROJECT_ID=aptos-distribution-markets
+FIREBASE_PRIVATE_KEY_ID=your-private-key-id
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nyour-private-key-here\n-----END PRIVATE KEY-----\n"
+FIREBASE_CLIENT_EMAIL=your-service-account-email@your-project.iam.gserviceaccount.com
+FIREBASE_CLIENT_ID=your-client-id
+FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
+FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
+FIREBASE_AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
+FIREBASE_CLIENT_X509_CERT_URL=https://www.googleapis.com/robot/v1/metadata/x509/your-service-account-email%40your-project.iam.gserviceaccount.com
 FIREBASE_DATABASE_URL=https://aptos-distribution-markets-default-rtdb.firebaseio.com
 
 # Server Configuration
@@ -251,6 +297,24 @@ RATE_LIMIT_MAX_REQUESTS=100
 
 # OpenRouter AI Configuration
 OPENAI_API_KEY=sk-or-v1-[your-openrouter-key]
+```
+
+**Method 2: Complete JSON in Environment Variable**
+```bash
+# Firebase Configuration - Complete JSON
+FIREBASE_SERVICE_ACCOUNT_KEY={"type":"service_account","project_id":"aptos-distribution-markets","private_key_id":"...","private_key":"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n","client_email":"...","client_id":"...","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_x509_cert_url":"..."}
+FIREBASE_DATABASE_URL=https://aptos-distribution-markets-default-rtdb.firebaseio.com
+
+# Other configurations same as above...
+```
+
+**Method 3: Service Account File (Fallback)**
+```bash
+# Firebase Configuration - File Path (Only if file exists)
+FIREBASE_SERVICE_ACCOUNT_KEY_FILE=./aptos-distribution-markets-firebase-adminsdk-fbsvc-0e39444f1c.json
+FIREBASE_DATABASE_URL=https://aptos-distribution-markets-default-rtdb.firebaseio.com
+
+# Other configurations same as above...
 ```
 
 #### Frontend `.env.local` Variables
