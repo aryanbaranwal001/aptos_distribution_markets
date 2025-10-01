@@ -69,6 +69,14 @@ const Navbar = () => {
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-4">
+              {/* Demo Button */}
+              <Link
+                href="/instance/1"
+                className={`px-4 py-2 rounded-lg border transition-all duration-200 ${theme.border} ${theme.textSecondary} hover:${theme.primary} hover:bg-gray-600/10 whitespace-nowrap`}
+              >
+                Demo
+              </Link>
+
               {/* Connect Wallet Button */}
               <div className="wallet-selector-wrapper">
                 <WalletSelector />
