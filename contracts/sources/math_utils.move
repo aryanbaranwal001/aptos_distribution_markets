@@ -32,7 +32,7 @@ module distribution_markets::math_utils {
     // Fixed Point Arithmetic
     // ==============================
 
-    /// Multiply two fixed-point numbers
+    /// Multiply two fixed-point numbers - ✅
     #[view]
     public fun fp_mul(a: u128, b: u128): u128 {
         // Use 256-bit arithmetic to prevent overflow
@@ -48,7 +48,7 @@ module distribution_markets::math_utils {
         (result_256 as u128)
     }
 
-    /// Divide two fixed-point numbers
+    /// Divide two fixed-point numbers - ✅
     #[view]
     public fun fp_div(a: u128, b: u128): u128 {
         assert!(b != 0, EDIVISION_BY_ZERO);
@@ -66,32 +66,32 @@ module distribution_markets::math_utils {
         (result_256 as u128)
     }
 
-    /// Add two fixed-point numbers
+    /// Add two fixed-point numbers - ✅
     #[view]
     public fun fp_add(a: u128, b: u128): u128 {
         a + b
     }
 
-    /// Subtract two fixed-point numbers (a - b)
+    /// Subtract two fixed-point numbers (a - b) - ✅
     #[view]
     public fun fp_sub(a: u128, b: u128): u128 {
         assert!(a >= b, EOVERFLOW);
         a - b
     }
 
-    /// Square a fixed-point number
+    /// Square a fixed-point number - ✅
     #[view]
     public fun fp_square(a: u128): u128 {
         fp_mul(a, a)
     }
 
-    /// Convert regular integer to fixed-point
+    /// Convert regular integer to fixed-point - ✅
     #[view]
     public fun to_fixed_point(a: u64): u128 {
         (a as u128) * PRECISION
     }
 
-    /// Convert fixed-point to regular integer (truncating decimals)
+    /// Convert fixed-point to regular integer (truncating decimals) - ✅
     #[view]
     public fun from_fixed_point(a: u128): u64 {
         (a / PRECISION as u64)
@@ -101,7 +101,7 @@ module distribution_markets::math_utils {
     // Mathematical Functions
     // ==============================
 
-    /// Calculate square root using Newton's method (fixed-point)
+    /// Calculate square root using Newton's method (fixed-point) - ✅
     #[view]
     public fun fp_sqrt(x: u128): u128 {
         if (x == 0) return 0;
@@ -116,28 +116,49 @@ module distribution_markets::math_utils {
         
         z
     }
-
-    /// Calculate exponential function e^x using Taylor series (simplified)
-    /// Note: This is a basic implementation, production code would need more precision
+    
+    /// Calculate exponential function e^x using range reduction and Taylor series - ✅
+    /// Uses e^x = e^(integer_part) * e^(fractional_part) for better accuracy
+    #[view]
     public fun fp_exp(x: u128): u128 {
         if (x == 0) return PRECISION;
         
-        // For large x, use e^x = e^(a+b) = e^a * e^b where a is integer part
-        let result = PRECISION;
+        // Range reduction: split x into integer and fractional parts
+        let integer_part = x / PRECISION;
+        let fractional_part = x % PRECISION;
+        
+        // Calculate e^(fractional_part) using Taylor series (fractional_part < 1)
+        let frac_result = PRECISION;
         let term = PRECISION;
         let i = 1;
         
-        // Calculate first few terms of Taylor series: 1 + x + x²/2! + x³/3! + ...
-        while (i <= 10 && term > 0) {
-            term = fp_mul(term, x) / (i as u128);
-            result = result + term;
+        // Taylor series converges well for values < 1
+        while (i <= 15 && term > PRECISION / 1000000) { // Better convergence check
+            term = fp_mul(term, fractional_part) / (i as u128);
+            frac_result = frac_result + term;
             i = i + 1;
         };
         
-        result
+        // Calculate e^(integer_part) = e^1 raised to integer_part power
+        let int_result = PRECISION;
+        let e_power = E; // e^1 = 2.718281828...
+        let remaining_power = integer_part;
+        
+        // Fast exponentiation: e^n = (e^1)^n
+        while (remaining_power > 0) {
+            if (remaining_power % 2 == 1) {
+                int_result = fp_mul(int_result, e_power);
+            };
+            e_power = fp_mul(e_power, e_power);
+            remaining_power = remaining_power / 2;
+        };
+        
+        // Combine: e^x = e^(integer_part) * e^(fractional_part)
+        fp_mul(int_result, frac_result)
     }
 
-    /// Calculate natural logarithm using Newton's method (simplified)
+    /// Calculate natural logarithm using Newton's method (simplified) 
+    #[view]
     public fun fp_ln(x: u128): u128 {
         assert!(x > 0, EINVALID_INPUT);
         if (x == PRECISION) return 0;
@@ -159,6 +180,7 @@ module distribution_markets::math_utils {
     }
 
     /// Calculate x^y for fixed-point numbers (x^y = e^(y * ln(x)))
+    #[view]
     public fun fp_pow(x: u128, y: u128): u128 {
         if (y == 0) return PRECISION;
         if (x == 0) return 0;
@@ -205,6 +227,7 @@ module distribution_markets::math_utils {
 
     /// Calculate the inner product of two normal distributions (simplified)
     /// This is used for the AMM invariant calculations
+    #[view]
     public fun normal_inner_product(
         mean1: u128, std_dev1: u128, mean1_is_negative: bool,
         mean2: u128, std_dev2: u128, mean2_is_negative: bool
@@ -238,6 +261,7 @@ module distribution_markets::math_utils {
 
     /// Calculate the cost of moving from one distribution to another
     /// Simplified version - in practice this should be computed off-chain and verified
+    #[view]
     public fun calculate_trade_cost(
         _from_mean: u128, from_std_dev: u128, _from_mean_is_negative: bool,
         _to_mean: u128, to_std_dev: u128, _to_mean_is_negative: bool,
@@ -266,12 +290,14 @@ module distribution_markets::math_utils {
     }
 
     /// Check if a fixed-point number is approximately equal to another
+    #[view]
     public fun fp_approx_equal(a: u128, b: u128, tolerance: u128): bool {
         let diff = if (a >= b) a - b else b - a;
         diff <= tolerance
     }
 
     /// Clamp a value between min and max
+    #[view]
     public fun clamp(value: u128, min_val: u128, max_val: u128): u128 {
         if (value < min_val) min_val
         else if (value > max_val) max_val
