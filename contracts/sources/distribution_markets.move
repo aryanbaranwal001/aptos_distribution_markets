@@ -318,14 +318,14 @@ module distribution_markets::distribution_markets {
     // ==============================
 
     #[view]
-    /// Get market state information
+    /// Get market state information - ✅
     public fun get_market_state(market_addr: address): MarketState acquires Market {
         let market = borrow_global<Market>(market_addr);
         market.state
     }
 
     #[view]
-    /// Get trader's positions with pagination
+    /// Get trader's positions with pagination - ✅
     public fun get_trader_position_page(
         trader: address,
         market_addr: address,
@@ -353,7 +353,7 @@ module distribution_markets::distribution_markets {
     }
 
     #[view]
-    /// Get LP share balance for an address
+    /// Get LP share balance for an address - ✅
     public fun get_lp_share_balance(lp: address, market_addr: address): u64 acquires Market {
         let market = borrow_global<Market>(market_addr);
         if (table::contains(&market.lp_shares, lp)) {
@@ -364,7 +364,7 @@ module distribution_markets::distribution_markets {
     }
 
     #[view]
-    /// Get total LP shares outstanding
+    /// Get total LP shares outstanding - ✅
     public fun get_total_lp_shares(market_addr: address): u64 acquires Market {
         let market = borrow_global<Market>(market_addr);
         market.total_lp_shares
@@ -374,14 +374,14 @@ module distribution_markets::distribution_markets {
     // AMM Invariant Functions
     // ==============================
 
-    /// Get the protocol-level invariant constant K
+    /// Get the protocol-level invariant constant K - ✅
     /// This is the same for all markets in the protocol - Done
     #[view]
     public fun get_protocol_invariant(): u128 {
         PROTOCOL_INVARIANT_K
     }
 
-    /// Verify that the AMM invariant is maintained (for debugging/testing)
+    /// Verify that the AMM invariant is maintained (for debugging/testing) - ✅
     /// Since K is a protocol constant, this always returns true
     #[view]
     public fun check_invariant_maintained(_market_addr: address): bool {
