@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import { Market } from '@/data/markets';
 import { formatVolume, formatDate, truncateAddress } from '@/utils/formatters';
 import BookmarkIcon from './BookmarkIcon';
+import { bookmarkStorage } from '@/utils/bookmarkStorage';
 
 interface MarketCardProps {
   market: Market;
@@ -14,16 +15,35 @@ interface MarketCardProps {
 
 const MarketCard = ({ market }: MarketCardProps) => {
   const { color } = useThemeStore();
-  const [isBookmarked, setIsBookmarked] = useState(market.isBookmarked || false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   // Use PNG directly
   const [iconSrc, setIconSrc] = useState(market.iconName ? `/icons/${market.iconName.replace('.svg', '.png')}` : '/icons/default.png');
   const [hasError, setHasError] = useState(false);
   
   const theme = getThemeClasses(color);
 
+  // Check bookmark status on mount
+  useEffect(() => {
+    setIsBookmarked(bookmarkStorage.isBookmarked(market.id));
+  }, [market.id]);
+
   const handleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsBookmarked(!isBookmarked);
+    
+    if (isBookmarked) {
+      bookmarkStorage.removeBookmark(market.id);
+      setIsBookmarked(false);
+    } else {
+      bookmarkStorage.addBookmark({
+        id: market.id,
+        title: market.title,
+        description: market.description,
+        volume: market.volume,
+        categories: market.categories,
+        iconName: market.iconName
+      });
+      setIsBookmarked(true);
+    }
   };
 
   const handleCategoryClick = (e: React.MouseEvent, category: string) => {
