@@ -50,7 +50,6 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex items-center space-x-3 mb-8">
-            <Bookmark className={`w-8 h-8 ${theme.primary}`} />
             <h1 className={`text-3xl font-bold ${theme.text}`}>
               My Dashboard
             </h1>
