@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import NormalDistributionChart from '@/components/NormalDistributionChart';
 import { formatDate } from '@/utils/formatters';
@@ -14,10 +15,12 @@ import CategoryNav from '@/components/CategoryNav';
 import AIHelperButton from '@/components/AIHelperButton';
 import AIChatSidebar from '@/components/AIChatSidebar';
 import BookmarkIcon from '@/components/BookmarkIcon';
+import { WalletSelector } from '@/components/WalletSelector';
 
 const MarketInstancePage = () => {
   const params = useParams();
   const { color } = useThemeStore();
+  const { connected, account } = useWallet();
   const [marketId, setMarketId] = useState<string | null>(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [iconSrc, setIconSrc] = useState('');
@@ -434,114 +437,148 @@ const MarketInstancePage = () => {
 
                     <hr className="border-t border-gray-500/20 mb-3" />
 
-                    {/* Connect Wallet Button */}
-                    <button className={`w-full px-3 py-2 rounded-lg ${theme.primaryBg} text-black text-sm font-semibold hover:opacity-90 transition-opacity`}>
-                      Connect wallet to trade
-                    </button>
+                    {/* Connect Wallet or Trade Button */}
+                    {!connected ? (
+                      <div className="wallet-selector-wrapper">
+                        <WalletSelector />
+                      </div>
+                    ) : (
+                      <button className={`w-full px-3 py-2 rounded-lg ${theme.primaryBg} text-black text-sm font-semibold hover:opacity-90 transition-opacity`}>
+                        Execute Trade
+                      </button>
+                    )}
                   </>
                 )}
 
                 {activeTab === 'positions' && (
-                  <div className="text-center py-8">
-                    <div className={`${theme.textSecondary} text-sm mb-4`}>
-                      Your positions will appear here
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Connect your wallet to view your market positions
-                    </div>
-                  </div>
+                  <>
+                    {!connected ? (
+                      <div className="text-center py-8">
+                        <div className={`${theme.textSecondary} text-sm mb-4`}>
+                          Connect your wallet to view positions
+                        </div>
+                        <div className="wallet-selector-wrapper">
+                          <WalletSelector />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <div className={`${theme.textSecondary} text-sm mb-4`}>
+                          No positions found
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Your market positions will appear here after trading
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {activeTab === 'liquidity' && (
                   <>
-                    {/* APT Amount Input */}
-                    <div className="mb-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="text-xs font-semibold">AMOUNT (APT)</label>
-                        <span className="text-xs text-gray-500">Balance: 12.45 APT</span>
+                    {!connected ? (
+                      <div className="text-center py-8">
+                        <div className={`${theme.textSecondary} text-sm mb-4`}>
+                          Connect your wallet to add liquidity
+                        </div>
+                        <div className="wallet-selector-wrapper">
+                          <WalletSelector />
+                        </div>
                       </div>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          value={aptAmount}
-                          onChange={(e) => setAptAmount(e.target.value)}
-                          placeholder="0.00"
-                          className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
-                        />
-                        <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-blue-400 hover:text-blue-300">
-                          MAX
+                    ) : (
+                      <>
+                        {/* APT Amount Input */}
+                        <div className="mb-4">
+                          <div className="flex justify-between items-center mb-2">
+                            <label className="text-xs font-semibold">AMOUNT (APT)</label>
+                            <span className="text-xs text-gray-500">
+                              Balance: {account?.address ? '12.45 APT' : '0.00 APT'}
+                            </span>
+                          </div>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={aptAmount}
+                              onChange={(e) => setAptAmount(e.target.value)}
+                              placeholder="0.00"
+                              className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+                            />
+                            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-blue-400 hover:text-blue-300">
+                              MAX
+                            </button>
+                          </div>
+                        </div>
+
+                        <hr className="border-t border-gray-500/20 mb-4" />
+
+                        {/* Slippage Tolerance */}
+                        <div className="mb-4">
+                          <label className="text-xs font-semibold mb-2 block">SLIPPAGE TOLERANCE</label>
+                          <div className="grid grid-cols-4 gap-2">
+                            {[0.1, 0.2, 0.5, 1].map((value) => (
+                              <button
+                                key={value}
+                                onClick={() => setSlippageTolerance(value)}
+                                className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                                  slippageTolerance === value
+                                    ? `${theme.primaryBg} text-black`
+                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                }`}
+                              >
+                                {value}%
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <hr className="border-t border-gray-500/20 mb-4" />
+
+                        {/* Liquidity Position Summary */}
+                        <div className="mb-2">
+                          <h3 className="text-xs font-semibold mb-3 uppercase tracking-wide">POSITION SUMMARY</h3>
+                          <div className="space-y-2">
+                            <div className="flex justify-between">
+                              <span className={`${theme.textSecondary} text-xs`}>Expected LP Shares</span>
+                              <span className="font-mono text-xs">{aptAmount || '0.00'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className={`${theme.textSecondary} text-xs`}>Pool Share</span>
+                              <span className="font-mono text-xs">
+                                {aptAmount ? ((parseFloat(aptAmount) / (2500000 + parseFloat(aptAmount))) * 100).toFixed(4) : '0.0000'}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className={`${theme.textSecondary} text-xs`}>Current Pool Size</span>
+                              <span className="font-mono text-xs">{(market.volume / 1000000).toFixed(2)}M APT</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className={`${theme.textSecondary} text-xs`}>Est. APY</span>
+                              <span className="font-mono text-xs text-green-400">12.5%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr className="border-t border-gray-500/20 mb-2" />
+
+                        {/* LP Share Definition */}
+                        <div className="mb-2">
+                          <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">LP SHARE DEFINITION</h3>
+                          <p className="text-xs text-gray-400 leading-relaxed">
+                          LP shares show your pool ownership and earn you proportional trading fees.
+                          </p>
+                        </div>
+
+                        <hr className="border-t border-gray-500/20 mb-2" />
+
+                        {/* Add Liquidity Button */}
+                        <button 
+                          className={`w-full px-4 py-3 rounded-xl ${theme.primaryBg} text-black font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
+                          disabled={!aptAmount || parseFloat(aptAmount) <= 0}
+                        >
+                          Add Liquidity
                         </button>
-                      </div>
-                    </div>
-
-                    <hr className="border-t border-gray-500/20 mb-4" />
-
-                    {/* Slippage Tolerance */}
-                    <div className="mb-4">
-                      <label className="text-xs font-semibold mb-2 block">SLIPPAGE TOLERANCE</label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {[0.1, 0.2, 0.5, 1].map((value) => (
-                          <button
-                            key={value}
-                            onClick={() => setSlippageTolerance(value)}
-                            className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                              slippageTolerance === value
-                                ? `${theme.primaryBg} text-black`
-                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                            }`}
-                          >
-                            {value}%
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <hr className="border-t border-gray-500/20 mb-4" />
-
-                    {/* Liquidity Position Summary */}
-                    <div className="mb-2">
-                      <h3 className="text-xs font-semibold mb-3 uppercase tracking-wide">POSITION SUMMARY</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className={`${theme.textSecondary} text-xs`}>Expected LP Shares</span>
-                          <span className="font-mono text-xs">{aptAmount || '0.00'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className={`${theme.textSecondary} text-xs`}>Pool Share</span>
-                          <span className="font-mono text-xs">
-                            {aptAmount ? ((parseFloat(aptAmount) / (2500000 + parseFloat(aptAmount))) * 100).toFixed(4) : '0.0000'}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className={`${theme.textSecondary} text-xs`}>Current Pool Size</span>
-                          <span className="font-mono text-xs">{(market.volume / 1000000).toFixed(2)}M APT</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className={`${theme.textSecondary} text-xs`}>Est. APY</span>
-                          <span className="font-mono text-xs text-green-400">12.5%</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <hr className="border-t border-gray-500/20 mb-2" />
-
-                    {/* LP Share Definition */}
-                    <div className="mb-2">
-                      <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">LP SHARE DEFINITION</h3>
-                      <p className="text-xs text-gray-400 leading-relaxed">
-                      LP shares show your pool ownership and earn you proportional trading fees.
-                      </p>
-                    </div>
-
-                    <hr className="border-t border-gray-500/20 mb-2" />
-
-                    {/* Add Liquidity Button */}
-                    <button 
-                      className={`w-full px-4 py-3 rounded-xl ${theme.primaryBg} text-black font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
-                      disabled={!aptAmount || parseFloat(aptAmount) <= 0}
-                    >
-                      Add Liquidity
-                    </button>
+                      </>
+                    )}
                   </>
                 )}
                 </div>
