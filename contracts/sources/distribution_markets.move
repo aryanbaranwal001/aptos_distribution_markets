@@ -389,10 +389,12 @@ module distribution_markets::distribution_markets {
         true
     }
 
-    /// Calculate the minimum standard deviation based on backing constraint
+    /// Calculate the minimum standard deviation based on backing constraint - ✅
     /// σ_min = k² / (b² * √π) where b is backing, k is protocol invariant
     fun calculate_min_standard_deviation(market: &Market): u64 {
-        let b = (market.initial_backing as u128);
+        // Convert backing from octas (8-decimal) to 18-decimal precision to match k
+        let b_octas = (market.initial_backing as u128);
+        let b = b_octas * 10000000000; // Convert 8-decimal to 18-decimal (multiply by 10^10)
         let k = PROTOCOL_INVARIANT_K;
         let k_squared = math_utils::fp_square(k);
         let b_squared = math_utils::fp_square(b);
@@ -404,7 +406,7 @@ module distribution_markets::distribution_markets {
         };
         
         let min_std_dev = math_utils::fp_div(k_squared, denominator);
-        let result = (min_std_dev / PRECISION as u64);
+        let result = (min_std_dev as u64);
         
         // Ensure we don't go below the fallback minimum
         if (result < MIN_STANDARD_DEVIATION_FALLBACK) {
@@ -414,7 +416,7 @@ module distribution_markets::distribution_markets {
         }
     }
 
-    /// Get the minimum standard deviation for a market (public view)
+    /// Get the minimum standard deviation for a market (public view) - ✅
     #[view]
     public fun get_min_standard_deviation(market_addr: address): u64 acquires Market {
         let market = borrow_global<Market>(market_addr);
