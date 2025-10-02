@@ -440,7 +440,9 @@ const MarketInstancePage = () => {
                     {/* Connect Wallet or Trade Button */}
                     {!connected ? (
                       <div className="wallet-selector-wrapper">
-                        <WalletSelector />
+                        <div className="w-full [&>*]:w-full">
+                          <WalletSelector />
+                        </div>
                       </div>
                     ) : (
                       <button className={`w-full px-3 py-2 rounded-lg ${theme.primaryBg} text-black text-sm font-semibold hover:opacity-90 transition-opacity`}>
@@ -458,7 +460,9 @@ const MarketInstancePage = () => {
                           Connect your wallet to view positions
                         </div>
                         <div className="wallet-selector-wrapper">
-                          <WalletSelector />
+                          <div className="w-full [&>*]:w-full">
+                            <WalletSelector />
+                          </div>
                         </div>
                       </div>
                     ) : (
@@ -482,7 +486,9 @@ const MarketInstancePage = () => {
                           Connect your wallet to add liquidity
                         </div>
                         <div className="wallet-selector-wrapper">
-                          <WalletSelector />
+                          <div className="w-full [&>*]:w-full">
+                            <WalletSelector />
+                          </div>
                         </div>
                       </div>
                     ) : (
