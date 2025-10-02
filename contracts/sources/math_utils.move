@@ -211,7 +211,7 @@ module distribution_markets::math_utils {
         series_result + power_count * LN_2
     }
 
-    /// Calculate x^y for fixed-point numbers (x^y = e^(y * ln(x)))
+    /// Calculate x^y for fixed-point numbers (x^y = e^(y * ln(x))) - ✅
     #[view]
     public fun fp_pow(x: u128, y: u128): u128 {
         if (y == 0) return PRECISION;
@@ -227,7 +227,7 @@ module distribution_markets::math_utils {
     // Statistical Functions
     // ==============================
 
-    /// Calculate the probability density function of normal distribution
+    /// Calculate the probability density function of normal distribution - ✅
     /// PDF(x) = (1 / (σ * sqrt(2π))) * e^(-0.5 * ((x - μ) / σ)²)
     #[view]
     public fun normal_pdf(x: u128, mean: u128, std_dev: u128, x_is_negative: bool, mean_is_negative: bool): u128 {
@@ -245,8 +245,10 @@ module distribution_markets::math_utils {
         let normalized_diff_squared = fp_square(normalized_diff);
         
         // Calculate e^(-0.5 * ((x - μ) / σ)²)
+        // Use e^(-x) = 1/e^x since we don't have negative number support
         let exponent = fp_div(normalized_diff_squared, 2 * PRECISION);
-        let exp_term = fp_exp(exponent); // Note: This should be e^(-exponent), simplified here
+        let exp_positive = fp_exp(exponent);
+        let exp_term = fp_div(PRECISION, exp_positive); // e^(-x) = 1/e^x
         
         // Calculate 1 / (σ * sqrt(2π))
         let denominator = fp_mul(std_dev, SQRT_2PI);
@@ -255,9 +257,9 @@ module distribution_markets::math_utils {
         fp_mul(coefficient, exp_term)
     }
 
-    // Note: L2 norm calculation removed - not needed on-chain, K is set by initializer
+    // Note: L2 norm calculation removed - not needed on-chain, K is set by initializer 
 
-    /// Calculate the inner product of two normal distributions (simplified)
+    /// Calculate the inner product of two normal distributions (simplified) - Will look later if needed
     /// This is used for the AMM invariant calculations
     #[view]
     public fun normal_inner_product(
@@ -291,7 +293,7 @@ module distribution_markets::math_utils {
         )
     }
 
-    /// Calculate the cost of moving from one distribution to another
+    /// Calculate the cost of moving from one distribution to another - Will look later if needed
     /// Simplified version - in practice this should be computed off-chain and verified
     #[view]
     public fun calculate_trade_cost(
@@ -315,20 +317,20 @@ module distribution_markets::math_utils {
     // Utility Functions
     // ==============================
 
-    /// Get the precision constant
+    /// Get the precision constant - ✅
     #[view]
     public fun get_precision(): u128 {
         PRECISION
     }
 
-    /// Check if a fixed-point number is approximately equal to another
+    /// Check if a fixed-point number is approximately equal to another - ✅
     #[view]
     public fun fp_approx_equal(a: u128, b: u128, tolerance: u128): bool {
         let diff = if (a >= b) a - b else b - a;
         diff <= tolerance
     }
 
-    /// Clamp a value between min and max
+    /// Clamp a value between min and max - ✅
     #[view]
     public fun clamp(value: u128, min_val: u128, max_val: u128): u128 {
         if (value < min_val) min_val
