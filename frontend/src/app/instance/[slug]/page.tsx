@@ -16,6 +16,7 @@ import AIHelperButton from '@/components/AIHelperButton';
 import AIChatSidebar from '@/components/AIChatSidebar';
 import BookmarkIcon from '@/components/BookmarkIcon';
 import { WalletSelector } from '@/components/WalletSelector';
+import { bookmarkStorage } from '@/utils/bookmarkStorage';
 
 const MarketInstancePage = () => {
   const params = useParams();
@@ -29,6 +30,13 @@ const MarketInstancePage = () => {
   
   // Use the new API hook
   const { data: market, loading, error } = useMarket(marketId);
+  
+  // Check bookmark status when market loads
+  useEffect(() => {
+    if (market) {
+      setIsBookmarked(bookmarkStorage.isBookmarked(market.id));
+    }
+  }, [market]);
   
   // Slider states for mean and std dev - dynamically set to market values for zero delta
   const [userMean, setUserMean] = useState(market?.market_mean || 0);
@@ -92,7 +100,22 @@ const MarketInstancePage = () => {
   };
 
   const handleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
+    if (!market) return;
+    
+    if (isBookmarked) {
+      bookmarkStorage.removeBookmark(market.id);
+      setIsBookmarked(false);
+    } else {
+      bookmarkStorage.addBookmark({
+        id: market.id,
+        title: market.title,
+        description: market.description,
+        volume: market.volume,
+        categories: market.categories,
+        iconName: market.iconName
+      });
+      setIsBookmarked(true);
+    }
   };
 
   if (loading) {

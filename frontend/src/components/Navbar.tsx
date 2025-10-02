@@ -69,6 +69,8 @@ const Navbar = () => {
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-4">
+
+
               {/* Demo Button */}
               <Link
                 href="/instance/1"
