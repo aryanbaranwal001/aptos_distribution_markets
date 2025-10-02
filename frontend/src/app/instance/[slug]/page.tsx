@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Bookmark } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
@@ -13,6 +13,7 @@ import Navbar from '@/components/Navbar';
 import CategoryNav from '@/components/CategoryNav';
 import AIHelperButton from '@/components/AIHelperButton';
 import AIChatSidebar from '@/components/AIChatSidebar';
+import BookmarkIcon from '@/components/BookmarkIcon';
 
 const MarketInstancePage = () => {
   const params = useParams();
@@ -172,11 +173,15 @@ const MarketInstancePage = () => {
                   onClick={handleBookmark}
                   className={`p-1.5 rounded-full transition-colors ${
                     isBookmarked
-                      ? `${theme.primaryBg} text-white`
+                      ? `${theme.textSecondary}`
                       : `${theme.textSecondary} hover:${theme.primary}`
                   }`}
                 >
-                  <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                  <BookmarkIcon 
+                    filled={isBookmarked} 
+                    className="w-5 h-5"
+                    themeColor={theme.primary}
+                  />
                 </button>
               </div>
               <p className={`${theme.textSecondary} text-sm leading-relaxed`}>

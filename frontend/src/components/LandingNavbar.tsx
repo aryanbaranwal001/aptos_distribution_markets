@@ -22,13 +22,7 @@ const LandingNavbar = () => {
           {/* Right side - Demo, Wallet and Theme */}
           <div className="flex items-center space-x-4 pointer-events-auto">
             {/* Demo Button */}
-            <Link
-              href="/instance/1"
-              className={`group relative px-4 py-2 rounded-lg border border-white/15 transition-all duration-200 ${theme.text} hover:${theme.primary} hover:border-current hover:shadow-lg hover:scale-105 whitespace-nowrap overflow-hidden`}
-            >
-              <span className="relative z-10 font-medium">✨ Demo</span>
-              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-            </Link>
+
 
             {/* Theme Toggle */}
             <button
