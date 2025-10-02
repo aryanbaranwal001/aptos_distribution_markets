@@ -1,4 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+'use client';
+
+import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import './LiquidEther.css';
 
