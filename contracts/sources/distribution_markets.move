@@ -1095,4 +1095,48 @@ module distribution_markets::distribution_markets {
     fun validate_normal_params_fallback(params: &NormalParams): bool {
         params.std_dev >= MIN_STANDARD_DEVIATION_FALLBACK
     }
+
+    // ==============================
+    // Entry Functions for CLI Testing
+    // ==============================
+
+    /// Entry function to initialize a market with APT - can be called from CLI
+    /// This function withdraws APT from the caller's account and initializes a market
+    entry fun initialize_market_with_apt(
+        creator: &signer,
+        initial_backing_octas: u64,
+        mean: u128,
+        std_dev: u64,
+        mean_is_negative: bool,
+        initial_lp: address,
+    ) {
+        // Create normal distribution parameters
+        let initial_distribution = NormalParams {
+            mean,
+            std_dev,
+            mean_is_negative,
+        };
+        
+        // Get APT metadata (APT fungible asset address)
+        let apt_metadata = object::address_to_object<Metadata>(@aptos_fungible_asset);
+        
+        // Withdraw APT from creator's primary store
+        let initial_collateral = primary_fungible_store::withdraw(
+            creator, 
+            apt_metadata, 
+            initial_backing_octas
+        );
+        
+        // Initialize the market
+        let _market_address = initialize_market(
+            creator,
+            initial_backing_octas,
+            initial_distribution,
+            initial_lp,
+            apt_metadata,
+            initial_collateral,
+        );
+        
+        // Market created successfully - address is returned but not used in entry function
+    }
 }
