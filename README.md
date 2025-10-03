@@ -10,9 +10,7 @@
 
 **A next generation prediction markets platform implementing continuous probability distributions on Aptos Blockchain**
 
-*Built on groundbreaking research from [Paradigm's Distribution Markets paper](https://www.paradigm.xyz/2024/12/distribution-markets)*
-
-[Live Demo](https://aptos-distribution-markets.vercel.app) • [📄 Research Paper](https://www.paradigm.xyz/2024/12/distribution-markets) • [📖 Documentation](./FIREBASE_DETAILED.md)
+*Built on research paper from [Paradigm's Distribution Markets paper](https://www.paradigm.xyz/2024/12/distribution-markets)*
 
 </div>
 
@@ -20,6 +18,7 @@
 
 ## 📋 Table of Contents
 
+- [ Live Demo] 
 - [🎯 Overview](#-overview)
 - [✨ Key Features](#-key-features)
 - [🏗️ Architecture](#️-architecture)
