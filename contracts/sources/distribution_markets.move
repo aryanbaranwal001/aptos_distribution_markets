@@ -435,19 +435,7 @@ module distribution_markets::distribution_markets {
         let realized_outcome = *option::borrow(&market.state.realized_outcome);
         let outcome_is_negative = market.state.outcome_is_negative;
 
-        // DEBUG: Print realized outcome
-        std::debug::print(&std::string::utf8(b"=== SETTLEMENT DEBUG ==="));
-        std::debug::print(&std::string::utf8(b"Realized outcome:"));
-        std::debug::print(&realized_outcome);
-        std::debug::print(&std::string::utf8(b"Outcome is negative:"));
-        std::debug::print(&outcome_is_negative);
-
         // Calculate g(x0) - trader's position value at realized outcome
-        std::debug::print(&std::string::utf8(b"Position params (g):"));
-        std::debug::print(&position.params.mean);
-        std::debug::print(&position.params.std_dev);
-        std::debug::print(&position.params.mean_is_negative);
-        
         let g_x0 = math_utils::normal_pdf(
             realized_outcome,
             position.params.mean,
@@ -455,15 +443,8 @@ module distribution_markets::distribution_markets {
             outcome_is_negative,
             position.params.mean_is_negative
         );
-        std::debug::print(&std::string::utf8(b"g(x0):"));
-        std::debug::print(&g_x0);
 
         // Calculate f(x0) - market position value at realized outcome (from creation time)
-        std::debug::print(&std::string::utf8(b"Market position at creation (f):"));
-        std::debug::print(&position.market_position_at_creation.mean);
-        std::debug::print(&position.market_position_at_creation.std_dev);
-        std::debug::print(&position.market_position_at_creation.mean_is_negative);
-        
         let f_x0 = math_utils::normal_pdf(
             realized_outcome,
             position.market_position_at_creation.mean,
@@ -471,66 +452,34 @@ module distribution_markets::distribution_markets {
             outcome_is_negative,
             position.market_position_at_creation.mean_is_negative
         );
-        std::debug::print(&std::string::utf8(b"f(x0):"));
-        std::debug::print(&f_x0);
 
         // Calculate λ_g * g(x0) - λ_f * f(x0) in u128 to preserve precision
-        std::debug::print(&std::string::utf8(b"Lambda values:"));
-        std::debug::print(&position.lambda_g);
-        std::debug::print(&position.lambda_f);
-        
         let scaled_g_x0 = math_utils::fp_mul(position.lambda_g, g_x0);
         let scaled_f_x0 = math_utils::fp_mul(position.lambda_f, f_x0);
-        
-        std::debug::print(&std::string::utf8(b"Scaled values:"));
-        std::debug::print(&scaled_g_x0);
-        std::debug::print(&scaled_f_x0);
         
         // Work with u128 throughout to preserve precision
         // Convert collateral from 8-decimal (octas) to 18-decimal for calculation
         let collateral_u128 = (position.collateral as u128) * 10000000000; // Multiply by 10^10
 
         // Settlement = λ_g * g(x0) - λ_f * f(x0) + collateral (all in fixed-point)
-        std::debug::print(&std::string::utf8(b"Collateral (original):"));
-        std::debug::print(&position.collateral);
-        std::debug::print(&std::string::utf8(b"Collateral (u128 * precision):"));
-        std::debug::print(&collateral_u128);
-        
         let settlement_u128 = if (scaled_g_x0 >= scaled_f_x0) {
             // Positive difference: trader profits
             let profit = scaled_g_x0 - scaled_f_x0;
-            std::debug::print(&std::string::utf8(b"TRADER PROFITS - profit:"));
-            std::debug::print(&profit);
-            let result = collateral_u128 + profit;
-            std::debug::print(&std::string::utf8(b"Settlement (collateral + profit):"));
-            std::debug::print(&result);
-            result
+            collateral_u128 + profit
         } else {
             // Negative difference: trader loses
             let loss = scaled_f_x0 - scaled_g_x0;
-            std::debug::print(&std::string::utf8(b"TRADER LOSES - loss:"));
-            std::debug::print(&loss);
-            let result = if (loss >= collateral_u128) {
-                std::debug::print(&std::string::utf8(b"Total loss - settlement = 0"));
+            if (loss >= collateral_u128) {
                 0 // Cannot go below zero
             } else {
-                let settlement_val = collateral_u128 - loss;
-                std::debug::print(&std::string::utf8(b"Partial loss - settlement:"));
-                std::debug::print(&settlement_val);
-                settlement_val
-            };
-            result
+                collateral_u128 - loss
+            }
         };
 
         // Convert final result back to u64 (octas)
         // settlement_u128 is in 18-decimal precision, octas are 8-decimal
         // So divide by 10^10 to convert from 18-decimal to 8-decimal
-        let settlement = (settlement_u128 / 10000000000) as u64;
-        std::debug::print(&std::string::utf8(b"Final settlement (u64):"));
-        std::debug::print(&settlement);
-        std::debug::print(&std::string::utf8(b"=== END SETTLEMENT DEBUG ==="));
-
-        settlement
+        (settlement_u128 / 10000000000) as u64
     }
 
     /// Verify off-chain calculated minimum collateral using nearby point comparison
@@ -1250,118 +1199,6 @@ module distribution_markets::distribution_markets {
         close_position(trader, market_addr, position_index);
     }
 
-    /// Test-only function to expose settlement calculation for isolated testing
-    #[test_only]
-    public fun test_settlement_calculation_with_data(
-        realized_outcome: u128,
-        outcome_is_negative: bool,
-        trader_mean: u128,
-        trader_std_dev: u64,
-        trader_mean_is_negative: bool,
-        market_mean: u128,
-        market_std_dev: u64,
-        market_mean_is_negative: bool,
-        collateral: u64,
-        lambda_g: u128,
-        lambda_f: u128,
-    ): u64 {
-        // DEBUG: Print all input parameters
-        std::debug::print(&std::string::utf8(b"=== ISOLATED SETTLEMENT DEBUG ==="));
-        std::debug::print(&std::string::utf8(b"Realized outcome:"));
-        std::debug::print(&realized_outcome);
-        std::debug::print(&std::string::utf8(b"Outcome is negative:"));
-        std::debug::print(&outcome_is_negative);
-
-        // Calculate g(x0) - trader's position value at realized outcome
-        std::debug::print(&std::string::utf8(b"Position params (g):"));
-        std::debug::print(&trader_mean);
-        std::debug::print(&trader_std_dev);
-        std::debug::print(&trader_mean_is_negative);
-        
-        let g_x0 = math_utils::normal_pdf(
-            realized_outcome,
-            trader_mean,
-            (trader_std_dev as u128),
-            outcome_is_negative,
-            trader_mean_is_negative
-        );
-        std::debug::print(&std::string::utf8(b"g(x0):"));
-        std::debug::print(&g_x0);
-
-        // Calculate f(x0) - market position value at realized outcome (from creation time)
-        std::debug::print(&std::string::utf8(b"Market position at creation (f):"));
-        std::debug::print(&market_mean);
-        std::debug::print(&market_std_dev);
-        std::debug::print(&market_mean_is_negative);
-        
-        let f_x0 = math_utils::normal_pdf(
-            realized_outcome,
-            market_mean,
-            (market_std_dev as u128),
-            outcome_is_negative,
-            market_mean_is_negative
-        );
-        std::debug::print(&std::string::utf8(b"f(x0):"));
-        std::debug::print(&f_x0);
-
-        // Calculate λ_g * g(x0) - λ_f * f(x0) in u128 to preserve precision
-        std::debug::print(&std::string::utf8(b"Lambda values:"));
-        std::debug::print(&lambda_g);
-        std::debug::print(&lambda_f);
-        
-        let scaled_g_x0 = math_utils::fp_mul(lambda_g, g_x0);
-        let scaled_f_x0 = math_utils::fp_mul(lambda_f, f_x0);
-        
-        std::debug::print(&std::string::utf8(b"Scaled values:"));
-        std::debug::print(&scaled_g_x0);
-        std::debug::print(&scaled_f_x0);
-        
-        // Work with u128 throughout to preserve precision
-        // Convert collateral from 8-decimal (octas) to 18-decimal for calculation
-        let collateral_u128 = (collateral as u128) * 10000000000; // Multiply by 10^10
-
-        // Settlement = λ_g * g(x0) - λ_f * f(x0) + collateral (all in fixed-point)
-        std::debug::print(&std::string::utf8(b"Collateral (original):"));
-        std::debug::print(&collateral);
-        std::debug::print(&std::string::utf8(b"Collateral (u128 * precision):"));
-        std::debug::print(&collateral_u128);
-        
-        let settlement_u128 = if (scaled_g_x0 >= scaled_f_x0) {
-            // Positive difference: trader profits
-            let profit = scaled_g_x0 - scaled_f_x0;
-            std::debug::print(&std::string::utf8(b"TRADER PROFITS - profit:"));
-            std::debug::print(&profit);
-            let result = collateral_u128 + profit;
-            std::debug::print(&std::string::utf8(b"Settlement (collateral + profit):"));
-            std::debug::print(&result);
-            result
-        } else {
-            // Negative difference: trader loses
-            let loss = scaled_f_x0 - scaled_g_x0;
-            std::debug::print(&std::string::utf8(b"TRADER LOSES - loss:"));
-            std::debug::print(&loss);
-            let result = if (loss >= collateral_u128) {
-                std::debug::print(&std::string::utf8(b"Total loss - settlement = 0"));
-                0 // Cannot go below zero
-            } else {
-                let settlement_val = collateral_u128 - loss;
-                std::debug::print(&std::string::utf8(b"Partial loss - settlement:"));
-                std::debug::print(&settlement_val);
-                settlement_val
-            };
-            result
-        };
-
-        // Convert final result back to u64 (octas)
-        // settlement_u128 is in 18-decimal precision, octas are 8-decimal
-        // So divide by 10^10 to convert from 18-decimal to 8-decimal
-        let settlement = (settlement_u128 / 10000000000) as u64;
-        std::debug::print(&std::string::utf8(b"Final settlement (u64):"));
-        std::debug::print(&settlement);
-        std::debug::print(&std::string::utf8(b"=== END ISOLATED SETTLEMENT DEBUG ==="));
-
-        settlement
-    }
 
     /// Debug function to check settlement calculation values
     #[view]
