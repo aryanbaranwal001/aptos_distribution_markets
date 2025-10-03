@@ -33,6 +33,20 @@
 
 </div>
 
+## 🚀 Live Demo
+
+<div align="center">
+
+### **Experience Infi Markets in Action**
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-brightgreen?style=for-the-badge&logo=vercel&logoColor=white)](https://aptos-distribution-markets.vercel.app/)
+
+**🔗 [https://aptos-distribution-markets.vercel.app/](https://aptos-distribution-markets.vercel.app/)**
+
+---
+
+</div>
+
 ## 🌟 Overview
 
 Infi Markets is a cutting-edge decentralized prediction market platform that enables trading on **continuous probability distributions** rather than traditional binary outcomes. Built on the Aptos blockchain using Move smart contracts, it implements the concept of distribution markets based on research from [Paradigm's Distribution Markets paper](https://www.paradigm.xyz/2024/12/distribution-markets).
