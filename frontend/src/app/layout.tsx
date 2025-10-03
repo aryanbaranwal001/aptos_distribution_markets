@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Mirae - Distribution Markets Platform",
+  title: "Infi Markets - Distribution Markets Platform",
   description: "A modern platform for prediction markets and distribution trading",
 };
 

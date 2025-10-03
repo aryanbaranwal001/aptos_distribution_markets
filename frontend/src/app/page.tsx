@@ -43,13 +43,13 @@ export default function Home() {
         <div className="text-center max-w-4xl mx-auto px-6 sm:px-12">
           {/* Hero Content - Allow mouse events to pass through background */}
           <div className=" pointer-events-none">
-            <h1 className={` ${theme.text} mb-10`}>
-              <span className="text-5xl sm:text-6xl md:text-7xl">Welcome to{' '}</span>
-              <span className={`text-6xl sm:text-7xl md:text-8xl ${theme.primary} font-serif font-extrabold tracking-wide`}>Mirae</span>
+            <h1 className={` ${theme.text} mb-8`}>
+              <span className="text-4xl sm:text-5xl md:text-6xl">Welcome to{' '}</span>
+              <span className={`text-4xl sm:text-5xl md:text-6xl ${theme.primary} font-extrabold tracking-wide`}>Infi Markets</span>
             </h1>
-            <p className={`text-lg sm:text-xl ${theme.textSecondary} mb-12 max-w-2xl mx-auto`}>
+            <p className={`text-lg sm:text-xl ${theme.textSecondary} mb-8 max-w-2xl mx-auto`}>
               <span className=''>Next generation prediction market on Aptos. <br /> </span>
-              <span>From risky guesses to informed trades, capture every outcome.</span>
+              <span className='pt-1 inline-block'>From risky guesses to informed trades, capture every outcome.</span>
             </p>
             
             {/* CTA Button */}
