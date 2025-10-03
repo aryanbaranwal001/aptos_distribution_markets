@@ -14,7 +14,7 @@ const themeColors: ThemeColor[] = ['green', 'orange', 'coral'];
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      color: 'green',
+      color: 'orange',
       setColor: (color) => set({ color }),
       nextColor: () => {
         const currentIndex = themeColors.indexOf(get().color);

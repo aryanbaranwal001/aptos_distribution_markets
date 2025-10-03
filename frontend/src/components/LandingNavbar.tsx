@@ -15,7 +15,7 @@ const LandingNavbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <h1 className={`text-2xl font-bold ${theme.text}`}>
-              <span className={theme.primary}>Infi</span> Markets
+              <span className={theme.primary}> { /* "here will come the symbol.svg" */} </span> Mirae
             </h1>
           </div>
 

@@ -39,7 +39,7 @@ const Navbar = () => {
             {/* Company Name */}
             <div className="flex-shrink-0">
               <h1 className={`text-xl font-bold ${theme.primary}`}>
-                Infi Markets
+                Mirae
               </h1>
             </div>
 
