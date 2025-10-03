@@ -10,6 +10,7 @@ module distribution_markets::distribution_markets {
     use std::option::{Self, Option};
     use aptos_std::table::{Self, Table};
     use aptos_std::math64;
+    use aptos_std::bcs;
     use aptos_framework::object::{Self, Object};
     use aptos_framework::fungible_asset::{Self, Metadata, FungibleAsset};
     use aptos_framework::primary_fungible_store;
@@ -202,7 +203,7 @@ module distribution_markets::distribution_markets {
     // Market Lifecycle Functions
     // ==============================
 
-    /// Initialize a new distribution market
+    /// Initialize a new distribution market - ✅
     /// @param creator The account creating the market
     /// @param initial_b Initial backing amount
     /// @param initial_f Initial distribution parameters
@@ -232,8 +233,8 @@ module distribution_markets::distribution_markets {
         let object_signer = object::generate_signer(&constructor_ref);
         let market_addr = signer::address_of(&object_signer);
 
-        // Create a per-market treasury resource account
-        let seed = b"market_treasury";
+        // Create a per-market treasury resource account with unique seed
+        let seed = bcs::to_bytes(&market_addr); // Use market address as unique seed
         let (treasury_signer, treasury_cap) = account::create_resource_account(creator, seed);
         let treasury_addr = signer::address_of(&treasury_signer);
         // Ensure primary FA store for the treasury
@@ -452,27 +453,31 @@ module distribution_markets::distribution_markets {
             position.market_position_at_creation.mean_is_negative
         );
 
-        // Calculate λ_g * g(x0) - λ_f * f(x0)
+        // Calculate λ_g * g(x0) - λ_f * f(x0) in u128 to preserve precision
         let scaled_g_x0 = math_utils::fp_mul(position.lambda_g, g_x0);
         let scaled_f_x0 = math_utils::fp_mul(position.lambda_f, f_x0);
         
-        let scaled_g_x0_u64 = (scaled_g_x0 / math_utils::get_precision() as u64);
-        let scaled_f_x0_u64 = (scaled_f_x0 / math_utils::get_precision() as u64);
+        // Work with u128 throughout to preserve precision
+        let precision_u128 = (math_utils::get_precision() as u128);
+        let collateral_u128 = (position.collateral as u128) * precision_u128;
 
-        // Settlement = λ_g * g(x0) - λ_f * f(x0) + collateral
-        let settlement = if (scaled_g_x0_u64 >= scaled_f_x0_u64) {
+        // Settlement = λ_g * g(x0) - λ_f * f(x0) + collateral (all in fixed-point)
+        let settlement_u128 = if (scaled_g_x0 >= scaled_f_x0) {
             // Positive difference: trader profits
-            let profit = scaled_g_x0_u64 - scaled_f_x0_u64;
-            position.collateral + profit
+            let profit = scaled_g_x0 - scaled_f_x0;
+            collateral_u128 + profit
         } else {
             // Negative difference: trader loses
-            let loss = scaled_f_x0_u64 - scaled_g_x0_u64;
-            if (loss >= position.collateral) {
+            let loss = scaled_f_x0 - scaled_g_x0;
+            if (loss >= collateral_u128) {
                 0 // Cannot go below zero
             } else {
-                position.collateral - loss
+                collateral_u128 - loss
             }
         };
+
+        // Convert final result back to u64 (octas)
+        let settlement = (settlement_u128 / precision_u128 as u64);
 
         settlement
     }
@@ -867,8 +872,10 @@ module distribution_markets::distribution_markets {
         fungible_asset::deposit(tstore, collateral);
 
         // Calculate lambdas for the position yf that LP will keep
-        let lambda_g = calculate_lambda(current_f.std_dev);
-        let lambda_f = calculate_lambda(current_f.std_dev); // Same function, so same lambda
+        // LP gets y proportion of the market position, so lambda should be scaled by y
+        let base_lambda = calculate_lambda(current_f.std_dev);
+        let lambda_g = math_utils::fp_mul(base_lambda, y);
+        let lambda_f = math_utils::fp_mul(base_lambda, y);
         
         // Create position yf for the LP (what they keep after contributing yh to AMM)
         let lp_position = Position {
@@ -1057,7 +1064,8 @@ module distribution_markets::distribution_markets {
         assert!(signer::address_of(oracle) == *option::borrow(&market.oracle), ENOT_AUTHORIZED);
         assert!(!market.state.is_resolved, EMARKET_RESOLVED);
 
-        // Update market state
+        // Update market state - market becomes inactive when resolved
+        market.state.is_active = false;  // Prevent new trades
         market.state.is_resolved = true;
         market.state.realized_outcome = option::some(x_realized);
         market.state.outcome_is_negative = outcome_is_negative;
@@ -1343,5 +1351,101 @@ module distribution_markets::distribution_markets {
         vector::push_back(&mut debug_values, (position.collateral as u128));
         
         debug_values
+    }
+
+    /// Entry function to add liquidity with APT - can be called from CLI
+    entry fun add_liquidity_with_apt(
+        lp: &signer,
+        market_addr: address,
+        proportion_y: u64, // Proportion scaled by PRECISION
+        collateral_amount: u64, // Amount of APT to provide
+    ) acquires Market {
+        // Get APT metadata
+        let apt_metadata = object::address_to_object<Metadata>(@aptos_fungible_asset);
+        
+        // Withdraw APT from LP's primary store
+        let collateral = primary_fungible_store::withdraw(
+            lp, 
+            apt_metadata, 
+            collateral_amount
+        );
+        
+        // Add liquidity
+        add_liquidity(lp, market_addr, proportion_y, collateral);
+    }
+
+    /// Entry function to remove liquidity - can be called from CLI
+    entry fun remove_liquidity_entry(
+        lp: &signer,
+        market_addr: address,
+        lp_shares_to_burn: u64,
+    ) acquires Market {
+        remove_liquidity(lp, market_addr, lp_shares_to_burn);
+    }
+
+    /// Get the number of positions a trader has
+    #[view]
+    public fun get_trader_position_count(
+        trader: address,
+        market_addr: address,
+    ): u64 acquires Market {
+        let market = borrow_global<Market>(market_addr);
+        
+        if (!table::contains(&market.positions, trader)) {
+            return 0
+        };
+
+        let trader_positions = table::borrow(&market.positions, trader);
+        vector::length(trader_positions)
+    }
+
+    /// Get all position details for a trader (up to 10 positions)
+    #[view]
+    public fun get_all_trader_positions(
+        trader: address,
+        market_addr: address,
+    ): vector<vector<u128>> acquires Market {
+        let market = borrow_global<Market>(market_addr);
+        let all_positions = vector::empty<vector<u128>>();
+        
+        if (!table::contains(&market.positions, trader)) {
+            return all_positions
+        };
+
+        let trader_positions = table::borrow(&market.positions, trader);
+        let len = vector::length(trader_positions);
+        let max_positions = if (len > 10) 10 else len; // Limit to 10 positions to avoid gas issues
+        
+        let i = 0;
+        while (i < max_positions) {
+            let position = vector::borrow(trader_positions, i);
+            let position_details = vector::empty<u128>();
+            
+            vector::push_back(&mut position_details, position.params.mean);
+            vector::push_back(&mut position_details, (position.params.std_dev as u128));
+            vector::push_back(&mut position_details, if (position.params.mean_is_negative) 1 else 0);
+            vector::push_back(&mut position_details, position.market_position_at_creation.mean);
+            vector::push_back(&mut position_details, (position.market_position_at_creation.std_dev as u128));
+            vector::push_back(&mut position_details, if (position.market_position_at_creation.mean_is_negative) 1 else 0);
+            vector::push_back(&mut position_details, (position.collateral as u128));
+            vector::push_back(&mut position_details, (position.created_at as u128));
+            vector::push_back(&mut position_details, position.lambda_g);
+            vector::push_back(&mut position_details, position.lambda_f);
+            
+            vector::push_back(&mut all_positions, position_details);
+            i = i + 1;
+        };
+        
+        all_positions
+    }
+
+    /// Helper function to get market address from transaction events
+    /// For now, we'll use the explorer or create markets with known patterns
+    /// In production, you'd typically store market addresses in a registry
+    #[view]
+    public fun get_latest_market_info(): vector<u8> {
+        // This is a placeholder - in practice you'd maintain a market registry
+        // For testing, we'll use the explorer to find the market address
+        b"Check transaction events for market address"
     }
 }
