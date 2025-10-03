@@ -46,12 +46,23 @@ const DemoMarketInstance = () => {
   const [aptAmount, setAptAmount] = useState<string>('');
   const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5);
   
-  // Calculate probability and cumulative values
+  // Calculate lambda using the formula: lambda = sqrt(2 * sigma * sqrt(pi))
+  const calculateLambda = (sigma: number) => {
+    return Math.sqrt(2 * Math.abs(sigma) * Math.sqrt(Math.PI));
+  };
+
+  // Calculate probability and cumulative values using the specified formula
+  // p(x) = lambda * (1/(sqrt(2*pi*sigma))) * e^(-((x-mu)^2)/(2*(sigma^2)))
   const calculateProbabilityAtPoint = (x: number) => {
     if (!market) return { probability: 0, cumulative: 0 };
     
-    const coefficient = 1 / (Math.abs(userStdDev) * Math.sqrt(2 * Math.PI));
-    const exponent = -0.5 * Math.pow((x - userMean) / Math.abs(userStdDev), 2);
+    const lambda = calculateLambda(userStdDev);
+    const sigma = Math.abs(userStdDev);
+    const mu = userMean;
+    
+    // Apply the formula: p(x) = lambda * (1/(sqrt(2*pi*sigma))) * e^(-((x-mu)^2)/(2*(sigma^2)))
+    const coefficient = lambda * (1 / Math.sqrt(2 * Math.PI * sigma));
+    const exponent = -Math.pow(x - mu, 2) / (2 * Math.pow(sigma, 2));
     const probability = coefficient * Math.exp(exponent);
     
     // Simple cumulative calculation (approximation)
@@ -59,6 +70,9 @@ const DemoMarketInstance = () => {
     
     return { probability, cumulative: Math.max(0, Math.min(1, cumulative)) };
   };
+
+  // Calculate lambda for current user parameters for display
+  const currentLambda = market ? calculateLambda(userStdDev) : 0;
   
   const currentStats = hoverValue !== null 
     ? calculateProbabilityAtPoint(hoverValue)
@@ -296,7 +310,7 @@ const DemoMarketInstance = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className={`${theme.textSecondary} text-xs`}>λ</span>
-                        <span className="font-mono text-xs">{market.Lambda}</span>
+                        <span className="font-mono text-xs">{currentLambda.toFixed(4)}</span>
                       </div>
                     </div>
                   </div>
