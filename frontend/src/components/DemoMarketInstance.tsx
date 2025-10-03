@@ -1,11 +1,12 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { useWallet, type InputTransactionData } from "@aptos-labs/wallet-adapter-react";
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 import { useThemeStore, getThemeClasses } from '@/store/themeStore';
 import NormalDistributionChart from '@/components/NormalDistributionChart';
 import { formatDate } from '@/utils/formatters';
@@ -18,15 +19,24 @@ import BookmarkIcon from '@/components/BookmarkIcon';
 import { WalletSelector } from '@/components/WalletSelector';
 import { bookmarkStorage } from '@/utils/bookmarkStorage';
 
+// Contract configuration
+const CONTRACT_ADDRESS = "0x3b0c1f2a3f9f281f3a654afd1cc07dfcdfa8facee967b196cc77cdd20b98c829";
+const MARKET_ADDRESS = "0x40704a2eacabe94c095c3710dbdd719969fc64baad41bae8c12f6762a16cdc2d";
+
+// Aptos SDK configuration
+const config = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(config);
+
 const DemoMarketInstance = () => {
   const params = useParams();
   const { color } = useThemeStore();
-  const { connected, account } = useWallet();
+  const { connected, account, signAndSubmitTransaction } = useWallet();
   const [marketId, setMarketId] = useState<string | null>(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [iconSrc, setIconSrc] = useState('');
   const [hasError, setHasError] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isTrading, setIsTrading] = useState(false);
   
   // Use the new API hook
   const { data: market, loading, error } = useMarket(marketId);
@@ -45,6 +55,8 @@ const DemoMarketInstance = () => {
   const [hoverValue, setHoverValue] = useState<number | null>(null);
   const [aptAmount, setAptAmount] = useState<string>('');
   const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5);
+  const [calculatedCost, setCalculatedCost] = useState<number>(0);
+  const [optimalX, setOptimalX] = useState<number>(0);
   
   // Calculate lambda using the formula: lambda = sqrt(2 * sigma * sqrt(pi))
   const calculateLambda = (sigma: number) => {
@@ -73,6 +85,68 @@ const DemoMarketInstance = () => {
 
   // Calculate lambda for market parameters (for display under Cap & Scale)
   const marketLambda = market ? calculateLambda(market.market_standard_deviation) : 0;
+
+  // Calculate normal distribution PDF: (1/sqrt(2*pi*sigma^2)) * exp(-(x-mu)^2/(2*sigma^2))
+  const normalPDF = (x: number, mu: number, sigma: number) => {
+    const coefficient = 1 / Math.sqrt(2 * Math.PI * sigma * sigma);
+    const exponent = -Math.pow(x - mu, 2) / (2 * sigma * sigma);
+    return coefficient * Math.exp(exponent);
+  };
+
+  // Calculate the cost function a(x) = |lambda_g * g(x) - lambda_f * f(x)|
+  const calculateCostFunction = useCallback(() => {
+    if (!market) return { cost: 0, optimalX: 0 };
+
+    // Market distribution parameters (f)
+    const marketMu = market.market_mean;
+    const marketSigma = market.market_standard_deviation;
+    const lambdaF = calculateLambda(marketSigma);
+
+    // User distribution parameters (g)
+    const userMu = userMean;
+    const userSigma = userStdDev;
+    const lambdaG = calculateLambda(userSigma);
+
+    // Define the cost function to minimize
+    const costFunction = (x: number) => {
+      const gx = normalPDF(x, userMu, userSigma);
+      const fx = normalPDF(x, marketMu, marketSigma);
+      return Math.abs(lambdaG * gx - lambdaF * fx);
+    };
+
+    // Define search range around the means
+    const searchMin = Math.min(userMu, marketMu) - 3 * Math.max(userSigma, marketSigma);
+    const searchMax = Math.max(userMu, marketMu) + 3 * Math.max(userSigma, marketSigma);
+
+    try {
+      // Use fmin to find the minimum cost and optimal x
+      const result = fmin.nelderMead(costFunction, [userMu], {
+        maxIterations: 1000,
+        nonZeroDelta: 0.05,
+        zeroDelta: 0.0001,
+        minErrorDelta: 1e-6,
+        minTolerance: 1e-5,
+        rho: 1,
+        chi: 2,
+        psi: -0.5,
+        sigma: 0.5,
+      });
+
+      const optimalXValue = result.x[0];
+      const minCost = costFunction(optimalXValue);
+
+      // Ensure optimal x is within reasonable bounds
+      const clampedOptimalX = Math.max(searchMin, Math.min(searchMax, optimalXValue));
+      const finalCost = costFunction(clampedOptimalX);
+
+      return { cost: finalCost, optimalX: clampedOptimalX };
+    } catch (error) {
+      console.error('Error in cost calculation:', error);
+      // Fallback to simple calculation
+      const midPoint = (userMu + marketMu) / 2;
+      return { cost: costFunction(midPoint), optimalX: midPoint };
+    }
+  }, [market, userMean, userStdDev]);
   
   const currentStats = hoverValue !== null 
     ? calculateProbabilityAtPoint(hoverValue)
@@ -105,6 +179,15 @@ const DemoMarketInstance = () => {
     }
   }, [market]);
 
+  // Recalculate cost whenever user parameters change
+  useEffect(() => {
+    if (market && userMean !== undefined && userStdDev !== undefined) {
+      const { cost, optimalX: optX } = calculateCostFunction();
+      setCalculatedCost(cost);
+      setOptimalX(optX);
+    }
+  }, [market, userMean, userStdDev, calculateCostFunction]);
+
   const handleImageError = () => {
     if (!hasError) {
       setHasError(true);
@@ -129,6 +212,82 @@ const DemoMarketInstance = () => {
         iconName: market.iconName
       });
       setIsBookmarked(true);
+    }
+  };
+
+  // Trading function to call the smart contract
+  const handleTrade = async () => {
+    if (account == null) {
+      console.error('Unable to find account to sign transaction');
+      return;
+    }
+
+    if (!market || !marketId) {
+      console.error('Market not loaded');
+      return;
+    }
+
+    setIsTrading(true);
+    
+    try {
+      // Convert values to the format expected by the smart contract
+      // Mean: convert to 18-decimal precision (multiply by 10^18)
+      const targetMean = Math.floor(Math.abs(userMean) * Math.pow(10, 18));
+      
+      // Standard deviation: convert to 18-decimal precision (multiply by 10^18)  
+      const targetStdDev = Math.floor(userStdDev * Math.pow(10, 18));
+      
+      // Mean is negative flag
+      const targetMeanIsNegative = userMean < 0;
+      
+      // Trade cost in APT octas (8-decimal) - using calculated cost plus fees
+      const totalCost = calculatedCost + 0.002; // Add protocol fee and gas
+      const tradeCost = Math.floor(totalCost * Math.pow(10, 8));
+      
+      // Optimal x value from fmin calculation (convert to 18-decimal precision)
+      const optimalXValue = Math.floor(Math.abs(optimalX) * Math.pow(10, 18));
+
+      console.log('Trade parameters:', {
+        contractAddress: CONTRACT_ADDRESS,
+        marketAddress: MARKET_ADDRESS,
+        targetMean: targetMean.toString(),
+        targetStdDev: targetStdDev.toString(),
+        targetMeanIsNegative,
+        tradeCost: tradeCost.toString(),
+        optimalX: optimalXValue.toString(),
+        calculatedCostAPT: calculatedCost
+      });
+
+      const transaction: InputTransactionData = {
+        data: {
+          function: `${CONTRACT_ADDRESS}::distribution_markets::trade_with_apt`,
+          functionArguments: [
+            MARKET_ADDRESS, // market_addr: address - using the correct market address
+            targetMean.toString(), // target_mean: u128
+            targetStdDev.toString(), // target_std_dev: u64  
+            targetMeanIsNegative, // target_mean_is_negative: bool
+            tradeCost.toString(), // trade_cost: u64
+            optimalXValue.toString(), // optimal_x: u128
+          ]
+        }
+      };
+
+      try {
+        // sign and submit transaction to chain
+        const response = await signAndSubmitTransaction(transaction);
+        console.log('Trade submitted:', response);
+        
+        // wait for transaction
+        await aptos.waitForTransaction({ transactionHash: response.hash });
+        console.log('Trade confirmed on blockchain');
+      } catch (error: any) {
+        console.error('Transaction failed:', error);
+      }
+      
+    } catch (error) {
+      console.error('Trade failed:', error);
+    } finally {
+      setIsTrading(false);
     }
   };
 
@@ -453,12 +612,12 @@ const DemoMarketInstance = () => {
                       <h3 className="text-xs font-semibold mb-2">COLLATERAL REQUIRED</h3>
                       <div className="space-y-1.5">
                         <div className="flex justify-between">
-                          <span className={`${theme.textSecondary} text-xs`}>Base Fee</span>
-                          <span className="font-mono text-xs">0.05 APT</span>
+                          <span className={`${theme.textSecondary} text-xs`}>Trade Cost</span>
+                          <span className="font-mono text-xs">{calculatedCost.toFixed(6)} APT</span>
                         </div>
                         <div className="flex justify-between">
                           <span className={`${theme.textSecondary} text-xs`}>Protocol Fee</span>
-                          <span className="font-mono text-xs">0.02 APT</span>
+                          <span className="font-mono text-xs">0.001 APT</span>
                         </div>
                         <div className="flex justify-between">
                           <span className={`${theme.textSecondary} text-xs`}>Gas Estimate</span>
@@ -467,7 +626,7 @@ const DemoMarketInstance = () => {
                         <hr className="border-t border-gray-500/20 my-1.5" />
                         <div className="flex justify-between text-xs">
                           <span>Total Required</span>
-                          <span className="font-mono text-sm font-bold">0.071 APT</span>
+                          <span className="font-mono text-sm font-bold">{(calculatedCost + 0.002).toFixed(6)} APT</span>
                         </div>
                       </div>
                     </div>
@@ -482,8 +641,12 @@ const DemoMarketInstance = () => {
                         </div>
                       </div>
                     ) : (
-                      <button className={`w-full px-3 py-2 rounded-lg ${theme.primaryBg} text-black text-sm font-semibold hover:opacity-90 transition-opacity`}>
-                        Execute Trade
+                      <button 
+                        onClick={handleTrade}
+                        disabled={isTrading}
+                        className={`w-full px-3 py-2 rounded-lg ${theme.primaryBg} text-black text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {isTrading ? 'Trading...' : 'Execute Trade'}
                       </button>
                     )}
                   </>
