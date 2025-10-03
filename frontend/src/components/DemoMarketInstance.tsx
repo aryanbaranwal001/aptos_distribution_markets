@@ -71,8 +71,8 @@ const DemoMarketInstance = () => {
     return { probability, cumulative: Math.max(0, Math.min(1, cumulative)) };
   };
 
-  // Calculate lambda for current user parameters for display
-  const currentLambda = market ? calculateLambda(userStdDev) : 0;
+  // Calculate lambda for market parameters (for display under Cap & Scale)
+  const marketLambda = market ? calculateLambda(market.market_standard_deviation) : 0;
   
   const currentStats = hoverValue !== null 
     ? calculateProbabilityAtPoint(hoverValue)
@@ -310,7 +310,7 @@ const DemoMarketInstance = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className={`${theme.textSecondary} text-xs`}>λ</span>
-                        <span className="font-mono text-xs">{currentLambda.toFixed(4)}</span>
+                        <span className="font-mono text-xs">{marketLambda.toFixed(4)}</span>
                       </div>
                     </div>
                   </div>
