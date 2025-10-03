@@ -613,15 +613,30 @@ module distribution_markets::distribution_markets {
     public(friend) fun normal_mean_is_negative(p: &NormalParams): bool { p.mean_is_negative }
 
     #[view]
+    // - ✅
     public fun market_is_active(market_addr: address): bool acquires Market {
         let market = borrow_global<Market>(market_addr);
         market.state.is_active
     }
 
     #[view]
+    // - ✅
     public fun market_is_resolved(market_addr: address): bool acquires Market {
         let market = borrow_global<Market>(market_addr);
         market.state.is_resolved
+    }
+
+    /// Get current AMM holdings (market distribution f(x)) - ✅
+    #[view]
+    public fun get_amm_holdings(market_addr: address): vector<u128> acquires Market {
+        let market = borrow_global<Market>(market_addr);
+        let holdings = vector::empty<u128>();
+        
+        vector::push_back(&mut holdings, market.amm_holdings.mean);
+        vector::push_back(&mut holdings, (market.amm_holdings.std_dev as u128));
+        vector::push_back(&mut holdings, if (market.amm_holdings.mean_is_negative) 1 else 0);
+        
+        holdings
     }
 
     public(friend) fun position_collateral_ref(p: &Position): u64 { p.collateral }
@@ -634,7 +649,7 @@ module distribution_markets::distribution_markets {
     // Trading Functions
     // ==============================
 
-    /// Execute a trade according to the Distribution Markets paper
+    /// Execute a trade according to the Distribution Markets paper - ✅
     /// AMM starts holding h(x) = b - f(x), trader wants to move market to g(x)
     /// After trade: AMM holds b - g(x), trader gets position g(x) - f(x)
     /// @param trader The account executing the trade
@@ -746,7 +761,7 @@ module distribution_markets::distribution_markets {
         settlement_amount
     }
 
-    /// Quote the cost of a trade between two distributions
+    /// Quote the cost of a trade from one distribution to another
     /// @param from_f Current distribution parameters
     /// @param to_g Target distribution parameters
     /// @param market_addr Address of the market
@@ -756,6 +771,31 @@ module distribution_markets::distribution_markets {
         to_g: NormalParams,
         market_addr: address,
     ): u64 acquires Market {
+        let market = borrow_global<Market>(market_addr);
+        quote_trade_internal(&from_f, &to_g, market.initial_backing)
+    }
+
+    /// Quote the cost of a trade with individual parameters (CLI-friendly)
+    #[view]
+    public fun quote_trade_params(
+        from_mean: u128,
+        from_std_dev: u64,
+        from_mean_is_negative: bool,
+        to_mean: u128,
+        to_std_dev: u64,
+        to_mean_is_negative: bool,
+        market_addr: address,
+    ): u64 acquires Market {
+        let from_f = NormalParams {
+            mean: from_mean,
+            std_dev: from_std_dev,
+            mean_is_negative: from_mean_is_negative,
+        };
+        let to_g = NormalParams {
+            mean: to_mean,
+            std_dev: to_std_dev,
+            mean_is_negative: to_mean_is_negative,
+        };
         let market = borrow_global<Market>(market_addr);
         quote_trade_internal(&from_f, &to_g, market.initial_backing)
     }
@@ -942,6 +982,45 @@ module distribution_markets::distribution_markets {
         // V1: Return first (and only) position
         let position = vector::borrow(trader_positions, 0);
         option::some(position.params)
+    }
+
+    /// Get complete trader position details (CLI-friendly)
+    #[view]
+    public fun get_trader_position_details(
+        trader: address,
+        market_addr: address,
+    ): Option<vector<u128>> acquires Market {
+        let market = borrow_global<Market>(market_addr);
+        if (!table::contains(&market.positions, trader)) {
+            return option::none<vector<u128>>()
+        };
+
+        let trader_positions = table::borrow(&market.positions, trader);
+        if (vector::length(trader_positions) == 0) {
+            return option::none<vector<u128>>()
+        };
+
+        // Return first position details as a vector of u128 values
+        let position = vector::borrow(trader_positions, 0);
+        let details = vector::empty<u128>();
+        
+        // g(x) parameters (target distribution)
+        vector::push_back(&mut details, position.params.mean);
+        vector::push_back(&mut details, (position.params.std_dev as u128));
+        vector::push_back(&mut details, if (position.params.mean_is_negative) 1 else 0);
+        
+        // f(x) parameters (market state at creation)
+        vector::push_back(&mut details, position.market_position_at_creation.mean);
+        vector::push_back(&mut details, (position.market_position_at_creation.std_dev as u128));
+        vector::push_back(&mut details, if (position.market_position_at_creation.mean_is_negative) 1 else 0);
+        
+        // Position metadata
+        vector::push_back(&mut details, (position.collateral as u128));
+        vector::push_back(&mut details, (position.created_at as u128));
+        vector::push_back(&mut details, position.lambda_g);
+        vector::push_back(&mut details, position.lambda_f);
+        
+        option::some(details)
     }
 
     // ==============================
@@ -1140,5 +1219,69 @@ module distribution_markets::distribution_markets {
         );
         
         // Market created successfully - address is returned but not used in entry function
+    }
+
+    /// Entry function to execute a trade with APT - can be called from CLI
+    /// This function withdraws APT from the caller's account and executes a trade
+    entry fun trade_with_apt(
+        trader: &signer,
+        market_addr: address,
+        target_mean: u128,
+        target_std_dev: u64,
+        target_mean_is_negative: bool,
+        collateral_amount: u64,
+    ) acquires Market {
+        // Create target distribution parameters
+        let target_g = NormalParams {
+            mean: target_mean,
+            std_dev: target_std_dev,
+            mean_is_negative: target_mean_is_negative,
+        };
+        
+        // Get APT metadata
+        let apt_metadata = object::address_to_object<Metadata>(@aptos_fungible_asset);
+        
+        // Withdraw APT from trader's primary store
+        let collateral = primary_fungible_store::withdraw(
+            trader, 
+            apt_metadata, 
+            collateral_amount
+        );
+        
+        // Execute the trade
+        trade(
+            trader,
+            market_addr,
+            target_g,
+            collateral,
+        );
+    }
+
+    /// Entry function to set oracle (admin only) - can be called from CLI
+    entry fun set_oracle_entry(
+        admin: &signer,
+        market_addr: address,
+        new_oracle: address,
+    ) acquires Market {
+        set_oracle(admin, market_addr, new_oracle);
+    }
+
+    /// Entry function to resolve market (oracle only) - can be called from CLI
+    entry fun resolve_market_entry(
+        oracle: &signer,
+        market_addr: address,
+        x_realized: u128,
+        outcome_is_negative: bool,
+    ) acquires Market {
+        resolve(oracle, market_addr, x_realized, outcome_is_negative);
+    }
+
+    /// Entry function to close position - can be called from CLI
+    entry fun close_position_entry(
+        trader: &signer,
+        market_addr: address,
+        position_index: u64,
+    ) acquires Market {
+        close_position(trader, market_addr, position_index);
     }
 }
