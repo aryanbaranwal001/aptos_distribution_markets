@@ -6,7 +6,7 @@ version = "1.0.0"
 distribution_markets = "_"
 
 [dev-addresses]
-distribution_markets = "0x123"
+distribution_markets = "0x3b0c1f2a3f9f281f3a654afd1cc07dfcdfa8facee967b196cc77cdd20b98c829"
 
 [dependencies.AptosFramework]
 git = "https://github.com/aptos-labs/aptos-framework.git"
