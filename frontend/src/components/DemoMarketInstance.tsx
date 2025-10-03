@@ -17,16 +17,9 @@ import AIChatSidebar from '@/components/AIChatSidebar';
 import BookmarkIcon from '@/components/BookmarkIcon';
 import { WalletSelector } from '@/components/WalletSelector';
 import { bookmarkStorage } from '@/utils/bookmarkStorage';
-import DemoMarketInstance from '@/components/DemoMarketInstance';
 
-const MarketInstancePage = () => {
+const DemoMarketInstance = () => {
   const params = useParams();
-  
-  // Check if this is the demo market (slug = "1") and render demo component
-  if (params.slug === '1') {
-    return <DemoMarketInstance />;
-  }
-  
   const { color } = useThemeStore();
   const { connected, account } = useWallet();
   const [marketId, setMarketId] = useState<string | null>(null);
@@ -645,4 +638,4 @@ const MarketInstancePage = () => {
   );
 };
 
-export default MarketInstancePage;
+export default DemoMarketInstance;
