@@ -1284,4 +1284,64 @@ module distribution_markets::distribution_markets {
     ) acquires Market {
         close_position(trader, market_addr, position_index);
     }
+
+    /// Debug function to check settlement calculation values
+    #[view]
+    public fun debug_settlement_calculation(
+        trader: address,
+        market_addr: address,
+    ): vector<u128> acquires Market {
+        let market = borrow_global<Market>(market_addr);
+        
+        if (!table::contains(&market.positions, trader)) {
+            return vector::empty<u128>()
+        };
+
+        let trader_positions = table::borrow(&market.positions, trader);
+        if (vector::length(trader_positions) == 0) {
+            return vector::empty<u128>()
+        };
+
+        let position = vector::borrow(trader_positions, 0);
+        
+        if (!market.state.is_resolved) {
+            return vector::empty<u128>()
+        };
+
+        let realized_outcome = *option::borrow(&market.state.realized_outcome);
+        let outcome_is_negative = market.state.outcome_is_negative;
+
+        // Calculate g(x0) and f(x0)
+        let g_x0 = math_utils::normal_pdf(
+            realized_outcome,
+            position.params.mean,
+            (position.params.std_dev as u128),
+            outcome_is_negative,
+            position.params.mean_is_negative
+        );
+
+        let f_x0 = math_utils::normal_pdf(
+            realized_outcome,
+            position.market_position_at_creation.mean,
+            (position.market_position_at_creation.std_dev as u128),
+            outcome_is_negative,
+            position.market_position_at_creation.mean_is_negative
+        );
+
+        // Calculate scaled values
+        let scaled_g_x0 = math_utils::fp_mul(position.lambda_g, g_x0);
+        let scaled_f_x0 = math_utils::fp_mul(position.lambda_f, f_x0);
+        
+        let debug_values = vector::empty<u128>();
+        vector::push_back(&mut debug_values, realized_outcome);
+        vector::push_back(&mut debug_values, g_x0);
+        vector::push_back(&mut debug_values, f_x0);
+        vector::push_back(&mut debug_values, position.lambda_g);
+        vector::push_back(&mut debug_values, position.lambda_f);
+        vector::push_back(&mut debug_values, scaled_g_x0);
+        vector::push_back(&mut debug_values, scaled_f_x0);
+        vector::push_back(&mut debug_values, (position.collateral as u128));
+        
+        debug_values
+    }
 }
