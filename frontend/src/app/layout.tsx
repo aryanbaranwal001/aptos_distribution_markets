@@ -21,6 +21,11 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "Infi Markets - Distribution Markets Platform",
   description: "A modern platform for prediction markets and distribution trading",
+  icons: {
+    icon: "/webpage_logo.png",
+    shortcut: "/webpage_logo.png",
+    apple: "/webpage_logo.png",
+  },
 };
 
 export default function RootLayout({
