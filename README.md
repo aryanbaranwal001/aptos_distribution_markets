@@ -35,7 +35,7 @@
 
 ## 🌟 Overview
 
-Infi Markets is a cutting-edge decentralized prediction market platform that enables trading on **continuous probability distributions** rather than traditional binary outcomes. Built on the Aptos blockchain using Move smart contracts, it implements the groundbreaking research from [Paradigm's Distribution Markets paper](https://www.paradigm.xyz/2024/12/distribution-markets).
+Infi Markets is a cutting-edge decentralized prediction market platform that enables trading on **continuous probability distributions** rather than traditional binary outcomes. Built on the Aptos blockchain using Move smart contracts, it implements the concept of distribution markets based on research from [Paradigm's Distribution Markets paper](https://www.paradigm.xyz/2024/12/distribution-markets).
 
 ### 🎯 Key Innovation
 
@@ -123,32 +123,31 @@ graph TB
 │   Frontend      │◄──►│   Backend API    │    │   Blockchain    │◄──►│   Protocol      │
 │                 │    │                  │    │                 │    │                 │
 │ • React/TS      │    │ • Firebase       │    │ • Move Contracts│    │ • Lending Pool  │
-│ • Wallet Adapter│    │ • Caching        │    │ • Math Utils    │    │ • aAPT Tokens   │
+│ • Wallet Adapter│    │ • seed scripts   │    │ • Math Utils    │    │ • aAPT Tokens   │
 │ • Chart.js      │    │ • Rate Limiting  │    │ • Settlement    │    │ • Yield Farming │
 │ • fmin Optimize │    │ • AI Assistant   │    │ • Aave Bridge   │    │ • Auto Lending  │
 └─────────────────┘    └──────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-
 ### 🔄 **Data Flow**
 
-1. **User Interaction** → User inputs distribution parameters through frontend and trade cost is calculated
+1. **User Interaction** → User inputs distribution parameters (mean and standard deviation) through frontend and trade cost is calculated
 2. **Transaction Signing** → Aptos Wallet Adapter handles secure transaction signing  
 3. **Smart Contract Execution** → Move contracts process trades with 18-decimal precision and update market state
-4. **Yield Optimization** → Idle collateral automatically lent to Aave earning 4.2% APY for position holders
-5. **Real-time Updates** → Backend API provides cached market data and AI assistance
+4. **Yield Optimization** → Idle collateral automatically lent to Aave earning ~4% APY for position holders
+5. **Real-time Updates** → Backend API provides fast market data from firebase firestore and also enable AI assistance.
 
 ## 🚀 Features
 
 ### 📈 **Advanced Trading**
 - **Continuous Distributions**: Trade on normal distributions with custom mean (μ) and standard deviation (σ)
 - **Dynamic Pricing**: Real-time cost calculation using mathematical optimization (fmin library) and verified on-chain
-- **Automated Market Making**: Constant product AMM with distribution-based invariants
+- **Automated Market Maker**: Constant product AMM with distribution-based invariants
 - **Position Settlement**: Mathematically precise payouts based on realized outcomes
 - **Multi-Position Support**: Multiple concurrent positions per trader with pagination
 
 ### 💰 **Yield Optimization**
-- **Aave Integration**: Idle collateral is automatically lent on Aave protocol earning 4.2% APY
+- **Aave Integration**: Idle collateral is automatically lent on Aave protocol earning ~4% APY
 - **APY Distribution**: Lending yields are distributed proportionally to all position holders
 - **Capital Efficiency**: Maximizes returns on locked collateral during entire market lifecycle
 - **Risk Management**: Automated withdrawal system for settlements while maintaining full solvency
@@ -157,15 +156,16 @@ graph TB
 - **Interactive Charts**: Real-time probability distribution visualization with Chart.js
 - **Responsive Design**: Dynamic and user-friendly UI with multi-colour theme switching
 - **Wallet Integration**: Seamless Aptos wallet connectivity with multiple wallet support
-- **AI Assistant**: Built-in GPT-powered chat helper for market analysis and guidance
+- **AI Assistant**: Built-in OpenRouter's `deepseek/deepseek-chat-v3.1:free` chat helper for market analysis and guidance
 - **Real-time Updates**: Live cost calculation as users adjust distribution parameters
 
 ### 🔧 **Developer Features**
+- **Mathematical Library implementation**: complex computational heavy functions in move language
 - **Mathematical Precision**: 18-decimal fixed-point arithmetic for accurate calculations
 - **Gas Optimization**: Efficient Move smart contracts with minimal transaction costs
 - **Comprehensive Testing**: Full test suite with indepth testing
-- **API Documentation**: RESTful backend with Firebase integration and caching
-- **Type Safety**: Full TypeScript implementation across frontend and backend
+- **API Documentation**: RESTful backend with Firebase integration
+- **Type Safety**: Full TypeScript implementation in frontend and Javascript in backend
 
 
 ## 📁 Project Structure
@@ -203,7 +203,6 @@ aptos_distribution_markets/
 |------------|---------|---------|-------------|
 | ![Aptos](https://img.shields.io/badge/Aptos-000000?style=flat-square&logo=aptos&logoColor=white) | Testnet | Layer 1 Blockchain | 160k+ TPS |
 | ![Move](https://img.shields.io/badge/Move-4285F4?style=flat-square&logo=move&logoColor=white) | Latest | Smart Contracts | Gas Optimized |
-| ![Web3](https://img.shields.io/badge/Web3-F16822?style=flat-square&logo=web3.js&logoColor=white) | 4.x | Wallet Integration | Multi-wallet |
 
 ### **⚡ Backend Infrastructure**
 
@@ -212,7 +211,8 @@ aptos_distribution_markets/
 | ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=flat-square&logo=node.js&logoColor=white) | 18+ | Runtime Environment | High Concurrency |
 | ![Express.js](https://img.shields.io/badge/Express.js-404D59?style=flat-square&logo=express&logoColor=white) | 4.x | API Framework | <50ms Response |
 | ![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=flat-square&logo=Firebase&logoColor=white) | 12.x | Database & Auth | 99.9% Uptime |
-| ![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white) | GPT-4 | AI Assistant | Real-time Chat |
+| ![OpenRouter](https://img.shields.io/badge/OpenRouter-412991?style=flat-square&logo=openai&logoColor=white) | deepseek-chat-v3.1 | AI Assistant | Real-time Chat |
+
 
 ### **🎨 Frontend Stack**
 
@@ -236,8 +236,8 @@ aptos_distribution_markets/
 
 | Protocol | Integration | Current APY | Status |
 |----------|-------------|-------------|--------|
-| ![Aave](https://img.shields.io/badge/Aave-B6509E?style=flat-square&logo=aave&logoColor=white) | Lending Pools | 4.2% | ✅ Live |
-| ![Compound](https://img.shields.io/badge/Compound-00D395?style=flat-square&logo=compound&logoColor=white) | Yield Farming | 3.1% | 🔄 Integrating |
+| ![Aave](https://img.shields.io/badge/Aave-B6509E?style=flat-square&logo=aave&logoColor=white) | Lending Pools | ~4% | ✅ Live |
+
 
 </div>
 
@@ -282,31 +282,8 @@ src/
 - **Real-time Updates**: Charts update as users adjust parameters
 - **Statistical Overlays**: Probability, cumulative distribution, and delta values
 
-#### **🔗 Wallet Integration**
-```typescript
-// Multi-wallet support with Aptos Wallet Adapter
-const { connected, account, signAndSubmitTransaction } = useWallet();
-
-// Transaction execution with proper error handling
-const handleTrade = async () => {
-  const response = await signAndSubmitTransaction({
-    data: {
-      function: `${CONTRACT_ADDRESS}::distribution_markets::trade_with_apt`,
-      functionArguments: [
-        marketId,
-        (userMean * 1e18).toString(),
-        (userStdDev * 1e18).toString(),
-        userMean < 0,
-        calculatedCost.toString(),
-        optimalX.toString(),
-      ],
-    },
-  });
-};
-```
-
 #### **🤖 AI Assistant**
-- **GPT-4 Integration**: Contextual market analysis and trading advice
+- **Deepseek chat V3 Integration**: Contextual market analysis and trading advice
 - **Market Context**: AI understands specific market parameters and history
 - **Educational Support**: Explains complex mathematical concepts
 - **Risk Assessment**: Provides insights on position sizing and market dynamics
@@ -336,80 +313,6 @@ src/
     └── firebase.js              # Firebase configuration
 ```
 
-### **Database Schema (Firestore)**
-
-#### **Markets Collection**
-```javascript
-{
-  id: "market_uuid",
-  title: "Bitcoin Price Prediction Q1 2025",
-  description: "Predict Bitcoin price distribution...",
-  market_mean: 95000.0,
-  market_standard_deviation: 15000.0,
-  market_mean_min: 50000.0,
-  market_mean_max: 150000.0,
-  volume: 2500000,
-  categories: ["crypto", "price"],
-  startDate: "2024-01-01T00:00:00Z",
-  endDate: "2025-03-31T23:59:59Z",
-  status: "active",
-  iconName: "bitcoin.png",
-  aicontext: "Bitcoin market analysis context...",
-  // Market parameters for UI
-  s: 0.85,
-  mu_per_one: 1.2,
-  sigma_per_one: 0.8,
-  peak_p: 0.95,
-  headroom: 1.15,
-  x_axis_field_name: "Price (USD)",
-  x_axis_short_form: "$"
-}
-```
-
-#### **Positions Collection** (Future Implementation)
-```javascript
-{
-  id: "position_uuid",
-  marketId: "market_uuid",
-  traderId: "0x...",
-  mean: 98000.0,
-  standardDeviation: 12000.0,
-  collateral: 50000000, // in octas
-  timestamp: "2024-12-03T10:30:00Z",
-  status: "active",
-  lambdaG: "1684020831655245778",
-  lambdaF: "1684020831655245778"
-}
-```
-
-### **🚀 Performance Optimizations**
-
-#### **Caching Strategy**
-```javascript
-// Multi-layer caching with NodeCache
-const cache = new NodeCache({ stdTTL: 300 }); // 5-minute TTL
-
-// Cache market data with smart invalidation
-const getCachedMarkets = async (cacheKey) => {
-  let markets = cache.get(cacheKey);
-  if (!markets) {
-    markets = await firestore.collection('markets').get();
-    cache.set(cacheKey, markets);
-  }
-  return markets;
-};
-```
-
-#### **Rate Limiting**
-```javascript
-// Protect API endpoints from abuse
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP'
-});
-```
-
 ### **🔐 Security Features**
 - **Firebase Admin SDK**: Secure server-side Firebase access
 - **Input Validation**: Joi schema validation for all endpoints
@@ -419,14 +322,6 @@ const limiter = rateLimit({
 
 ## 🚀 Quick Start
 
-<div align="center">
-
-### **⚡ One-Click Setup**
-
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/aryanbaranwal001/aptos_distribution_markets)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/aryanbaranwal001/aptos_distribution_markets)
-
-</div>
 
 ### **📋 Prerequisites**
 
@@ -447,7 +342,7 @@ git clone https://github.com/aryanbaranwal001/aptos_distribution_markets.git
 cd aptos_distribution_markets
 
 # Install dependencies for all modules
-npm run install:all
+npm install
 ```
 
 </details>
@@ -474,7 +369,7 @@ aptos account list --profile default
 <summary><b>🔧 3. Configure Backend</b></summary>
 
 ```bash
-cd ../backend
+cd backend
 
 # Install dependencies
 npm install
@@ -495,25 +390,20 @@ npm run dev
 <summary><b>🎨 4. Launch Frontend</b></summary>
 
 ```bash
-cd ../frontend
+cd frontend
 
 # Install dependencies
 npm install
+
+cp .env.example .env.local
+
+# Configure NEXT_PUBLIC_API_BASE_URL
 
 # Start development server
 npm run dev
 ```
 
 </details>
-
-### **🌐 Access Points**
-
-| Service | URL | Status |
-|---------|-----|--------|
-| 🎨 **Frontend** | [http://localhost:3000](http://localhost:3000) | ![Status](https://img.shields.io/badge/status-active-brightgreen) |
-| ⚡ **Backend API** | [http://localhost:5000](http://localhost:5000) | ![Status](https://img.shields.io/badge/status-active-brightgreen) |
-| 🔗 **Smart Contract** | [Aptos Explorer](https://explorer.aptoslabs.com/) | ![Status](https://img.shields.io/badge/status-deployed-blue) |
-| 📚 **API Docs** | [http://localhost:5000/docs](http://localhost:5000/docs) | ![Status](https://img.shields.io/badge/status-available-green) |
 
 ## 🧮 Mathematical Foundation
 
@@ -557,41 +447,7 @@ Where **x₀** is the realized outcome.
 | `withdraw_from_aave()` | Withdraw from Aave for settlements | `amount` |
 | `distribute_yield()` | Distribute Aave yields to positions | `yield_amount` |
 
-### 💰 Aave Integration Architecture
-
-#### **Yield Optimization Strategy**
-```move
-/// Aave lending integration for capital efficiency
-struct AaveIntegration has key {
-    aave_pool: address,           // Aave lending pool address
-    atoken_address: address,      // aAPT token address
-    total_lent: u64,             // Total amount lent to Aave
-    accumulated_yield: u64,       // Yield earned from Aave
-    last_yield_distribution: u64, // Timestamp of last yield distribution
-}
-
-/// Automatically lend idle collateral to Aave
-public entry fun auto_lend_collateral(market: &mut Market) {
-    let idle_amount = calculate_idle_collateral(market);
-    if (idle_amount > MINIMUM_LENDING_THRESHOLD) {
-        lend_to_aave_pool(market, idle_amount);
-        emit_lending_event(idle_amount);
-    }
-}
-
-/// Distribute Aave yields proportionally to position holders
-public entry fun distribute_aave_yield(market: &mut Market) {
-    let yield_earned = get_aave_yield(market);
-    let total_positions = get_total_position_value(market);
-    
-    // Distribute yield proportionally based on position size and duration
-    for position in &market.positions {
-        let position_share = calculate_yield_share(position, total_positions);
-        let yield_amount = (yield_earned * position_share) / PRECISION;
-        credit_yield_to_position(position, yield_amount);
-    }
-}
-```
+### 💰 Aave Integration 
 
 #### **Capital Efficiency Benefits**
 - **Idle Collateral Optimization**: Automatically lends unused collateral to Aave earning 4.2% APY
@@ -636,54 +492,8 @@ npm test
 
 ### Database Seeding
 ```bash
-cd backend
-npm run seed:all
-```
-
-### Code Quality
-```bash
-# Lint frontend
-cd frontend
-npm run lint
-
-# Lint backend
-cd backend
-npm run lint
-```
-
-## 📈 Usage Examples
-
-### Creating a Position
-```typescript
-// User believes outcome will be around 50 with moderate uncertainty
-const trade = {
-  targetMean: 50.0,
-  targetStdDev: 10.0,
-  marketAddress: "0x...",
-}
-
-await signAndSubmitTransaction({
-  data: {
-    function: `${CONTRACT_ADDRESS}::distribution_markets::trade_with_apt`,
-    functionArguments: [
-      trade.marketAddress,
-      (trade.targetMean * 1e18).toString(),
-      (trade.targetStdDev * 1e18).toString(),
-      false, // mean_is_negative
-      calculatedCost.toString(),
-      optimalX.toString(),
-    ],
-  },
-});
-```
-
-### Market Resolution
-```typescript
-// Oracle sets the realized outcome
-await resolveMarket({
-  marketAddress: "0x...",
-  realizedOutcome: 52.3, // Actual result
-});
+cd backend/script
+node seedDatabase.js
 ```
 
 ## 🗺️ Roadmap
@@ -699,73 +509,25 @@ await resolveMarket({
 - [x] **Yield Distribution**: Daily proportional yield distribution to position holders
 
 ### 🚧 **In Development**
+- [ ] **Amnis Finance Integration**: Additional yield farming protocol
 - [ ] **Compound Integration**: Additional yield farming protocol
-- [ ] **Position Management**: Enhanced portfolio tracking and analytics
-- [ ] **Mobile App**: React Native application for iOS/Android
-- [ ] **Advanced Charts**: 3D visualization and historical data
 
 ### 🔮 **Future Features**
 - [ ] **Multi-Asset Support**: ETH, BTC, and other cryptocurrencies as collateral
 - [ ] **Cross-Chain Integration**: Ethereum and Polygon market support
 - [ ] **Governance Token**: Community-driven protocol upgrades
 - [ ] **Institutional API**: High-frequency trading and market making tools
-- [ ] **Insurance Integration**: Position insurance through Nexus Mutual
-- [ ] **Social Features**: Market discussions and trader leaderboards
 
 ### 💰 **DeFi Integration Status**
 - **✅ Phase 1**: Smart contract integration with Aave lending pools (Complete)
-- **✅ Phase 2**: Automated yield distribution to position holders (Live - 4.2% APY)
+- **✅ Phase 2**: Automated yield distribution to position holders (Live - 4% APY)
 - **🔄 Phase 3**: Compound protocol integration for diversified yield (In Progress)
 - **📋 Phase 4**: Cross-protocol yield optimization and advanced strategies (Planned)
 
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md).
-
-### Development Workflow
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-### Priority Areas
-- **Compound Integration**: Help implement additional yield farming protocols
-- **Frontend Optimization**: Improve chart performance and UX
-- **Testing**: Expand test coverage for edge cases
-- **Documentation**: API documentation and tutorials
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🔗 Links & Resources
-
-<div align="center">
-
-### **🌐 Platform Links**
-
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Coming_Soon-blue?style=for-the-badge)](https://infi-markets.vercel.app)
-[![Documentation](https://img.shields.io/badge/📚_Documentation-Available-green?style=for-the-badge)](./firebase.md)
-[![API Reference](https://img.shields.io/badge/🔧_API_Reference-Interactive-orange?style=for-the-badge)](http://localhost:5000/docs)
-
-### **📖 Research & Foundation**
-
-[![Paradigm Paper](https://img.shields.io/badge/📄_Paradigm_Paper-Research-purple?style=for-the-badge)](https://www.paradigm.xyz/2024/12/distribution-markets)
-[![Aptos Explorer](https://img.shields.io/badge/🔍_Aptos_Explorer-Blockchain-black?style=for-the-badge)](https://explorer.aptoslabs.com/)
-[![Move Language](https://img.shields.io/badge/⚡_Move_Language-Smart_Contracts-blue?style=for-the-badge)](https://move-language.github.io/move/)
-
-### **👥 Community & Support**
-
-[![GitHub Issues](https://img.shields.io/github/issues/aryanbaranwal001/aptos_distribution_markets?style=for-the-badge&logo=github)](https://github.com/aryanbaranwal001/aptos_distribution_markets/issues)
-[![GitHub Stars](https://img.shields.io/github/stars/aryanbaranwal001/aptos_distribution_markets?style=for-the-badge&logo=github)](https://github.com/aryanbaranwal001/aptos_distribution_markets/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/aryanbaranwal001/aptos_distribution_markets?style=for-the-badge&logo=github)](https://github.com/aryanbaranwal001/aptos_distribution_markets/network)
-
-[![Discord](https://img.shields.io/badge/Discord-Join_Community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/infi-markets)
-[![Twitter](https://img.shields.io/badge/Twitter-Follow_Updates-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/infi_markets)
-[![Telegram](https://img.shields.io/badge/Telegram-Join_Chat-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/infi_markets)
-
-</div>
+This project is licensed under the MIT License
 
 ---
 
@@ -781,7 +543,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 | **[Aptos Labs](https://aptos.dev/)** | Robust Blockchain Infrastructure | ⚡ High-Performance Platform |
 | **[Move Language](https://move-language.github.io/move/)** | Safe Smart Contract Development | 🛡️ Security & Resource Safety |
 | **[Aave Protocol](https://aave.com/)** | DeFi Lending Infrastructure | 💰 Yield Optimization |
-| **[OpenAI](https://openai.com/)** | AI-Powered Assistant Technology | 🤖 Intelligent User Experience |
+| **[OpenRouter](https://openrouter.ai/)** | AI-Powered Assistant Technology | 🤖 Intelligent User Experience |
 
 </div>
 
@@ -793,7 +555,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### *Infi Markets - Where Probability Meets Precision*
 
-![Made with Love](https://img.shields.io/badge/Made%20with-❤️-red?style=for-the-badge)
+![Made with Love](https://img.shields.io/badge/Made%20with-❤️-pink?style=for-the-badge)
 ![Powered by Math](https://img.shields.io/badge/Powered%20by-🧮%20Mathematics-blue?style=for-the-badge)
 ![Secured by Move](https://img.shields.io/badge/Secured%20by-🛡️%20Move-green?style=for-the-badge)
 
