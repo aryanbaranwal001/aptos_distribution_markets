@@ -45,7 +45,7 @@ export default function Home() {
           <div className=" pointer-events-none">
             <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold ${theme.text} mb-10`}>
               Welcome to{' '}
-              <span className={theme.primary}>Mirae</span>
+              <span className={`${theme.primary} font-serif font-extrabold tracking-wide`}>Mirae</span>
             </h1>
             <p className={`text-lg sm:text-xl ${theme.textSecondary} mb-8 max-w-2xl mx-auto`}>
               The future of prediction markets and distribution trading on the Aptos blockchain. 

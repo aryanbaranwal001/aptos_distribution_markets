@@ -48,6 +48,11 @@
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
+  
+  /* Theme colors for SVG */
+  --theme-primary-green: #11b881;
+  --theme-primary-orange: #e59500;
+  --theme-primary-coral: #ef2d56;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
