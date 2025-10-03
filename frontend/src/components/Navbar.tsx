@@ -38,9 +38,27 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-16">
             {/* Company Name */}
             <div className="flex-shrink-0">
-              <h1 className={`text-xl font-bold ${theme.primary}`}>
-                Infi Markets
-              </h1>
+              <div className="flex items-center space-x-1">
+                <div className="w-10 h-10 flex-shrink-0">
+                  <div 
+                    className={`w-full h-full transition-all duration-200`}
+                    style={{ 
+                      maskImage: 'url(/infi.svg)',
+                      WebkitMaskImage: 'url(/infi.svg)',
+                      maskRepeat: 'no-repeat',
+                      WebkitMaskRepeat: 'no-repeat',
+                      maskSize: 'contain',
+                      WebkitMaskSize: 'contain',
+                      maskPosition: 'center',
+                      WebkitMaskPosition: 'center',
+                      backgroundColor: color === 'green' ? '#11b881' : color === 'orange' ? '#e59500' : '#ef2d56'
+                    }}
+                  />
+                </div>
+                <h1 className={`text-xl font-extrabold tracking-wide ${theme.primary} font-roboto`}>
+                  Infi Markets
+                </h1>
+              </div>
             </div>
 
             {/* Search Bar */}

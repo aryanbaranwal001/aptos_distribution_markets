@@ -13,9 +13,25 @@ const LandingNavbar = () => {
       <div className="px-6 sm:px-12 lg:px-24">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center">
-            <h1 className={`text-2xl font-bold ${theme.text}`}>
-              <span className={theme.primary}>Infi</span> Markets
+          <div className="flex items-center space-x-2">
+            <div className="w-10 h-10 flex-shrink-0">
+              <div 
+                className={`w-full h-full transition-all duration-200`}
+                style={{ 
+                  maskImage: 'url(/infi.svg)',
+                  WebkitMaskImage: 'url(/infi.svg)',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskSize: 'contain',
+                  WebkitMaskSize: 'contain',
+                  maskPosition: 'center',
+                  WebkitMaskPosition: 'center',
+                  backgroundColor: color === 'green' ? '#11b881' : color === 'orange' ? '#e59500' : '#ef2d56'
+                }}
+              />
+            </div>
+            <h1 className={`text-2xl font-extrabold tracking-wide ${theme.text}`}>
+              <span className={`${theme.primary} font-roboto`}>Infi Markets</span>
             </h1>
           </div>
 
