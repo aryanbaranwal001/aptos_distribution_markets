@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Roboto } from "next/font/google";
 import "./globals.css";
 import "../styles/wallet-selector.css";
 import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
@@ -10,6 +10,12 @@ import ThemeCSS from "@/components/ThemeCSS";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  variable: "--font-roboto",
+  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -24,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${roboto.variable} font-sans antialiased`}>
         <WalletProvider>
           <ThemeProvider>
             <ThemeCSS />

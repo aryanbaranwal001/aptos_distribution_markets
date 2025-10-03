@@ -25,7 +25,7 @@ const LandingNavbar = () => {
               </svg>
             </div>
             <h1 className={`text-2xl font-extrabold tracking-wide ${theme.text}`}>
-              <span className={`${theme.primary} font-serif`}>Infi Markets</span>
+              <span className={`${theme.primary} font-roboto`}>Infi Markets</span>
             </h1>
           </div>
 
