@@ -52,6 +52,7 @@ const DemoMarketInstance = () => {
   const [hasError, setHasError] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isTrading, setIsTrading] = useState(false);
+  const [isAddingLiquidity, setIsAddingLiquidity] = useState(false);
 
   const [marketState, setMarketState] = useState<any>(null);
   const [marketParams, setMarketParams] = useState<any>(null);
@@ -62,7 +63,7 @@ const DemoMarketInstance = () => {
   // Use the new API hook
   const { data: market, loading, error } = useMarket(marketId);
 
-  // Set current wallet when connected (similar to trade-app.js)
+  // Set current wallet when connected
   useEffect(() => {
     if (connected && typeof window !== "undefined" && window.aptos) {
       setCurrentWallet(window.aptos);
@@ -362,7 +363,7 @@ const DemoMarketInstance = () => {
     }
   };
 
-  // Trading function to call the smart contract (following trade-app.js pattern)
+  // Trading function to call the smart contract
   const handleTrade = async () => {
     console.log("=== TRADE DEBUG INFO ===");
     console.log("currentWallet:", currentWallet);
@@ -447,7 +448,7 @@ const DemoMarketInstance = () => {
         optimalX: optimalXValue.toString(),
       });
 
-      // Create the transaction payload in the new format (following trade-app.js)
+      // Create the transaction payload in the new format
       const transaction = {
         type: "entry_function_payload",
         function: `${CONTRACT_ADDRESS}::distribution_markets::trade_with_apt`,
@@ -471,7 +472,7 @@ const DemoMarketInstance = () => {
           JSON.stringify(transaction, null, 2)
         );
 
-        // Sign and submit the transaction using the current wallet (following trade-app.js pattern)
+        // Sign and submit the transaction using the current wallet
         const response = await currentWallet.signAndSubmitTransaction(
           transaction
         );
@@ -479,7 +480,7 @@ const DemoMarketInstance = () => {
         console.log("Transaction response:", response);
         console.log("Transaction hash:", response.hash);
 
-        // Wait for transaction confirmation following trade-app.js pattern
+        // Wait for transaction confirmation
         try {
           console.log("Waiting for transaction confirmation...");
           await aptos.waitForTransaction({
@@ -507,6 +508,47 @@ const DemoMarketInstance = () => {
     }
   };
 
+  const handleAddLiquidity = async () => {
+    if (!currentWallet || !account) {
+      console.error("Please connect your wallet first");
+      return;
+    }
+    if (!aptAmount || parseFloat(aptAmount) <= 0) {
+      console.error("Please enter a valid amount of APT");
+      return;
+    }
+
+    setIsAddingLiquidity(true);
+    try {
+      const y = BigInt(Math.floor(parseFloat(aptAmount) * 1e18));
+      const aptAmountInOctas = BigInt(Math.floor(parseFloat(aptAmount) * 1e8));
+
+      const transaction = {
+        type: "entry_function_payload",
+        function: `${CONTRACT_ADDRESS}::distribution_markets::add_liquidity_with_apt`,
+        type_arguments: [],
+        arguments: [
+          MARKET_ADDRESS,
+          y.toString(),
+          aptAmountInOctas.toString(),
+        ],
+      };
+
+      console.log("Submitting add liquidity transaction:", transaction);
+
+      const response = await currentWallet.signAndSubmitTransaction(transaction);
+
+      console.log("Transaction response:", response);
+      await aptos.waitForTransaction({ transactionHash: response.hash });
+      console.log("Liquidity added successfully!");
+      setAptAmount("");
+    } catch (error) {
+      console.error("Failed to add liquidity:", error);
+    } finally {
+      setIsAddingLiquidity(false);
+    }
+  };
+
   if (loading || !marketParams || !minStdDev) {
     return (
       <div className={`min-h-screen ${theme.background} ${theme.text}`}>
@@ -519,60 +561,59 @@ const DemoMarketInstance = () => {
     );
   }
 
-	if (error || !market) {
-		return (
-			<div className={`min-h-screen ${theme.background} ${theme.text}`}>
-				<Navbar />
-				<CategoryNav />
-				<div className="flex items-center justify-center pt-32">
-					<div className="text-center">
-						<h1 className="text-2xl font-bold mb-4">
-							{error
-								? "Error Loading Market"
-								: "Market Not Found"}
-						</h1>
-						{error && <p className="text-red-400 mb-4">{error}</p>}
-						<Link
-							href="/"
-							className={`${theme.primary} hover:underline`}
-						>
-							Return to Markets
-						</Link>
-					</div>
-				</div>
-			</div>
-		);
-	}
+  if (error || !market) {
+    return (
+      <div className={`min-h-screen ${theme.background} ${theme.text}`}>
+        <Navbar />
+        <CategoryNav />
+        <div className="flex items-center justify-center pt-32">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">
+              {error
+                ? "Error Loading Market"
+                : "Market Not Found"}
+            </h1>
+            {error && <p className="text-red-400 mb-4">{error}</p>}
+            <Link
+              href="/"
+              className={`${theme.primary} hover:underline`}
+            >
+              Return to Markets
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-	// Calculate deltas for display (removed unused variable)
+  // Calculate deltas for display (removed unused variable)
 
-	if (typeof market.market_mean_deviation !== 'number') {
-		return (
-			<div className={`min-h-screen ${theme.background} ${theme.text}`}>
-				<Navbar />
-				<CategoryNav />
-				<div className="flex items-center justify-center pt-32">
-					<div className="text-center">
-						<h1 className="text-2xl font-bold mb-4">
-							Market Data Error
-						</h1>
-						<p className="text-red-400 mb-4">
-							The required 'market_mean_deviation' is missing for this market.
-						</p>
-						<Link
-							href="/"
-							className={`${theme.primary} hover:underline`}
-						>
-							Return to Markets
-						</Link>
-					</div>	
-				</div>
-			</div>
-		);
-	}
+  if (typeof market.market_mean_deviation !== 'number') {
+    return (
+      <div className={`min-h-screen ${theme.background} ${theme.text}`}>
+        <Navbar />
+        <CategoryNav />
+        <div className="flex items-center justify-center pt-32">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">
+              Market Data Error
+            </h1>
+            <p className="text-red-400 mb-4">
+              The required 'market_mean_deviation' is missing for this market.
+            </p>
+            <Link
+              href="/"
+              className={`${theme.primary} hover:underline`}
+            >
+              Return to Markets
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-	return (
-
+  return (
     <div className={`min-h-screen ${theme.background} ${theme.text}`}>
       <Navbar />
       <CategoryNav />
@@ -1169,7 +1210,7 @@ const DemoMarketInstance = () => {
                                   Expected LP Shares
                                 </span>
                                 <span className="font-mono text-xs">
-                                  {aptAmount || "0.00"}
+                                  {aptAmount ? (parseFloat(aptAmount) * 1e8).toLocaleString() : "0"}
                                 </span>
                               </div>
                               <div className="flex justify-between">
@@ -1179,12 +1220,8 @@ const DemoMarketInstance = () => {
                                   Pool Share
                                 </span>
                                 <span className="font-mono text-xs">
-                                  {aptAmount
-                                    ? (
-                                        (parseFloat(aptAmount) /
-                                          (2500000 + parseFloat(aptAmount))) *
-                                        100
-                                      ).toFixed(4)
+                                  {aptAmount && parseFloat(aptAmount) > 0
+                                    ? (parseFloat(aptAmount) / 1 * 100).toFixed(4)
                                     : "0.0000"}
                                   %
                                 </span>
@@ -1196,7 +1233,7 @@ const DemoMarketInstance = () => {
                                   Current Pool Size
                                 </span>
                                 <span className="font-mono text-xs">
-                                  {(market.volume / 1000000).toFixed(2)}M APT
+                                  1 APT
                                 </span>
                               </div>
                               <div className="flex justify-between">
@@ -1206,33 +1243,24 @@ const DemoMarketInstance = () => {
                                   Est. APY
                                 </span>
                                 <span className="font-mono text-xs text-green-400">
-                                  12.5%
+                                  4.7%
                                 </span>
                               </div>
                             </div>
                           </div>
 
-                          <hr className="border-t border-gray-500/20 mb-2" />
-
-                          {/* LP Share Definition */}
-                          <div className="mb-2">
-                            <h3 className="text-xs font-semibold mb-2 uppercase tracking-wide">
-                              LP SHARE DEFINITION
-                            </h3>
-                            <p className="text-xs text-gray-400 leading-relaxed">
-                              LP shares show your pool ownership and earn you
-                              proportional trading fees.
-                            </p>
-                          </div>
-
-                          <hr className="border-t border-gray-500/20 mb-2" />
-
                           {/* Add Liquidity Button */}
                           <button
+                            onClick={handleAddLiquidity}
                             className={`w-full px-4 py-3 rounded-xl ${theme.primaryBg} text-black font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
-                            disabled={!aptAmount || parseFloat(aptAmount) <= 0}
+                            disabled={
+                              !aptAmount ||
+                              parseFloat(
+                                aptAmount
+                              ) <= 0 || isAddingLiquidity
+                            }
                           >
-                            Add Liquidity
+                            {isAddingLiquidity ? 'Adding...' : 'Add Liquidity'}
                           </button>
                         </>
                       )}
