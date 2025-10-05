@@ -52,11 +52,12 @@ const DemoMarketInstance = () => {
 	const [hasError, setHasError] = useState(false);
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [isTrading, setIsTrading] = useState(false);
+	const [isAddingLiquidity, setIsAddingLiquidity] = useState(false);
 
 	// Use the new API hook
 	const { data: market, loading, error } = useMarket(marketId);
 
-	// Set current wallet when connected (similar to trade-app.js)
+	// Set current wallet when connected
 	useEffect(() => {
 		if (connected && typeof window !== "undefined" && window.aptos) {
 			setCurrentWallet(window.aptos);
@@ -279,7 +280,7 @@ const DemoMarketInstance = () => {
 		}
 	};
 
-	// Trading function to call the smart contract (following trade-app.js pattern)
+	// Trading function to call the smart contract
 	const handleTrade = async () => {
 		console.log("=== TRADE DEBUG INFO ===");
 		console.log("currentWallet:", currentWallet);
@@ -377,7 +378,7 @@ const DemoMarketInstance = () => {
 				optimalX: optimalXValue.toString(),
 			});
 
-			// Create the transaction payload in the new format (following trade-app.js)
+			// Create the transaction payload in the new format
 			const transaction = {
 				type: "entry_function_payload",
 				function: `${CONTRACT_ADDRESS}::distribution_markets::trade_with_apt`,
@@ -403,7 +404,7 @@ const DemoMarketInstance = () => {
 					JSON.stringify(transaction, null, 2)
 				);
 
-				// Sign and submit the transaction using the current wallet (following trade-app.js pattern)
+				// Sign and submit the transaction using the current wallet
 				const response = await currentWallet.signAndSubmitTransaction(
 					transaction
 				);
@@ -411,7 +412,7 @@ const DemoMarketInstance = () => {
 				console.log("Transaction response:", response);
 				console.log("Transaction hash:", response.hash);
 
-				// Wait for transaction confirmation following trade-app.js pattern
+				// Wait for transaction confirmation
 				try {
 					console.log("Waiting for transaction confirmation...");
 					await aptos.waitForTransaction({
@@ -436,6 +437,47 @@ const DemoMarketInstance = () => {
 			console.error("Trade failed:", error);
 		} finally {
 			setIsTrading(false);
+		}
+	};
+
+	const handleAddLiquidity = async () => {
+		if (!currentWallet || !account) {
+			console.error("Please connect your wallet first");
+			return;
+		}
+		if (!aptAmount || parseFloat(aptAmount) <= 0) {
+			console.error("Please enter a valid amount of APT");
+			return;
+		}
+	
+		setIsAddingLiquidity(true);
+		try {
+			const y = BigInt(Math.floor(parseFloat(aptAmount) * 1e18));
+			const aptAmountInOctas = BigInt(Math.floor(parseFloat(aptAmount) * 1e8));
+	
+			const transaction = {
+				type: "entry_function_payload",
+				function: `${CONTRACT_ADDRESS}::distribution_markets::add_liquidity_with_apt`,
+				type_arguments: [],
+				arguments: [
+					MARKET_ADDRESS,
+					y.toString(),
+					aptAmountInOctas.toString(),
+				],
+			};
+	
+			console.log("Submitting add liquidity transaction:", transaction);
+	
+			const response = await currentWallet.signAndSubmitTransaction(transaction);
+	
+			console.log("Transaction response:", response);
+			await aptos.waitForTransaction({ transactionHash: response.hash });
+			console.log("Liquidity added successfully!");
+			setAptAmount("");
+		} catch (error) {
+			console.error("Failed to add liquidity:", error);
+		} finally {
+			setIsAddingLiquidity(false);
 		}
 	};
 
@@ -1147,35 +1189,22 @@ const DemoMarketInstance = () => {
 																	Shares
 																</span>
 																<span className="font-mono text-xs">
-																	{aptAmount ||
-																		"0.00"}
+																	{aptAmount ? (parseFloat(aptAmount) * 1e8).toLocaleString() : "0"}
 																</span>
 															</div>
-															<div className="flex justify-between">
-																<span
-																	className={`${theme.textSecondary} text-xs`}
-																>
-																	Pool Share
-																</span>
-																<span className="font-mono text-xs">
-																	{aptAmount
-																		? (
-																				(parseFloat(
-																					aptAmount
-																				) /
-																					(2500000 +
-																						parseFloat(
-																							aptAmount
-																						))) *
-																				100
-																		  ).toFixed(
-																				4
-																		  )
-																		: "0.0000"}
-																	%
-																</span>
-															</div>
-															<div className="flex justify-between">
+																															<div className="flex justify-between">
+																																<span
+																																	className={`${theme.textSecondary} text-xs`}
+																																>
+																																	Pool Share
+																																</span>
+																																<span className="font-mono text-xs">
+																																	{aptAmount && parseFloat(aptAmount) > 0
+																																		? (parseFloat(aptAmount) / 1 * 100).toFixed(4)
+																																		: "0.0000"}
+																																	%
+																																</span>
+																															</div>															<div className="flex justify-between">
 																<span
 																	className={`${theme.textSecondary} text-xs`}
 																>
@@ -1183,13 +1212,7 @@ const DemoMarketInstance = () => {
 																	Size
 																</span>
 																<span className="font-mono text-xs">
-																	{(
-																		market.volume /
-																		1000000
-																	).toFixed(
-																		2
-																	)}
-																	M APT
+																	1 APT
 																</span>
 															</div>
 															<div className="flex justify-between">
@@ -1199,7 +1222,7 @@ const DemoMarketInstance = () => {
 																	Est. APY
 																</span>
 																<span className="font-mono text-xs text-green-400">
-																	12.5%
+																	4.7%
 																</span>
 															</div>
 														</div>
@@ -1225,15 +1248,16 @@ const DemoMarketInstance = () => {
 
 													{/* Add Liquidity Button */}
 													<button
+														onClick={handleAddLiquidity}
 														className={`w-full px-4 py-3 rounded-xl ${theme.primaryBg} text-black font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
 														disabled={
 															!aptAmount ||
 															parseFloat(
 																aptAmount
-															) <= 0
+															) <= 0 || isAddingLiquidity
 														}
 													>
-														Add Liquidity
+														{isAddingLiquidity ? 'Adding...' : 'Add Liquidity'}
 													</button>
 												</>
 											)}

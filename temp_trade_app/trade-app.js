@@ -7,9 +7,7 @@ const CONTRACT_ADDRESS =
 const MARKET_ADDRESS =
 	"0x305f65ce0586f4cf101774497acacf98d041022ddbd9906ba8428bcc9637d9ef";
 
-// Liquidity parameters - hardcoded values from CLI command
-const LIQUIDITY_AMOUNT_APT = "100000000000000000";
-const LIQUIDITY_AMOUNT_OTHER = "10000000";
+// Liquidity parameters are now calculated inside the addLiquidity function
 
 // Trade parameters - exact values from your CLI command
 const TRADE_PARAMS = {
@@ -195,6 +193,16 @@ async function addLiquidity() {
 
 		showStatus("Preparing transaction...", "info");
 
+		// These values would be dynamic in a real application
+		const aptAmountToAdd = 1; // Example: 1 APT
+		const poolSize = 1; // As per instruction
+
+		// y = (amount of APT / pool size) * 10^18
+		const y = BigInt(Math.floor((aptAmountToAdd / poolSize) * 1e18));
+		// apt_amount = amount * 10^8
+		const aptAmountOctas = BigInt(Math.floor(aptAmountToAdd * 1e8));
+
+
 		// Create the transaction payload
 		const transaction = {
 			type: "entry_function_payload",
@@ -202,8 +210,8 @@ async function addLiquidity() {
 			type_arguments: [],
 			arguments: [
 				MARKET_ADDRESS,
-				LIQUIDITY_AMOUNT_APT,
-				LIQUIDITY_AMOUNT_OTHER,
+				y.toString(),
+				aptAmountOctas.toString(),
 			],
 		};
 
