@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,11 +22,7 @@ import DemoMarketInstance from '@/components/DemoMarketInstance';
 const MarketInstancePage = () => {
   const params = useParams();
   
-  // Check if this is the demo market (slug = "1") and render demo component
-  if (params.slug === '1') {
-    return <DemoMarketInstance />;
-  }
-  
+  // All hooks must be called before any conditional returns
   const { color } = useThemeStore();
   const { connected, account } = useWallet();
   const [marketId, setMarketId] = useState<string | null>(null);
@@ -38,13 +34,6 @@ const MarketInstancePage = () => {
   // Use the new API hook
   const { data: market, loading, error } = useMarket(marketId);
   
-  // Check bookmark status when market loads
-  useEffect(() => {
-    if (market) {
-      setIsBookmarked(bookmarkStorage.isBookmarked(market.id));
-    }
-  }, [market]);
-  
   // Slider states for mean and std dev - dynamically set to market values for zero delta
   const [userMean, setUserMean] = useState(market?.market_mean || 0);
   const [userStdDev, setUserStdDev] = useState(market?.market_standard_deviation || 0);
@@ -52,26 +41,22 @@ const MarketInstancePage = () => {
   const [hoverValue, setHoverValue] = useState<number | null>(null);
   const [aptAmount, setAptAmount] = useState<string>('');
   const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5);
+  const [chartData, setChartData] = useState<{
+    marketData: Array<{ x: number; y: number }>;
+    userProposalData: Array<{ x: number; y: number }>;
+    differenceData: Array<{ x: number; y: number }>;
+  }>({
+    marketData: [],
+    userProposalData: [],
+    differenceData: [],
+  });
   
-  // Calculate probability and cumulative values
-  const calculateProbabilityAtPoint = (x: number) => {
-    if (!market) return { probability: 0, cumulative: 0 };
-    
-    const coefficient = 1 / (Math.abs(userStdDev) * Math.sqrt(2 * Math.PI));
-    const exponent = -0.5 * Math.pow((x - userMean) / Math.abs(userStdDev), 2);
-    const probability = coefficient * Math.exp(exponent);
-    
-    // Simple cumulative calculation (approximation)
-    const cumulative = 0.5 * (1 + Math.sign(x - userMean) * Math.sqrt(1 - Math.exp(-2 * Math.pow((x - userMean) / Math.abs(userStdDev), 2) / Math.PI)));
-    
-    return { probability, cumulative: Math.max(0, Math.min(1, cumulative)) };
-  };
-  
-  const currentStats = hoverValue !== null 
-    ? calculateProbabilityAtPoint(hoverValue)
-    : calculateProbabilityAtPoint(userMean);
-  
-  const theme = getThemeClasses(color);
+  // Check bookmark status when market loads
+  useEffect(() => {
+    if (market) {
+      setIsBookmarked(bookmarkStorage.isBookmarked(market.id));
+    }
+  }, [market]);
 
   // First, we need to find the market ID from the slug
   // For now, we'll use the slug as the ID since we don't have a slug-to-ID mapping
@@ -97,6 +82,105 @@ const MarketInstancePage = () => {
       setUserStdDev(market.market_standard_deviation);
     }
   }, [market]);
+
+  // Normal PDF function
+  const normalPDF = (x: number, mean: number, stdDev: number) => {
+    const absStdDev = Math.abs(stdDev);
+    if (absStdDev === 0) return 0;
+    const coefficient = 1 / (absStdDev * Math.sqrt(2 * Math.PI));
+    const exponent = -0.5 * Math.pow((x - mean) / absStdDev, 2);
+    return coefficient * Math.exp(exponent);
+  };
+
+  // Calculate lambda using the formula: lambda = sqrt(2 * sigma * sqrt(pi))
+  const calculateLambda = (sigma: number) => {
+    return Math.sqrt(2 * Math.abs(sigma) * Math.sqrt(Math.PI));
+  };
+
+  // Generate data points for λ * pdf curve
+  const generateScaledCurveData = useCallback((
+    mean: number,
+    stdDev: number,
+    lambda: number,
+    min: number,
+    max: number,
+    points: number = 200
+  ) => {
+    const step = (max - min) / points;
+    const data: Array<{ x: number; y: number }> = [];
+
+    for (let i = 0; i <= points; i++) {
+      const x = min + i * step;
+      const y = lambda * normalPDF(x, mean, stdDev);
+      data.push({ x, y });
+    }
+
+    return data;
+  }, []);
+
+  // Generate chart data when market or user values change
+  useEffect(() => {
+    if (!market) return;
+
+    // 1. Generate data for chart
+    const minX = Math.min(
+      market.market_mean - 4 * Math.abs(market.market_standard_deviation),
+      userMean - 4 * Math.abs(userStdDev)
+    );
+    const maxX = Math.max(
+      market.market_mean + 4 * Math.abs(market.market_standard_deviation),
+      userMean + 4 * Math.abs(userStdDev)
+    );
+
+    const lambdaMarket = calculateLambda(market.market_standard_deviation);
+    const lambdaUser = calculateLambda(userStdDev);
+
+    const marketData = generateScaledCurveData(
+      market.market_mean,
+      market.market_standard_deviation,
+      lambdaMarket,
+      minX,
+      maxX
+    );
+    const userProposalData = generateScaledCurveData(
+      userMean,
+      userStdDev,
+      lambdaUser,
+      minX,
+      maxX
+    );
+    const differenceData = marketData.map((point, index) => ({
+      x: point.x,
+      y: userProposalData[index].y - point.y,
+    }));
+
+    setChartData({ marketData, userProposalData, differenceData });
+  }, [market, userMean, userStdDev, generateScaledCurveData]);
+
+  // Check if this is the demo market (slug = "1") and render demo component
+  if (params.slug === '1') {
+    return <DemoMarketInstance />;
+  }
+
+  // Calculate probability and cumulative values
+  const calculateProbabilityAtPoint = (x: number) => {
+    if (!market) return { probability: 0, cumulative: 0 };
+    
+    const coefficient = 1 / (Math.abs(userStdDev) * Math.sqrt(2 * Math.PI));
+    const exponent = -0.5 * Math.pow((x - userMean) / Math.abs(userStdDev), 2);
+    const probability = coefficient * Math.exp(exponent);
+    
+    // Simple cumulative calculation (approximation)
+    const cumulative = 0.5 * (1 + Math.sign(x - userMean) * Math.sqrt(1 - Math.exp(-2 * Math.pow((x - userMean) / Math.abs(userStdDev), 2) / Math.PI)));
+    
+    return { probability, cumulative: Math.max(0, Math.min(1, cumulative)) };
+  };
+  
+  const currentStats = hoverValue !== null 
+    ? calculateProbabilityAtPoint(hoverValue)
+    : calculateProbabilityAtPoint(userMean);
+  
+  const theme = getThemeClasses(color);
 
   const handleImageError = () => {
     if (!hasError) {
@@ -257,10 +341,9 @@ const MarketInstancePage = () => {
                 {/* Graph Section - Flexible Height */}
                 <div className="flex-1 mb-3 min-h-[300px]">
                   <NormalDistributionChart
-                    marketMean={market.market_mean}
-                    marketStdDev={market.market_standard_deviation}
-                    userMean={userMean}
-                    userStdDev={userStdDev}
+                    marketData={chartData.marketData}
+                    userProposalData={chartData.userProposalData}
+                    differenceData={chartData.differenceData}
                     onHover={setHoverValue}
                     xAxisLabel={market.x_axis_field_name}
                   />

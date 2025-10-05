@@ -7,7 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   useWallet,
-  type InputTransactionData,
 } from "@aptos-labs/wallet-adapter-react";
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 import { useThemeStore, getThemeClasses } from "@/store/themeStore";
@@ -21,13 +20,11 @@ import AIChatSidebar from "@/components/AIChatSidebar";
 import BookmarkIcon from "@/components/BookmarkIcon";
 import { WalletSelector } from "@/components/WalletSelector";
 import { bookmarkStorage } from "@/utils/bookmarkStorage";
-import { Bool } from "@aptos-labs/ts-sdk";
-import * as numeric from "numeric";
 
 // Extend Window interface to include aptos wallet
 declare global {
   interface Window {
-    aptos?: any;
+    aptos?: unknown;
   }
 }
 
@@ -44,8 +41,8 @@ const aptos = new Aptos(config);
 const DemoMarketInstance = () => {
   const params = useParams();
   const { color } = useThemeStore();
-  const { connected, account, signAndSubmitTransaction } = useWallet();
-  const [currentWallet, setCurrentWallet] = useState<any>(null);
+  const { connected, account } = useWallet();
+  const [currentWallet, setCurrentWallet] = useState<unknown>(null);
   const [marketId, setMarketId] = useState<string | null>(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [iconSrc, setIconSrc] = useState("");
@@ -54,10 +51,10 @@ const DemoMarketInstance = () => {
   const [isTrading, setIsTrading] = useState(false);
   const [isAddingLiquidity, setIsAddingLiquidity] = useState(false);
 
-  const [marketState, setMarketState] = useState<any>(null);
-  const [marketParams, setMarketParams] = useState<any>(null);
-  const [minStdDev, setMinStdDev] = useState<any>(null);
-  const [positions, setPositions] = useState<any[]>([]);
+  const [marketState, setMarketState] = useState<unknown>(null);
+  const [marketParams, setMarketParams] = useState<unknown>(null);
+  const [minStdDev, setMinStdDev] = useState<unknown>(null);
+  const [positions, setPositions] = useState<unknown[]>([]);
   const [positionsLoading, setPositionsLoading] = useState(false);
 
   // Use the new API hook
@@ -90,7 +87,11 @@ const DemoMarketInstance = () => {
   const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5);
   const [calculatedCost, setCalculatedCost] = useState<number>(0);
   const [optimalX, setOptimalX] = useState<number>(0);
-  const [chartData, setChartData] = useState<any>({
+  const [chartData, setChartData] = useState<{
+    marketData: Array<{ x: number; y: number }>;
+    userProposalData: Array<{ x: number; y: number }>;
+    differenceData: Array<{ x: number; y: number }>;
+  }>({
     marketData: [],
     userProposalData: [],
     differenceData: [],
@@ -147,7 +148,7 @@ const DemoMarketInstance = () => {
   };
 
   // Generate data points for λ * pdf curve
-  const generateScaledCurveData = (
+  const generateScaledCurveData = useCallback((
     mean: number,
     stdDev: number,
     lambda: number,
@@ -165,7 +166,7 @@ const DemoMarketInstance = () => {
     }
 
     return data;
-  };
+  }, []);
 
   const currentStats =
     hoverValue !== null
@@ -175,10 +176,10 @@ const DemoMarketInstance = () => {
   const theme = getThemeClasses(color);
 
   // View call helper
-  async function callView(functionName: string, args: any[] = []) {
+  async function callView(functionName: string, args: (string | number | boolean)[] = []) {
     try {
       const payload = {
-        function: `${CONTRACT_ADDRESS}::distribution_markets::${functionName}`,
+        function: `${CONTRACT_ADDRESS}::distribution_markets::${functionName}` as const,
         type_arguments: [],
         functionArguments: args,
       };
@@ -220,10 +221,10 @@ const DemoMarketInstance = () => {
     setPositionsLoading(true);
     try {
       const positionsData = await callView("get_all_trader_positions", [
-        account.address,
+        account.address.toString(),
         MARKET_ADDRESS,
       ]);
-      setPositions(positionsData[0]);
+      setPositions(positionsData[0] as unknown[]);
     } catch (error) {
       console.error("Failed to fetch positions:", error);
     } finally {
@@ -252,8 +253,8 @@ const DemoMarketInstance = () => {
         : "/icons/default.png";
       setIconSrc(pngSrc);
 
-      const newMarketMean = Number(marketParams[0]) / 1e18;
-      const newMarketStdDev = Number(marketParams[1]) / 1e18;
+      const newMarketMean = Number((marketParams as unknown[])[0]) / 1e18;
+      const newMarketStdDev = Number((marketParams as unknown[])[1]) / 1e18;
       const newMinStdDev = Number(minStdDev) / 1e18;
 
       // Initialize sliders to center positions for zero delta
@@ -334,7 +335,7 @@ const DemoMarketInstance = () => {
       setCalculatedCost(cost);
       setOptimalX(minPoint.x);
     }
-  }, [market, userMean, userStdDev]);
+  }, [market, userMean, userStdDev, generateScaledCurveData]);
 
   const handleImageError = () => {
     if (!hasError) {
@@ -473,32 +474,32 @@ const DemoMarketInstance = () => {
         );
 
         // Sign and submit the transaction using the current wallet
-        const response = await currentWallet.signAndSubmitTransaction(
+        const response = await (currentWallet as { signAndSubmitTransaction: (tx: unknown) => Promise<unknown> }).signAndSubmitTransaction(
           transaction
         );
 
         console.log("Transaction response:", response);
-        console.log("Transaction hash:", response.hash);
+        console.log("Transaction hash:", (response as { hash: string }).hash);
 
         // Wait for transaction confirmation
         try {
           console.log("Waiting for transaction confirmation...");
           await aptos.waitForTransaction({
-            transactionHash: response.hash,
+            transactionHash: (response as { hash: string }).hash,
           });
           console.log("Trade executed successfully!");
-        } catch (waitError: any) {
+        } catch (waitError: unknown) {
           console.error("Transaction wait error:", waitError);
           console.error(
-            `Transaction submitted but confirmation failed: ${waitError.message}`
+            `Transaction submitted but confirmation failed: ${waitError instanceof Error ? waitError.message : String(waitError)}`
           );
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Transaction failed:", error);
         console.error("Error details:", {
-          message: error.message,
-          code: error.code,
-          stack: error.stack,
+          message: error instanceof Error ? error.message : String(error),
+          code: (error as { code?: unknown })?.code,
+          stack: error instanceof Error ? error.stack : undefined,
         });
       }
     } catch (error) {
@@ -536,10 +537,10 @@ const DemoMarketInstance = () => {
 
       console.log("Submitting add liquidity transaction:", transaction);
 
-      const response = await currentWallet.signAndSubmitTransaction(transaction);
+      const response = await (currentWallet as { signAndSubmitTransaction: (tx: unknown) => Promise<unknown> }).signAndSubmitTransaction(transaction);
 
       console.log("Transaction response:", response);
-      await aptos.waitForTransaction({ transactionHash: response.hash });
+      await aptos.waitForTransaction({ transactionHash: (response as { hash: string }).hash });
       console.log("Liquidity added successfully!");
       setAptAmount("");
     } catch (error) {
@@ -599,7 +600,7 @@ const DemoMarketInstance = () => {
               Market Data Error
             </h1>
             <p className="text-red-400 mb-4">
-              The required 'market_mean_deviation' is missing for this market.
+              The required &apos;market_mean_deviation&apos; is missing for this market.
             </p>
             <Link
               href="/"
@@ -746,10 +747,11 @@ const DemoMarketInstance = () => {
                     ) : positions.length > 0 ? (
                       <div className="flex flex-col h-[400px] overflow-y-auto gap-y-20">
                         {positions.map((position, index) => {
-                          const traderMean = Number(position[0]) / 1e18;
-                          const traderStdDev = Number(position[1]) / 1e18;
-                          const marketMean = Number(position[3]) / 1e18;
-                          const marketStdDev = Number(position[4]) / 1e18;
+                          const pos = position as unknown[];
+                          const traderMean = Number(pos[0]) / 1e18;
+                          const traderStdDev = Number(pos[1]) / 1e18;
+                          const marketMean = Number(pos[3]) / 1e18;
+                          const marketStdDev = Number(pos[4]) / 1e18;
 
                           const lambdaTrader = calculateLambda(traderStdDev);
                           const lambdaMarket = calculateLambda(marketStdDev);
@@ -886,12 +888,12 @@ const DemoMarketInstance = () => {
                         </span>
                         <span
                           className={`${
-                            marketState?.is_active
+                            (marketState as { is_active?: boolean })?.is_active
                               ? "text-green-500"
                               : "text-red-500"
                           } text-xs`}
                         >
-                          {marketState?.is_active ? "Active" : "Inactive"}
+                          {(marketState as { is_active?: boolean })?.is_active ? "Active" : "Inactive"}
                         </span>
                       </div>
                       <div className="flex justify-between">
