@@ -7,6 +7,10 @@ const CONTRACT_ADDRESS =
 const MARKET_ADDRESS =
 	"0x305f65ce0586f4cf101774497acacf98d041022ddbd9906ba8428bcc9637d9ef";
 
+// Liquidity parameters - hardcoded values from CLI command
+const LIQUIDITY_AMOUNT_APT = "100000000000000000";
+const LIQUIDITY_AMOUNT_OTHER = "10000000";
+
 // Trade parameters - exact values from your CLI command
 const TRADE_PARAMS = {
 	marketAddress: MARKET_ADDRESS,
@@ -37,6 +41,7 @@ let fetchMarketStateBtn;
 let fetchMarketParamsBtn;
 let fetchPositionsBtn;
 let fetchMinStdDevBtn;
+let addLiquidityBtn;
 
 // Utility function to show status messages
 function showStatus(message, type = "info") {
@@ -50,7 +55,8 @@ function showStatus(message, type = "info") {
 function showJsonResult(title, obj) {
 	const pre = document.createElement("pre");
 	pre.className = "transaction-hash";
-	pre.textContent = `${title}:\n${JSON.stringify(obj, null, 2)}`;
+	pre.textContent = `${title}:
+${JSON.stringify(obj, null, 2)}`;
 	statusDiv.appendChild(pre);
 }
 
@@ -65,12 +71,14 @@ function updateWalletUI() {
 		connectWalletBtn.textContent = "Wallet Connected";
 		connectWalletBtn.disabled = true;
 		executeTradeBtn.disabled = false;
+		if (addLiquidityBtn) addLiquidityBtn.disabled = false;
 	} else {
 		walletStatus.textContent = "Not connected";
 		walletInfo.style.display = "block";
 		connectWalletBtn.textContent = "Connect Wallet";
 		connectWalletBtn.disabled = false;
 		executeTradeBtn.disabled = true;
+		if (addLiquidityBtn) addLiquidityBtn.disabled = true;
 	}
 }
 
@@ -171,6 +179,73 @@ async function executeTrade() {
 	} finally {
 		executeTradeBtn.disabled = false;
 		executeTradeBtn.textContent = "Execute Trade";
+	}
+}
+
+// Execute add liquidity function
+async function addLiquidity() {
+	if (!currentAccount || !currentWallet) {
+		showStatus("Please connect your wallet first", "error");
+		return;
+	}
+
+	try {
+		addLiquidityBtn.disabled = true;
+		addLiquidityBtn.textContent = "Adding Liquidity...";
+
+		showStatus("Preparing transaction...", "info");
+
+		// Create the transaction payload
+		const transaction = {
+			type: "entry_function_payload",
+			function: `${CONTRACT_ADDRESS}::distribution_markets::add_liquidity_with_apt`,
+			type_arguments: [],
+			arguments: [
+				MARKET_ADDRESS,
+				LIQUIDITY_AMOUNT_APT,
+				LIQUIDITY_AMOUNT_OTHER,
+			],
+		};
+
+		console.log("Transaction payload:", transaction);
+
+		showStatus("Please approve the transaction in your wallet...", "info");
+
+		// Sign and submit the transaction
+		const response = await currentWallet.signAndSubmitTransaction(
+			transaction
+		);
+
+		console.log("Transaction response:", response);
+
+		showStatus(
+			"Transaction submitted! Waiting for confirmation...",
+			"info"
+		);
+
+		// Wait for transaction confirmation
+		try {
+			await aptos.waitForTransaction({ transactionHash: response.hash });
+			showStatus("Liquidity added successfully!", "success");
+
+			// Display transaction hash
+			const hashDiv = document.createElement("div");
+			hashDiv.className = "transaction-hash";
+			hashDiv.innerHTML = `<strong>Transaction Hash:</strong><br>${response.hash}`;
+			statusDiv.appendChild(hashDiv);
+		} catch (waitError) {
+			console.error("Transaction wait error:", waitError);
+			showStatus(
+				`Transaction submitted but confirmation failed: ${waitError.message}`,
+				"error"
+			);
+		}
+	} catch (error) {
+		console.error("Add liquidity failed:", error);
+		showStatus(`Add liquidity failed: ${error.message}`, "error");
+	} finally {
+		addLiquidityBtn.disabled = false;
+		addLiquidityBtn.textContent = "Add Liquidity";
 	}
 }
 
@@ -298,10 +373,16 @@ function initializeApp() {
 	fetchMinStdDevBtn.textContent = "Fetch Min Std Dev";
 	fetchMinStdDevBtn.addEventListener("click", fetchMinStdDev);
 
+	addLiquidityBtn = document.createElement("button");
+	addLiquidityBtn.textContent = "Add Liquidity";
+	addLiquidityBtn.disabled = true;
+	addLiquidityBtn.addEventListener("click", addLiquidity);
+
 	btnWrap.appendChild(fetchMarketStateBtn);
 	btnWrap.appendChild(fetchMarketParamsBtn);
 	btnWrap.appendChild(fetchPositionsBtn);
 	btnWrap.appendChild(fetchMinStdDevBtn);
+	btnWrap.appendChild(addLiquidityBtn);
 	container.appendChild(btnWrap);
 }
 
