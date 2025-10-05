@@ -699,7 +699,7 @@ const DemoMarketInstance = () => {
                   )}
                   {activeTab === "positions" &&
                     (positions.length > 0 ? (
-                      <div className="space-y-4 h-[400px] overflow-y-auto">
+                      <div className="flex flex-col h-[400px] overflow-y-auto gap-y-20">
                         {positions.map((position, index) => {
                           const traderMean = Number(position[0]) / 1e18;
                           const traderStdDev = Number(position[1]) / 1e18;
