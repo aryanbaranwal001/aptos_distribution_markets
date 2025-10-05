@@ -739,7 +739,11 @@ const DemoMarketInstance = () => {
                     />
                   )}
                   {activeTab === "positions" &&
-                    (positions.length > 0 ? (
+                    (positionsLoading ? (
+                      <div className="flex items-center justify-center h-full">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-current"></div>
+                      </div>
+                    ) : positions.length > 0 ? (
                       <div className="flex flex-col h-[400px] overflow-y-auto gap-y-20">
                         {positions.map((position, index) => {
                           const traderMean = Number(position[0]) / 1e18;
@@ -799,8 +803,7 @@ const DemoMarketInstance = () => {
                           </p>
                         </div>
                       </div>
-                    ))}
-                </div>
+                    ))}                </div>
 
                 <hr className="border-t border-gray-500/20 mb-3" />
 
@@ -1007,22 +1010,22 @@ const DemoMarketInstance = () => {
                             MEAN (M)
                           </label>
                           <span className="text-sm font-bold">
-                            {userMean.toFixed(2)}
+                            {userMean.toFixed(3)}
                           </span>
                         </div>
                         <input
                           type="range"
                           min={market.market_mean_min}
                           max={market.market_mean_max}
-                          step="0.01"
+                          step="0.001"
                           value={userMean}
                           onChange={(e) => setUserMean(Number(e.target.value))}
                           className={`w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-gray-600 slider-${color}`}
                         />
                         <div className="flex justify-between text-xs text-gray-500 mt-1">
-                          <span>{market.market_mean_min.toFixed(2)}</span>
-                          <span>{market.market_mean.toFixed(2)}</span>
-                          <span>{market.market_mean_max.toFixed(2)}</span>
+                          <span>{market.market_mean_min.toFixed(3)}</span>
+                          <span>{market.market_mean.toFixed(3)}</span>
+                          <span>{market.market_mean_max.toFixed(3)}</span>
                         </div>{" "}
                       </div>
 
@@ -1035,14 +1038,14 @@ const DemoMarketInstance = () => {
                             SIGMA (σ)
                           </label>
                           <span className="text-sm font-bold">
-                            {userStdDev.toFixed(2)}
+                            {userStdDev.toFixed(3)}
                           </span>
                         </div>
                         <input
                           type="range"
                           min={market.market_standard_deviation_min}
                           max={market.market_standard_deviation_max}
-                          step="0.01"
+                          step="0.001"
                           value={userStdDev}
                           onChange={(e) =>
                             setUserStdDev(Number(e.target.value))
@@ -1051,13 +1054,13 @@ const DemoMarketInstance = () => {
                         />
                         <div className="flex justify-between text-xs text-gray-500 mt-1">
                           <span>
-                            {market.market_standard_deviation_min.toFixed(2)}
+                            {market.market_standard_deviation_min.toFixed(3)}
                           </span>
                           <span>
-                            {market.market_standard_deviation.toFixed(2)}
+                            {market.market_standard_deviation.toFixed(3)}
                           </span>
                           <span>
-                            {market.market_standard_deviation_max.toFixed(2)}
+                            {market.market_standard_deviation_max.toFixed(3)}
                           </span>
                         </div>
                       </div>
