@@ -257,13 +257,22 @@ const DemoMarketInstance = () => {
 			setUserMean(newMarketMean);
 			setUserStdDev(newMarketStdDev);
 
+			const marketMeanDeviation = market.market_mean_deviation;
+			const marketMeanMin =
+				newMarketMean - (marketMeanDeviation * newMarketMean) / 100;
+			const marketMeanMax =
+				newMarketMean + (marketMeanDeviation * newMarketMean) / 100;
+
 			// Update market object with on-chain data
 			const updatedMarket = {
 				...market,
 				market_mean: newMarketMean,
 				market_standard_deviation: newMarketStdDev,
 				market_standard_deviation_min: newMinStdDev,
-				market_standard_deviation_max: newMarketStdDev + (newMarketStdDev - newMinStdDev),
+				market_standard_deviation_max:
+					newMarketStdDev + (newMarketStdDev - newMinStdDev),
+				market_mean_min: marketMeanMin,
+				market_mean_max: marketMeanMax,
 			};
 			// This is a bit of a hack to avoid changing the whole structure
 			Object.assign(market, updatedMarket);
