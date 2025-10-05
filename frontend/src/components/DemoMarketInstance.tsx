@@ -946,18 +946,17 @@ const DemoMarketInstance = () => {
 													}
 													className={`w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-gray-600 slider-${color}`}
 												/>
-												<div className="flex justify-between text-xs text-gray-500 mt-1">
-													<span>
-														{market.market_mean_min}
-													</span>
-													<span>
-														{market.market_mean}
-													</span>
-													<span>
-														{market.market_mean_max}
-													</span>
-												</div>
-											</div>
+																						<div className="flex justify-between text-xs text-gray-500 mt-1">
+																							<span>
+																								{market.market_mean_min.toFixed(2)}
+																							</span>
+																							<span>
+																								{market.market_mean.toFixed(2)}
+																							</span>
+																							<span>
+																								{market.market_mean_max.toFixed(2)}
+																							</span>
+																						</div>											</div>
 
 											<hr className="border-t border-gray-500/20 mb-3" />
 
@@ -992,19 +991,19 @@ const DemoMarketInstance = () => {
 												/>
 												<div className="flex justify-between text-xs text-gray-500 mt-1">
 													<span>
-														{
-															market.market_standard_deviation_min
-														}
+														{market.market_standard_deviation_min.toFixed(
+															2
+														)}
 													</span>
 													<span>
-														{
-															market.market_standard_deviation
-														}
+														{market.market_standard_deviation.toFixed(
+															2
+														)}
 													</span>
 													<span>
-														{
-															market.market_standard_deviation_max
-														}
+														{market.market_standard_deviation_max.toFixed(
+															2
+														)}
 													</span>
 												</div>
 											</div>
