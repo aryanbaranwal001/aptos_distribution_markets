@@ -511,7 +511,7 @@ const DemoMarketInstance = () => {
 		}
 	};
 
-	if (loading) {
+	if (loading || !marketParams || !minStdDev) {
 		return (
 			<div className={`min-h-screen ${theme.background} ${theme.text}`}>
 				<Navbar />
