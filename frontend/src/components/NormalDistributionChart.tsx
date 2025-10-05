@@ -28,95 +28,21 @@ ChartJS.register(
 );
 
 interface NormalDistributionChartProps {
-	marketMean: number;
-	marketStdDev: number;
-	userMean: number;
-	userStdDev: number;
+	marketData: Array<{ x: number; y: number }>;
+	userProposalData: Array<{ x: number; y: number }>;
+	differenceData: Array<{ x: number; y: number }>;
 	onHover?: (value: number | null) => void;
 	xAxisLabel?: string;
 }
 
-// Normal distribution probability density function
-const normalPDF = (x: number, mean: number, stdDev: number): number => {
-	if (stdDev <= 0) return 0;
-	const sigma = Math.abs(stdDev);
-	const coefficient = 1 / (sigma * Math.sqrt(2 * Math.PI));
-	const exponent = -0.5 * Math.pow((x - mean) / sigma, 2);
-	return coefficient * Math.exp(exponent);
-};
-
-// Lambda calculation used to scale the pdf: λ = sqrt(2 * |σ| * sqrt(pi))
-const calculateLambda = (stdDev: number): number => {
-	const sigma = Math.abs(stdDev);
-	return Math.sqrt(2 * sigma * Math.sqrt(Math.PI));
-};
-
-// Generate data points for λ * pdf curve
-const generateScaledCurveData = (
-	mean: number,
-	stdDev: number,
-	lambda: number,
-	min: number,
-	max: number,
-	points: number = 200
-) => {
-	const step = (max - min) / points;
-	const data: Array<{ x: number; y: number }> = [];
-
-	for (let i = 0; i <= points; i++) {
-		const x = min + i * step;
-		const y = lambda * normalPDF(x, mean, stdDev);
-		data.push({ x, y });
-	}
-
-	return data;
-};
-
 const NormalDistributionChart: React.FC<NormalDistributionChartProps> = ({
-	marketMean,
-	marketStdDev,
-	userMean,
-	userStdDev,
+	marketData,
+	userProposalData,
+	differenceData,
 	onHover,
 	xAxisLabel,
 }) => {
 	const chartRef = useRef<ChartJS<"line">>(null);
-
-	// Calculate the range for x-axis (show ±4 standard deviations from both means)
-	const minX = Math.min(
-		marketMean - 4 * Math.abs(marketStdDev),
-		userMean - 4 * Math.abs(userStdDev)
-	);
-	const maxX = Math.max(
-		marketMean + 4 * Math.abs(marketStdDev),
-		userMean + 4 * Math.abs(userStdDev)
-	);
-
-	// Compute λ for market and user
-	const lambdaMarket = calculateLambda(marketStdDev);
-	const lambdaUser = calculateLambda(userStdDev);
-
-	// Generate data for λ * pdf curves
-	const marketData = generateScaledCurveData(
-		marketMean,
-		marketStdDev,
-		lambdaMarket,
-		minX,
-		maxX
-	);
-	const userProposalData = generateScaledCurveData(
-		userMean,
-		userStdDev,
-		lambdaUser,
-		minX,
-		maxX
-	);
-
-	// Calculate difference curve (λ_g·g(x) − λ_f·f(x))
-	const differenceData = marketData.map((point, index) => ({
-		x: point.x,
-		y: userProposalData[index].y - point.y,
-	}));
 
 	const data = {
 		datasets: [

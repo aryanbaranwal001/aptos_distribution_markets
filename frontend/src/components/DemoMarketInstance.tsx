@@ -22,8 +22,7 @@ import BookmarkIcon from "@/components/BookmarkIcon";
 import { WalletSelector } from "@/components/WalletSelector";
 import { bookmarkStorage } from "@/utils/bookmarkStorage";
 import { Bool } from "@aptos-labs/ts-sdk";
-// @ts-ignore - fmin doesn't have TypeScript declarations
-const fmin = require("fmin");
+import * as numeric from "numeric";
 
 // Extend Window interface to include aptos wallet
 declare global {
@@ -84,6 +83,11 @@ const DemoMarketInstance = () => {
 	const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5);
 	const [calculatedCost, setCalculatedCost] = useState<number>(0);
 	const [optimalX, setOptimalX] = useState<number>(0);
+	const [chartData, setChartData] = useState<any>({
+		marketData: [],
+		userProposalData: [],
+		differenceData: [],
+	});
 
 	// Calculate lambda using the formula: lambda = sqrt(2 * sigma * sqrt(pi))
 	const calculateLambda = (sigma: number) => {
@@ -99,10 +103,8 @@ const DemoMarketInstance = () => {
 		const sigma = Math.abs(userStdDev);
 		const mu = userMean;
 
-		// Apply the formula: p(x) = lambda * (1/(sqrt(2*pi*sigma))) * e^(-((x-mu)^2)/(2*(sigma^2)))
-		const coefficient = lambda * (1 / Math.sqrt(2 * Math.PI * sigma));
-		const exponent = -Math.pow(x - mu, 2) / (2 * Math.pow(sigma, 2));
-		const probability = coefficient * Math.exp(exponent);
+		// Correctly calculate probability using the component's normalPDF function
+		const probability = lambda * normalPDF(x, mu, sigma);
 
 		// Simple cumulative calculation (approximation)
 		const cumulative =
@@ -134,70 +136,33 @@ const DemoMarketInstance = () => {
 
 	// Calculate normal distribution PDF: (1/sqrt(2*pi*sigma^2)) * exp(-(x-mu)^2/(2*sigma^2))
 	const normalPDF = (x: number, mu: number, sigma: number) => {
-		const coefficient = 1 / Math.sqrt(2 * Math.PI * sigma * sigma);
-		const exponent = -Math.pow(x - mu, 2) / (2 * sigma * sigma);
+		if (sigma <= 0) return 0;
+		const absSigma = Math.abs(sigma);
+		const coefficient = 1 / (absSigma * Math.sqrt(2 * Math.PI));
+		const exponent = -0.5 * Math.pow((x - mu) / absSigma, 2);
 		return coefficient * Math.exp(exponent);
 	};
 
-	// Calculate the cost function a(x) = |lambda_g * g(x) - lambda_f * f(x)|
-	const calculateCostFunction = useCallback(() => {
-		if (!market) return { cost: 0, optimalX: 0 };
+	// Generate data points for λ * pdf curve
+	const generateScaledCurveData = (
+		mean: number,
+		stdDev: number,
+		lambda: number,
+		min: number,
+		max: number,
+		points: number = 200
+	) => {
+		const step = (max - min) / points;
+		const data: Array<{ x: number; y: number }> = [];
 
-		// Market distribution parameters (f)
-		const marketMu = market.market_mean;
-		const marketSigma = market.market_standard_deviation;
-		const lambdaF = calculateLambda(marketSigma);
-
-		// User distribution parameters (g)
-		const userMu = userMean;
-		const userSigma = userStdDev;
-		const lambdaG = calculateLambda(userSigma);
-
-		// Define the cost function to minimize
-		const costFunction = (x: number) => {
-			const gx = normalPDF(x, userMu, userSigma);
-			const fx = normalPDF(x, marketMu, marketSigma);
-			return Math.abs(lambdaG * gx - lambdaF * fx);
-		};
-
-		// Define search range around the means
-		const searchMin =
-			Math.min(userMu, marketMu) - 3 * Math.max(userSigma, marketSigma);
-		const searchMax =
-			Math.max(userMu, marketMu) + 3 * Math.max(userSigma, marketSigma);
-
-		try {
-			// Use fmin to find the minimum cost and optimal x
-			const result = fmin.nelderMead(costFunction, [userMu], {
-				maxIterations: 1000,
-				nonZeroDelta: 0.05,
-				zeroDelta: 0.0001,
-				minErrorDelta: 1e-6,
-				minTolerance: 1e-5,
-				rho: 1,
-				chi: 2,
-				psi: -0.5,
-				sigma: 0.5,
-			});
-
-			const optimalXValue = result.x[0];
-			const minCost = costFunction(optimalXValue);
-
-			// Ensure optimal x is within reasonable bounds
-			const clampedOptimalX = Math.max(
-				searchMin,
-				Math.min(searchMax, optimalXValue)
-			);
-			const finalCost = costFunction(clampedOptimalX);
-
-			return { cost: finalCost, optimalX: clampedOptimalX };
-		} catch (error) {
-			console.error("Error in cost calculation:", error);
-			// Fallback to simple calculation
-			const midPoint = (userMu + marketMu) / 2;
-			return { cost: costFunction(midPoint), optimalX: midPoint };
+		for (let i = 0; i <= points; i++) {
+			const x = min + i * step;
+			const y = lambda * normalPDF(x, mean, stdDev);
+			data.push({ x, y });
 		}
-	}, [market, userMean, userStdDev]);
+
+		return data;
+	};
 
 	const currentStats =
 		hoverValue !== null
@@ -233,14 +198,59 @@ const DemoMarketInstance = () => {
 		}
 	}, [market]);
 
-	// Recalculate cost whenever user parameters change
+	// Recalculate chart data and cost whenever user parameters change
 	useEffect(() => {
-		if (market && userMean !== undefined && userStdDev !== undefined) {
-			const { cost, optimalX: optX } = calculateCostFunction();
+		if (!market) return;
+
+		// 1. Generate data for chart
+		const minX = Math.min(
+			market.market_mean - 4 * Math.abs(market.market_standard_deviation),
+			userMean - 4 * Math.abs(userStdDev)
+		);
+		const maxX = Math.max(
+			market.market_mean + 4 * Math.abs(market.market_standard_deviation),
+			userMean + 4 * Math.abs(userStdDev)
+		);
+
+		const lambdaMarket = calculateLambda(market.market_standard_deviation);
+		const lambdaUser = calculateLambda(userStdDev);
+
+		const marketData = generateScaledCurveData(
+			market.market_mean,
+			market.market_standard_deviation,
+			lambdaMarket,
+			minX,
+			maxX
+		);
+		const userProposalData = generateScaledCurveData(
+			userMean,
+			userStdDev,
+			lambdaUser,
+			minX,
+			maxX
+		);
+		const differenceData = marketData.map((point, index) => ({
+			x: point.x,
+			y: userProposalData[index].y - point.y,
+		}));
+
+		setChartData({ marketData, userProposalData, differenceData });
+
+		// 2. Calculate cost from difference data
+		if (differenceData.length > 0) {
+			// Find the minimum y-value in the difference curve
+			const minPoint = differenceData.reduce(
+				(min, p) => (p.y < min.y ? p : min),
+				differenceData[0]
+			);
+
+			// Cost is the absolute value of the minimum difference
+			const cost = Math.abs(minPoint.y);
+
 			setCalculatedCost(cost);
-			setOptimalX(optX);
+			setOptimalX(minPoint.x);
 		}
-	}, [market, userMean, userStdDev, calculateCostFunction]);
+	}, [market, userMean, userStdDev]);
 
 	const handleImageError = () => {
 		if (!hasError) {
@@ -605,12 +615,9 @@ const DemoMarketInstance = () => {
 								{/* Graph Section - Flexible Height */}
 								<div className="flex-1 mb-3 min-h-[300px]">
 									<NormalDistributionChart
-										marketMean={market.market_mean}
-										marketStdDev={
-											market.market_standard_deviation
-										}
-										userMean={userMean}
-										userStdDev={userStdDev}
+										marketData={chartData.marketData}
+										userProposalData={chartData.userProposalData}
+										differenceData={chartData.differenceData}
 										onHover={setHoverValue}
 										xAxisLabel={market.x_axis_field_name}
 									/>
