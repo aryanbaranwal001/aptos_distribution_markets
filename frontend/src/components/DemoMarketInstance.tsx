@@ -688,13 +688,77 @@ const DemoMarketInstance = () => {
 
                 {/* Graph Section - Flexible Height */}
                 <div className="flex-1 mb-3 min-h-[300px]">
-                  <NormalDistributionChart
-                    marketData={chartData.marketData}
-                    userProposalData={chartData.userProposalData}
-                    differenceData={chartData.differenceData}
-                    onHover={setHoverValue}
-                    xAxisLabel={market.x_axis_field_name}
-                  />
+                  {activeTab === "trade" && (
+                    <NormalDistributionChart
+                      marketData={chartData.marketData}
+                      userProposalData={chartData.userProposalData}
+                      differenceData={chartData.differenceData}
+                      onHover={setHoverValue}
+                      xAxisLabel={market.x_axis_field_name}
+                    />
+                  )}
+                  {activeTab === "positions" &&
+                    (positions.length > 0 ? (
+                      <div className="space-y-4 h-full overflow-y-auto">
+                        {positions.map((position, index) => {
+                          const traderMean = Number(position[0]) / 1e18;
+                          const traderStdDev = Number(position[1]) / 1e18;
+                          const marketMean = Number(position[3]) / 1e18;
+                          const marketStdDev = Number(position[4]) / 1e18;
+
+                          const lambdaTrader = calculateLambda(traderStdDev);
+                          const lambdaMarket = calculateLambda(marketStdDev);
+
+                          const minX = Math.min(
+                            marketMean - 4 * marketStdDev,
+                            traderMean - 4 * traderStdDev
+                          );
+                          const maxX = Math.max(
+                            marketMean + 4 * marketStdDev,
+                            traderMean + 4 * traderStdDev
+                          );
+
+                          const traderData = generateScaledCurveData(
+                            traderMean,
+                            traderStdDev,
+                            lambdaTrader,
+                            minX,
+                            maxX
+                          );
+                          const marketData = generateScaledCurveData(
+                            marketMean,
+                            marketStdDev,
+                            lambdaMarket,
+                            minX,
+                            maxX
+                          );
+
+                          return (
+                            <div key={index} className="h-72">
+                              <h3 className="text-sm font-bold mb-2 text-center">
+                                Position {index + 1}
+                              </h3>
+                              <NormalDistributionChart
+                                marketData={marketData}
+                                userProposalData={traderData}
+                                differenceData={[]}
+                                onHover={() => {}}
+                                xAxisLabel={market.x_axis_field_name}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <div className="text-center text-gray-500">
+                          <p>No positions to display.</p>
+                          <p className="text-xs">
+                            Your positions will be shown here.
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                 </div>
 
                 <hr className="border-t border-gray-500/20 mb-3" />
