@@ -32,6 +32,7 @@ function transformMarketData(market) {
   const fullData = {
     ...minimalData,
     market_mean: market.market_mean,
+    market_mean_deviation: market.market_mean_deviation,
     market_mean_min: market.market_mean_min,
     market_mean_max: market.market_mean_max,
     market_standard_deviation: market.market_standard_deviation,
