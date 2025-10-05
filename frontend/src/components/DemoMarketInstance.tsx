@@ -699,7 +699,7 @@ const DemoMarketInstance = () => {
                   )}
                   {activeTab === "positions" &&
                     (positions.length > 0 ? (
-                      <div className="space-y-4 h-full overflow-y-auto">
+                      <div className="space-y-4 h-[400px] overflow-y-auto">
                         {positions.map((position, index) => {
                           const traderMean = Number(position[0]) / 1e18;
                           const traderStdDev = Number(position[1]) / 1e18;
@@ -734,7 +734,7 @@ const DemoMarketInstance = () => {
                           );
 
                           return (
-                            <div key={index} className="h-72">
+                            <div key={index} className="h-60">
                               <h3 className="text-sm font-bold mb-2 text-center">
                                 Position {index + 1}
                               </h3>
@@ -1079,93 +1079,11 @@ const DemoMarketInstance = () => {
                   )}
 
                   {activeTab === "positions" && (
-                    <>
-                      {!connected ? (
-                        <div className="text-center py-8">
-                          <div
-                            className={`${theme.textSecondary} text-sm mb-4`}
-                          >
-                            Connect your wallet to view positions
-                          </div>
-                          <div className="wallet-selector-wrapper">
-                            <div className="w-full [&>*]:w-full">
-                              <WalletSelector />
-                            </div>
-                          </div>
-                        </div>
-                      ) : positionsLoading ? (
-                        <div className="flex items-center justify-center pt-16">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-current"></div>
-                        </div>
-                      ) : positions.length > 0 ? (
-                        <div className="space-y-4">
-                          {positions.map((position, index) => {
-                            const traderMean = Number(position[0]) / 1e18;
-                            const traderStdDev = Number(position[1]) / 1e18;
-                            const marketMean = Number(position[3]) / 1e18;
-                            const marketStdDev = Number(position[4]) / 1e18;
-
-                            const lambdaTrader = calculateLambda(traderStdDev);
-                            const lambdaMarket = calculateLambda(marketStdDev);
-
-                            const minX = Math.min(
-                              marketMean - 4 * marketStdDev,
-                              traderMean - 4 * traderStdDev
-                            );
-                            const maxX = Math.max(
-                              marketMean + 4 * marketStdDev,
-                              traderMean + 4 * traderStdDev
-                            );
-
-                            const traderData = generateScaledCurveData(
-                              traderMean,
-                              traderStdDev,
-                              lambdaTrader,
-                              minX,
-                              maxX
-                            );
-                            const marketData = generateScaledCurveData(
-                              marketMean,
-                              marketStdDev,
-                              lambdaMarket,
-                              minX,
-                              maxX
-                            );
-
-                            return (
-                              <div
-                                key={index}
-                                className="rounded-lg border border-gray-500/20 p-3"
-                              >
-                                <h3 className="text-sm font-bold mb-2">
-                                  Position {index + 1}
-                                </h3>
-                                <div className="h-48">
-                                  <NormalDistributionChart
-                                    marketData={marketData}
-                                    userProposalData={traderData}
-                                    differenceData={[]}
-                                    onHover={() => {}}
-                                    xAxisLabel={market.x_axis_field_name}
-                                  />
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8">
-                          <div
-                            className={`${theme.textSecondary} text-sm mb-4`}
-                          >
-                            No positions found
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            Your market positions will appear here after trading
-                          </div>
-                        </div>
-                      )}
-                    </>
+                    <div className="text-center py-8">
+                      <div className={`${theme.textSecondary} text-sm`}>
+                        Your positions are shown to the left.
+                      </div>
+                    </div>
                   )}
 
                   {activeTab === "liquidity" && (
