@@ -764,6 +764,7 @@ const DemoMarketInstance = () => {
                 <hr className="border-t border-gray-500/20 mb-3" />
 
                 {/* Market Parameters */}
+                {activeTab === 'trade' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-500/20">
                   {/* Stiffness Section */}
                   <div className="py-2 md:py-0 md:pr-3">
@@ -868,6 +869,7 @@ const DemoMarketInstance = () => {
                     </div>
                   </div>
                 </div>
+                )}
               </div>
             </div>
 
