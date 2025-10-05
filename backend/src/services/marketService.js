@@ -249,11 +249,6 @@ class MarketService {
         return null;
       }
 
-      if (market.market_mean_deviation === undefined) {
-        console.log(`Market ${id} missing market_mean_deviation, using default 60.`);
-        market.market_mean_deviation = 60;
-      }
-
       return market;
     } catch (error) {
       console.error('Error fetching market by ID:', error);

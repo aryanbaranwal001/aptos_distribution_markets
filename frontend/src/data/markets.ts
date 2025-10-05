@@ -41,7 +41,7 @@ export const markets: Market[] = [
     startDate: "2024-10-01T00:00:00Z",
     endDate: "2025-12-31T23:59:59Z",
     market_mean: 12.5,
-    market_mean_deviation: 60, 
+    market_mean_deviation: 120, 
     market_mean_min: 0.1,
     market_mean_max: 0.9,
     market_standard_deviation: 3.2,
