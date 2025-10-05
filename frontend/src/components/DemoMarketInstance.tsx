@@ -53,6 +53,13 @@ const DemoMarketInstance = () => {
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [isTrading, setIsTrading] = useState(false);
 
+	const [marketState, setMarketState] = useState<any>(null);
+	const [marketParams, setMarketParams] = useState<any>(null);
+	const [minStdDev, setMinStdDev] = useState<any>(null);
+	const [positions, setPositions] = useState<any[]>([]);
+	const [positionsLoading, setPositionsLoading] = useState(false);
+
+
 	// Use the new API hook
 	const { data: market, loading, error } = useMarket(marketId);
 
@@ -171,6 +178,56 @@ const DemoMarketInstance = () => {
 
 	const theme = getThemeClasses(color);
 
+	// View call helper
+	async function callView(functionName: string, args: any[] = []) {
+		try {
+			const payload = {
+				function: `${CONTRACT_ADDRESS}::distribution_markets::${functionName}`,
+				type_arguments: [],
+				functionArguments: args,
+			};
+			const result = await aptos.view({ payload });
+			return result;
+		} catch (e) {
+			console.error("View call failed:", e);
+			throw e;
+		}
+	}
+
+	useEffect(() => {
+		const fetchInitialData = async () => {
+			try {
+				const marketStateData = await callView("get_market_state", [MARKET_ADDRESS]);
+				setMarketState(marketStateData[0]);
+
+				const marketParamsData = await callView("get_amm_holdings", [MARKET_ADDRESS]);
+				setMarketParams(marketParamsData[0]);
+
+				const minStdDevData = await callView("get_min_standard_deviation", [MARKET_ADDRESS]);
+				setMinStdDev(minStdDevData[0]);
+
+			} catch (error) {
+				console.error("Failed to fetch initial data:", error);
+			}
+		};
+
+		fetchInitialData();
+	}, []);
+
+	const fetchPositions = async () => {
+		if (!account) return;
+		setPositionsLoading(true);
+		try {
+			const positionsData = await callView("get_all_trader_positions", [account.address, MARKET_ADDRESS]);
+			setPositions(positionsData[0]);
+		} catch (error) {
+			console.error("Failed to fetch positions:", error);
+		} finally {
+			setPositionsLoading(false);
+		}
+	};
+
+
 	// First, we need to find the market ID from the slug
 	// For now, we'll use the slug as the ID since we don't have a slug-to-ID mapping
 	useEffect(() => {
@@ -183,7 +240,7 @@ const DemoMarketInstance = () => {
 
 	// Update component state when market data is loaded
 	useEffect(() => {
-		if (market) {
+		if (market && marketParams && minStdDev) {
 			setIsBookmarked(market.isBookmarked || false);
 
 			// Set initial icon source - use PNG directly
@@ -192,11 +249,26 @@ const DemoMarketInstance = () => {
 				: "/icons/default.png";
 			setIconSrc(pngSrc);
 
+			const newMarketMean = Number(marketParams[0]) / 1e18;
+			const newMarketStdDev = Number(marketParams[1]) / 1e18;
+			const newMinStdDev = Number(minStdDev) / 1e18;
+
 			// Initialize sliders to center positions for zero delta
-			setUserMean(market.market_mean);
-			setUserStdDev(market.market_standard_deviation);
+			setUserMean(newMarketMean);
+			setUserStdDev(newMarketStdDev);
+
+			// Update market object with on-chain data
+			const updatedMarket = {
+				...market,
+				market_mean: newMarketMean,
+				market_standard_deviation: newMarketStdDev,
+				market_standard_deviation_min: newMinStdDev,
+				market_standard_deviation_max: newMarketStdDev + (newMarketStdDev - newMinStdDev),
+			};
+			// This is a bit of a hack to avoid changing the whole structure
+			Object.assign(market, updatedMarket);
 		}
-	}, [market]);
+	}, [market, marketParams, minStdDev]);
 
 	// Recalculate chart data and cost whenever user parameters change
 	useEffect(() => {
@@ -717,9 +789,11 @@ const DemoMarketInstance = () => {
 												>
 													Status
 												</span>
-												<span className="text-green-500 text-xs">
-													Active
-												</span>
+																								<span
+														className={`${marketState?.is_active ? "text-green-500" : "text-red-500"} text-xs`}
+													>
+														{marketState?.is_active ? "Active" : "Inactive"}
+													</span>
 											</div>
 											<div className="flex justify-between">
 												<span
@@ -774,10 +848,11 @@ const DemoMarketInstance = () => {
 										>
 											Trade
 										</button>
-										<button
-											onClick={() =>
-												setActiveTab("positions")
-											}
+																				<button
+											onClick={() => {
+												setActiveTab("positions");
+												fetchPositions();
+											}}
 											className={`flex-1 py-1.5 px-1 rounded-lg transition-all duration-200 text-xs font-semibold ${
 												activeTab === "positions"
 													? `${theme.primaryBg} text-black`
@@ -1014,7 +1089,7 @@ const DemoMarketInstance = () => {
 										</>
 									)}
 
-									{activeTab === "positions" && (
+																		{activeTab === "positions" && (
 										<>
 											{!connected ? (
 												<div className="text-center py-8">
@@ -1029,6 +1104,43 @@ const DemoMarketInstance = () => {
 															<WalletSelector />
 														</div>
 													</div>
+												</div>
+											) : positionsLoading ? (
+												<div className="flex items-center justify-center pt-16">
+													<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-current"></div>
+												</div>
+											) : positions.length > 0 ? (
+												<div className="space-y-4">
+													{positions.map((position, index) => {
+														const traderMean = Number(position[0]) / 1e18;
+														const traderStdDev = Number(position[1]) / 1e18;
+														const marketMean = Number(position[3]) / 1e18;
+														const marketStdDev = Number(position[4]) / 1e18;
+
+														const lambdaTrader = calculateLambda(traderStdDev);
+														const lambdaMarket = calculateLambda(marketStdDev);
+
+														const minX = Math.min(marketMean - 4 * marketStdDev, traderMean - 4 * traderStdDev);
+														const maxX = Math.max(marketMean + 4 * marketStdDev, traderMean + 4 * traderStdDev);
+
+														const traderData = generateScaledCurveData(traderMean, traderStdDev, lambdaTrader, minX, maxX);
+														const marketData = generateScaledCurveData(marketMean, marketStdDev, lambdaMarket, minX, maxX);
+
+														return (
+															<div key={index} className="rounded-lg border border-gray-500/20 p-3">
+																<h3 className="text-sm font-bold mb-2">Position {index + 1}</h3>
+																<div className="h-48">
+																	<NormalDistributionChart
+																		marketData={marketData}
+																		userProposalData={traderData}
+																		differenceData={[]}
+																		onHover={() => {}}
+																		xAxisLabel={market.x_axis_field_name}
+																	/>
+																</div>
+															</div>
+														);
+													})}
 												</div>
 											) : (
 												<div className="text-center py-8">
