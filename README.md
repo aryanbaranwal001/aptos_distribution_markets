@@ -1,584 +1,360 @@
-# Infi Markets - Distribution Markets Platform
-
 <div align="center">
 
-![Infi Markets Logo](./logo.png)
+<img src="logo.png"/>
 
-**A revolutionary prediction market platform for continuous probability distributions on Aptos blockchain**
+**Next Generation Prediction Markets Platform on Aptos**
+
+*From risky guesses to informed trades, capture every outcome.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/aryanbaranwal001/aptos_distribution_markets)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/aryanbaranwal001/aptos_distribution_markets)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/aryanbaranwal001/aptos_distribution_markets/pulls)
-
-### 🛠️ **Tech Stack**
-
-![Aptos](https://img.shields.io/badge/Aptos-000000?style=for-the-badge&logo=aptos&logoColor=white)
-![Move](https://img.shields.io/badge/Move-4285F4?style=for-the-badge&logo=move&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Chart.js](https://img.shields.io/badge/Chart.js-F5788D.svg?style=for-the-badge&logo=chart.js&logoColor=white)
-
-### 🔗 **DeFi Integrations**
-
-![Aave](https://img.shields.io/badge/Aave-B6509E?style=for-the-badge&logo=aave&logoColor=white)
-![Web3](https://img.shields.io/badge/Web3-F16822?style=for-the-badge&logo=web3.js&logoColor=white)
-
----
+[![Aptos](https://img.shields.io/badge/Built%20on-Aptos-00D4AA?style=flat&logo=aptos)](https://aptoslabs.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.3-black?style=flat&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
+[![Move](https://img.shields.io/badge/Move-1.0.0-purple?style=flat)](https://move-language.github.io/)
 
 </div>
 
-## 🚀 Live Demo
+---
 
-<div align="center">
+## 📋 Table of Contents
 
-### **Experience Infi Markets in Action**
+- [📋 Table of Contents](#-table-of-contents)
+- [🚀 Live Application](#-live-application)
+- [User Guide](#user-guide)
+  - [How to Engage with the Market](#how-to-engage-with-the-market)
+  - [Rewards](#rewards)
+- [🌟 Overview](#-overview)
+  - [🎯 Key Features](#-key-features)
+- [🏗️ Architecture](#️-architecture)
+- [🚀 Quick Start](#-quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [📁 Project Structure](#-project-structure)
+- [🔧 Technology Stack](#-technology-stack)
+  - [Frontend](#frontend)
+  - [Backend](#backend)
+  - [Blockchain](#blockchain)
+- [🧮 Mathematical Foundation](#-mathematical-foundation)
+  - [Normal Distribution Parameters](#normal-distribution-parameters)
+  - [Key Formulas](#key-formulas)
+  - [Research Paper Implementation](#research-paper-implementation)
+- [🧪 Testing Smart Contracts](#-testing-smart-contracts)
+- [🙏 Acknowledgments](#-acknowledgments)
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-brightgreen?style=for-the-badge&logo=vercel&logoColor=white)](https://aptos-distribution-markets.vercel.app/)
-
-**🔗 [https://aptos-distribution-markets.vercel.app/](https://aptos-distribution-markets.vercel.app/)**
 
 ---
 
-</div>
+## 🚀 Live Application
 
-## 🌟 Overview
 
-Infi Markets is a cutting-edge decentralized prediction market platform that enables trading on **continuous probability distributions** rather than traditional binary outcomes. Built on the Aptos blockchain using Move smart contracts, it implements the concept of distribution markets based on research from [Paradigm's Distribution Markets paper](https://www.paradigm.xyz/2024/12/distribution-markets).
+**🔥 Try Infi Markets Now**
 
-### 🎯 Key Innovation
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-aptos--distribution--markets--d12b.vercel.app-00D4AA?style=for-the-badge&logo=vercel)](https://aptos-distribution-markets-d12b.vercel.app/)
 
-Instead of betting on simple yes/no outcomes, traders can express nuanced beliefs about **where** and **how likely** different outcomes are across infinite ranges using different distributions - Normal distribution for now.
+🚨 **Website loading delay**: Render's policy of spinning down free instance with inactivity, can delay website loading by 50 seconds or more.
 
-**Example**: Rather than betting "Will Bitcoin be above $100k?", you can bet "Bitcoin will be around $95k with high confidence, but could range from $80k-$110k"
+🚨 **Only Demo available**: Currently, only the market in **Demo** is fully functional end-to-end.
 
-## 🏗️ System Architecture
+---
 
-<div align="center">
+## User Guide
+
+### How to Engage with the Market
+
+1. **Select a Market**
+2. **Set Your Position:** By changing the following parameters.
+
+   * **Mean:** This represents the <u>expected value of the asset</u> in a market. 
+    
+        **Example:** for market *What will be price of APT by the end of December 2025*, the mean here is the expected price of APT in USD.
+    
+   * **Standard Deviation:** This represents your level of <u>confidence</u> in the position. A higher standard deviation indicates greater confidence, which can result in higher potential profits if the market resolves in your favor. Higher standard deviation means pointier the curve around your expected value
+
+        **Example:** If you expect the price of APT to be $8 by the end of December 2025, you will set the mean to 8. And if you are highly confident that the price will be close to $8, you will assign a higher standard deviation, creating a pointier curve around your predicted value.
+
+3. **Execute Trades:** After setting the mean and standard deviation, users can buy their position based on their prediction. All positions will be visible in the **Positions** section.
+4. **Add Liquidity:** Users can also provide liquidity by buying the current market position.
+
+### Rewards
+
+* Rewards will be distributed based on the value of parameter (like APT price) in which market resolves and the difference curve made during position creation.
+* Regardless of whether the market resolves in your favor through trade positions, users earn a **4% APY** on their positions.
+* Liquidity providers will also earn a **4% APY** on their liquidity
+---
+
+## 🌟 Overview  
+
+**Infi Markets** is a next generation prediction market platform built on the Aptos blockchain, implementing continuous distribution markets for normal (Gaussian) probability distributions. This project is a implementation of the [Distribution Markets research paper](https://www.paradigm.xyz/2024/12/distribution-markets) by Dave White at Paradigm.
+
+Unlike traditional binary prediction markets, Infi Markets allows traders to express nuanced beliefs about outcomes using distribution curves in virtually infinite ways. This unlocks a new dimension of prediction markets which captures the real world complex events which can't be captured by simple yes or no markets.
+
+### 🎯 Key Features
+
+- **📊 Continuous Distribution Markets**: Trade on normal distributions with infinite possibilities
+- **🔗 Aptos Blockchain Integration**: Built on Aptos with Move smart contracts
+- **🤖 AI-Powered Insights**: Integrated AI chat for market analysis, to provide guidance and knowledge to users to make smarter positions.
+- **🔥 Real-time Data**: Firebase Firestore for market data
+- **💼 Wallet Integration**: Seamless Aptos wallet connectivity, using Aptos Labs SDK
+
+## 🏗️ Architecture
+
+  
 
 ```mermaid
+
 graph TB
-    subgraph "🎨 Frontend Layer"
-        A[Next.js 15 + TypeScript]
-        B[React Components]
-        C[Chart.js Visualization]
-        D[Aptos Wallet Adapter]
-        E[fmin Optimization]
-    end
-    
-    subgraph "⚡ Backend Layer"
-        F[Express.js API]
-        G[Firebase Firestore]
-        H[NodeCache]
-        I[OpenAI GPT-4]
-        J[Rate Limiting]
-    end
-    
-    subgraph "⛓️ Blockchain Layer"
-        K[Aptos Network]
-        L[Move Smart Contracts]
-        M[Distribution Markets]
-        N[Math Utils]
-    end
-    
-    subgraph "💰 DeFi Integration"
-        O[Aave Protocol]
-        P[Lending Pools]
-        Q[aAPT Tokens]
-        R[Yield Distribution]
-    end
-    
-    %% Frontend to Backend connections
-    A --> F
-    B --> F
-    C --> F
-    E --> F
-    
-    %% Frontend to Blockchain connections
-    D --> K
-    
-    %% Backend internal connections
-    F --> G
-    F --> H
-    F --> I
-    F --> J
-    
-    %% Blockchain internal connections
-    K --> L
-    L --> M
-    L --> N
-    
-    %% DeFi integration connections
-    M --> O
-    O --> P
-    P --> Q
-    Q --> R
-    
-    %% Styling
-    style A fill:#000000,stroke:#ffffff,color:#ffffff
-    style K fill:#000000,stroke:#ffffff,color:#ffffff
-    style O fill:#B6509E,stroke:#ffffff,color:#ffffff
-    style M fill:#4285F4,stroke:#ffffff,color:#ffffff
-    style F fill:#43853D,stroke:#ffffff,color:#ffffff
-```
 
-</div>
+subgraph "Frontend Layer"
 
-### **🔄 Data Flow Architecture**
+A[Next.js 15 App]
 
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Next.js       │    │   Express.js     │    │   Aptos         │    │   Aave          │
-│   Frontend      │◄──►│   Backend API    │    │   Blockchain    │◄──►│   Protocol      │
-│                 │    │                  │    │                 │    │                 │
-│ • React/TS      │    │ • Firebase       │    │ • Move Contracts│    │ • Lending Pool  │
-│ • Wallet Adapter│    │ • seed scripts   │    │ • Math Utils    │    │ • aAPT Tokens   │
-│ • Chart.js      │    │ • Rate Limiting  │    │ • Settlement    │    │ • Yield Farming │
-│ • fmin Optimize │    │ • AI Assistant   │    │ • Aave Bridge   │    │ • Auto Lending  │
-└─────────────────┘    └──────────────────┘    └─────────────────┘    └─────────────────┘
-```
+B[React Components]
 
-### 🔄 **Data Flow**
+C[Wallet Integration]
 
-1. **User Interaction** → User inputs distribution parameters (mean and standard deviation) through frontend and trade cost is calculated
-2. **Transaction Signing** → Aptos Wallet Adapter handles secure transaction signing  
-3. **Smart Contract Execution** → Move contracts process trades with 18-decimal precision and update market state
-4. **Yield Optimization** → Idle collateral automatically lent to Aave earning ~4% APY for position holders
-5. **Real-time Updates** → Backend API provides fast market data from firebase firestore and also enable AI assistance.
+D[AI Chat Interface]
 
-## 🚀 Features
+end
 
-### 📈 **Advanced Trading**
-- **Continuous Distributions**: Trade on normal distributions with custom mean (μ) and standard deviation (σ)
-- **Dynamic Pricing**: Real-time cost calculation using mathematical optimization (fmin library) and verified on-chain
-- **Automated Market Maker**: Constant product AMM with distribution-based invariants
-- **Position Settlement**: Mathematically precise payouts based on realized outcomes
-- **Multi-Position Support**: Multiple concurrent positions per trader with pagination
+subgraph "Backend Layer"
 
-### 💰 **Yield Optimization**
-- **Aave Integration**: Idle collateral is automatically lent on Aave protocol earning ~4% APY
-- **APY Distribution**: Lending yields are distributed proportionally to all position holders
-- **Capital Efficiency**: Maximizes returns on locked collateral during entire market lifecycle
-- **Risk Management**: Automated withdrawal system for settlements while maintaining full solvency
+E[Express.js API]
 
-### 🎨 **Modern Interface**
-- **Interactive Charts**: Real-time probability distribution visualization with Chart.js
-- **Responsive Design**: Dynamic and user-friendly UI with multi-colour theme switching
-- **Wallet Integration**: Seamless Aptos wallet connectivity with multiple wallet support
-- **AI Assistant**: Built-in OpenRouter's `deepseek/deepseek-chat-v3.1:free` chat helper for market analysis and guidance
-- **Real-time Updates**: Live cost calculation as users adjust distribution parameters
+F[Firebase Admin SDK]
 
-### 🔧 **Developer Features**
-- **Mathematical Library implementation**: complex computational heavy functions in move language
-- **Mathematical Precision**: 18-decimal fixed-point arithmetic for accurate calculations
-- **Gas Optimization**: Efficient Move smart contracts with minimal transaction costs
-- **Comprehensive Testing**: Full test suite with indepth testing
-- **API Documentation**: RESTful backend with Firebase integration
-- **Type Safety**: Full TypeScript implementation in frontend and Javascript in backend
+G[Rate Limiting]
 
+H[AI Integration]
 
-## 📁 Project Structure
+end
+
+subgraph "Blockchain Layer"
+
+I[Aptos Network]
+
+J[Move Smart Contracts]
+
+K[Distribution Markets]
+
+end
+
+subgraph "Data Layer"
+
+L[Firestore Database]
+
+M[Market Data]
+
+N[User Data]
+
+end
+
+A --> E
+
+B --> A
+
+C --> I
+
+D --> H
+
+E --> F
+
+E --> G
+
+F --> L
+
+I --> J
+
+J --> K
+
+L --> M
+
+L --> N
 
 ```
-aptos_distribution_markets/
-├── 📁 contracts/              # Move smart contracts
-│   ├── sources/
-│   │   ├── distribution_markets.move  # Core trading logic
-│   │   └── math_utils.move           # Mathematical utilities
-│   └── tests/                        # Contract tests
-├── 📁 frontend/               # Next.js web application
-│   ├── src/
-│   │   ├── components/              # React components
-│   │   ├── hooks/                   # Custom React hooks
-│   │   ├── services/                # API services
-│   │   └── utils/                   # Utility functions
-│   └── public/                      # Static assets
-├── 📁 backend/                # Express.js API server
-│   ├── src/
-│   │   ├── controllers/             # Route handlers
-│   │   ├── services/                # Business logic
-│   │   └── middleware/              # Express middleware
-│   └── scripts/                     # Database utilities
-└── 📄 firebase.md            # Firebase integration docs
-```
 
-## 🛠️ Technology Stack
-
-<div align="center">
-
-### **🔗 Blockchain Infrastructure**
-
-| Technology | Version | Purpose | Performance |
-|------------|---------|---------|-------------|
-| ![Aptos](https://img.shields.io/badge/Aptos-000000?style=flat-square&logo=aptos&logoColor=white) | Testnet | Layer 1 Blockchain | 160k+ TPS |
-| ![Move](https://img.shields.io/badge/Move-4285F4?style=flat-square&logo=move&logoColor=white) | Latest | Smart Contracts | Gas Optimized |
-
-### **⚡ Backend Infrastructure**
-
-| Technology | Version | Purpose | Performance |
-|------------|---------|---------|-------------|
-| ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=flat-square&logo=node.js&logoColor=white) | 18+ | Runtime Environment | High Concurrency |
-| ![Express.js](https://img.shields.io/badge/Express.js-404D59?style=flat-square&logo=express&logoColor=white) | 4.x | API Framework | <50ms Response |
-| ![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=flat-square&logo=Firebase&logoColor=white) | 12.x | Database & Auth | 99.9% Uptime |
-| ![OpenRouter](https://img.shields.io/badge/OpenRouter-412991?style=flat-square&logo=openai&logoColor=white) | deepseek-chat-v3.1 | AI Assistant | Real-time Chat |
-
-
-### **🎨 Frontend Stack**
-
-| Technology | Version | Purpose | Performance |
-|------------|---------|---------|-------------|
-| ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=next.js&logoColor=white) | 15.x | React Framework | SSR + ISR |
-| ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB) | 19.x | UI Library | Virtual DOM |
-| ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white) | 5.x | Type Safety | 100% Coverage |
-| ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) | 4.x | Styling | JIT Compilation |
-| ![Chart.js](https://img.shields.io/badge/Chart.js-F5788D.svg?style=flat-square&logo=chart.js&logoColor=white) | 4.x | Data Visualization | 60fps Rendering |
-
-### **🔧 Optimization & Utils**
-
-| Technology | Version | Purpose | Performance |
-|------------|---------|---------|-------------|
-| ![fmin](https://img.shields.io/badge/fmin-FF6B6B?style=flat-square&logo=npm&logoColor=white) | 0.0.4 | Mathematical Optimization | <1ms Calculation |
-| ![Zustand](https://img.shields.io/badge/Zustand-FF9500?style=flat-square&logo=react&logoColor=white) | 5.x | State Management | Lightweight |
-| ![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=flat-square&logo=eslint&logoColor=white) | 9.x | Code Quality | Zero Errors |
-
-### **💰 DeFi Integrations**
-
-| Protocol | Integration | Current APY | Status |
-|----------|-------------|-------------|--------|
-| ![Aave](https://img.shields.io/badge/Aave-B6509E?style=flat-square&logo=aave&logoColor=white) | Lending Pools | ~4% | ✅ Live |
-
-
-</div>
-
-## 🎨 Frontend Architecture
-
-### **Component Structure**
-```
-src/
-├── 📁 components/
-│   ├── DemoMarketInstance.tsx    # Main trading interface
-│   ├── NormalDistributionChart.tsx # Interactive probability charts
-│   ├── WalletSelector.tsx        # Multi-wallet connection
-│   ├── AIChatSidebar.tsx        # GPT-powered assistant
-│   ├── Navbar.tsx               # Navigation with theme switching
-│   └── ThemeProvider.tsx        # Global theme management
-├── 📁 hooks/
-│   ├── useMarkets.ts            # Market data fetching
-│   ├── useWallet.ts             # Wallet state management
-│   └── useTheme.ts              # Theme persistence
-├── 📁 services/
-│   └── apiService.ts            # Backend API integration
-├── 📁 store/
-│   ├── themeStore.ts            # Zustand theme store
-│   └── marketStore.ts           # Market state management
-└── 📁 utils/
-    ├── formatters.ts            # Data formatting utilities
-    ├── calculations.ts          # Mathematical helpers
-    └── bookmarkStorage.ts       # Local storage management
-```
-
-### **Key Frontend Features**
-
-#### **🎯 Trading Interface**
-- **Real-time Cost Calculation**: Uses fmin optimization to calculate minimum trade cost
-- **Interactive Sliders**: Smooth μ (mean) and σ (standard deviation) adjustment
-- **Live Preview**: Instant visualization of proposed vs market distributions
-- **Position Management**: View, track, and close multiple positions
-
-#### **📊 Visualization**
-- **Chart.js Integration**: High-performance probability distribution rendering
-- **Responsive Charts**: Mobile-optimized with touch interactions
-- **Real-time Updates**: Charts update as users adjust parameters
-- **Statistical Overlays**: Probability, cumulative distribution, and delta values
-
-#### **🤖 AI Assistant**
-- **Deepseek chat V3 Integration**: Contextual market analysis and trading advice
-- **Market Context**: AI understands specific market parameters and history
-- **Educational Support**: Explains complex mathematical concepts
-- **Risk Assessment**: Provides insights on position sizing and market dynamics
-
-## 🔧 Backend Architecture
-
-### **API Structure**
-```
-src/
-├── 📁 controllers/
-│   ├── marketController.js      # Market CRUD operations
-│   ├── chatController.js        # AI assistant endpoints
-│   └── healthController.js      # System health checks
-├── 📁 services/
-│   ├── firebaseService.js       # Firestore operations
-│   ├── cacheService.js          # In-memory caching
-│   └── openaiService.js         # GPT integration
-├── 📁 middleware/
-│   ├── rateLimiter.js           # API rate limiting
-│   ├── validator.js             # Request validation
-│   └── errorHandler.js          # Global error handling
-├── 📁 routes/
-│   ├── markets.js               # Market endpoints
-│   ├── chat.js                  # AI chat endpoints
-│   └── health.js                # Health check routes
-└── 📁 config/
-    └── firebase.js              # Firebase configuration
-```
-
-### **🔐 Security Features**
-- **Firebase Admin SDK**: Secure server-side Firebase access
-- **Input Validation**: Joi schema validation for all endpoints
-- **Rate Limiting**: Per-IP request throttling
-- **Error Sanitization**: Secure error messages without sensitive data
-- **CORS Configuration**: Proper cross-origin resource sharing setup
+  
 
 ## 🚀 Quick Start
 
+### Prerequisites
 
-### **📋 Prerequisites**
+- **Node.js** >= 18.0.0
+- **Aptos CLI** for smart contract deployment
+- **Firebase Project** for database
+- **OpenAI API Key** for AI features
 
-| Requirement | Version | Installation |
-|-------------|---------|--------------|
-| ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=flat-square&logo=node.js&logoColor=white) | 18+ | [Download](https://nodejs.org/) |
-| ![Aptos CLI](https://img.shields.io/badge/Aptos_CLI-000000?style=flat-square&logo=aptos&logoColor=white) | Latest | [Install Guide](https://aptos.dev/tools/aptos-cli/install-cli/) |
-| ![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white) | 2.x | [Download](https://git-scm.com/) |
+### Installation
 
-### **🔧 Installation Steps**
+  
 
-<details>
-<summary><b>📦 1. Clone & Setup Repository</b></summary>
+1. **Clone the repository**
 
 ```bash
-# Clone the repository
 git clone https://github.com/aryanbaranwal001/aptos_distribution_markets.git
 cd aptos_distribution_markets
-
-# Install dependencies for all modules
-npm install
 ```
 
-</details>
-
-<details>
-<summary><b>⛓️ 2. Deploy Smart Contracts</b></summary>
+2. **Install dependencies**
 
 ```bash
-cd contracts
-
-# Compile Move contracts
-aptos move compile --dev
-
-# Deploy to testnet
-aptos move publish --profile default --assume-yes
-
-# Verify deployment
-aptos account list --profile default
-```
-
-</details>
-
-<details>
-<summary><b>🔧 3. Configure Backend</b></summary>
-
-```bash
+# Backend dependencies
 cd backend
-
-# Install dependencies
 npm install
 
-# Setup environment
-cp .env.example .env
+# Frontend dependencies
+cd ../frontend
+npm install
 
-# Configure Firebase credentials
-# Add your Firebase service account key to .env
-
-# Start development server
-npm run dev
+# Smart contracts (optional)
+cd ../contracts
+aptos move compile
 ```
 
-</details>
+  
 
-<details>
-<summary><b>🎨 4. Launch Frontend</b></summary>
+3. **Environment Setup**
+
+**Backend (.env)**
 
 ```bash
+FIREBASE_SERVICE_ACCOUNT_KEY=firebase_service_account_key_in_json
+PORT=5000
+NODE_ENV=development
+API_BASE_URL=/api/v1
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+OPENAI_API_KEY=your_openai_key
+```
+**Frontend (.env.local)**
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
+```
+
+4. **Start the development servers**
+
+```bash
+# Terminal 1: Backend
+cd backend
+npm run dev
+
+# Terminal 2: Frontend
 cd frontend
-
-# Install dependencies
-npm install
-
-cp .env.example .env.local
-
-# Configure NEXT_PUBLIC_API_BASE_URL
-
-# Start development server
 npm run dev
 ```
 
-</details>
+## 📁 Project Structure
+
+
+```
+aptos_distribution_markets/
+
+├── 🖥️ frontend/ # Next.js 15 React application
+│ ├── src/
+│ │ ├── app/ # App router pages
+│ │ ├── components/ # Reusable React components
+│ │ ├── data/ # Market data and types
+│ │ ├── hooks/ # Custom React hooks
+│ │ ├── services/ # API services
+│ │ ├── store/ # Zustand state management
+│ │ └── utils/ # Utility functions
+│ └── public/ # Static assets and icons
+│
+├── 🔧 backend/ # Express.js API server
+│ ├── src/
+│ │ ├── config/ # Firebase configuration
+│ │ ├── controllers/ # API route controllers
+│ │ ├── middleware/ # Express middleware
+│ │ ├── routes/ # API routes
+│ │ └── services/ # Business logic
+│ └── scripts/ # Database seeding scripts
+│
+├── 📜 contracts/ # Aptos Move smart contracts
+│ ├── sources/ # Move source files
+│ │ ├── distribution_markets.move # main market contract
+│ │ └── math_utils.move # state of the art math utils library in move
+│ └── tests/ # Contract tests
+│
+└── 🖼️ README.md # Project README
+```
+
+## 🔧 Technology Stack
+
+### Frontend
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Hybrid of Tailwind CSS and CSS
+- **State Management**: Zustand
+- **Charts**: Chart.js with React integration
+- **3D Graphics**: Three.js
+- **Wallet**: Aptos Labs Wallet Adapter
+
+### Backend
+- **Runtime**: Node.js with Express.js
+- **Database**: Firebase Firestore
+- **Authentication**: Firebase Admin SDK
+- **Rate Limiting**: Express Rate Limit
+- **AI Integration**: OpenAI API
+- **Security**: Helmet, CORS
+
+### Blockchain
+
+- **Network**: Aptos Testnet
+- **Language**: Move
+- **SDK**: Aptos Labs TypeScript SDK
+- **Features**: Continuous distribution markets
 
 ## 🧮 Mathematical Foundation
 
-### Core Formula
-The platform implements the cost function:
+Infi Markets implements the **Distribution Markets** protocol based on the [Paradigm research paper](https://www.paradigm.xyz/2024/12/distribution-markets) by Dave White. This groundbreaking research introduces a new kind of prediction market for events with continuous outcomes, using constant function AMMs over probability distributions.  
+
+The system uses:
+
+### Normal Distribution Parameters
+
+- **μ (Mean)**: Central tendency of the distribution
+- **σ (Standard Deviation)**: Spread and uncertainty
+- **λ (Lambda)**: Scaling factor for market dynamics
+- **K (Invariant)**: AMM invariant constant
+
+### Key Formulas
 
 ```
-a(x) = |λ_g × g(x) - λ_f × f(x)|
+Position Value = λ_g * √(2πσ_g) * e^(-(x-μ_g)²/(2σ_g²))
+
+Market Price = λ_f * √(2πσ_f) * e^(-(x-μ_f)²/(2σ_f²))
 ```
 
-Where:
-- **g(x)**: Trader's proposed distribution
-- **f(x)**: Current market distribution  
-- **λ**: Scaling factor = √(2σ√π)
-- **x**: Outcome value
+  
 
-### Settlement Calculation
-```
-Settlement = λ_g × g(x₀) - λ_f × f(x₀) + collateral
-```
+### Research Paper Implementation
 
-Where **x₀** is the realized outcome.
+This project implements the complete Distribution Markets mechanism as described in the [Paradigm research paper](https://www.paradigm.xyz/2024/12/distribution-markets), including:
 
-### Key Properties
-- **18-decimal precision**: Prevents rounding errors
-- **Optimization-based pricing**: Uses fmin library for cost minimization
-- **Mathematical soundness**: Based on peer-reviewed research
 
-## 📊 Smart Contract Details
+- **Constant Function AMM**: Using l₂ norm invariant over probability distributions
+- **Normal Distribution Trading**: Full implementation of Gaussian distribution markets
+- **Collateralization**: Proper backing constraints and risk management
+- **AMM Behavior**: Market dynamics that prevent information extraction attacks
 
-### Core Functions
+## 🧪 Testing Smart Contracts
 
-| Function | Description | Parameters |
-|----------|-------------|------------|
-| `initialize_market()` | Create new prediction market | `initial_params`, `backing`, `asset` |
-| `trade_with_apt()` | Execute distribution trade | `target_mean`, `target_std_dev`, `trade_cost` |
-| `add_liquidity()` | Provide market liquidity | `apt_amount` |
-| `resolve()` | Set market outcome | `realized_outcome` |
-| `close_position()` | Claim settlement | `position_index` |
-| `lend_to_aave()` | Lend idle collateral to Aave | `amount` |
-| `withdraw_from_aave()` | Withdraw from Aave for settlements | `amount` |
-| `distribute_yield()` | Distribute Aave yields to positions | `yield_amount` |
-
-### 💰 Aave Integration 
-
-#### **Capital Efficiency Benefits**
-- **Idle Collateral Optimization**: Automatically lends unused collateral to Aave earning 4.2% APY
-- **Proportional Yield Distribution**: Yields distributed daily based on position size and duration
-- **Risk-Adjusted Returns**: Enhanced APY for position holders with zero additional risk
-- **Automated Management**: Smart contracts handle all lending/withdrawal operations seamlessly
-
-#### **Yield Calculation Formula**
-```
-Position Yield = (Aave APY × Position Collateral × Time Held) / Total Market Collateral
-```
-
-#### **Safety Mechanisms**
-- **Liquidity Reserves**: Maintains minimum liquidity for instant settlements
-- **Automated Withdrawal**: Withdraws from Aave when settlements are needed
-- **Yield Caps**: Prevents excessive exposure to Aave protocol risks
-- **Emergency Pause**: Admin can pause Aave integration if needed
-
-### Contract Addresses
-```
-Testnet: 0x3b0c1f2a3f9f281f3a654afd1cc07dfcdfa8facee967b196cc77cdd20b98c829
-Aave Pool: 0x794a61358d6845594f94dc1db02a252b5b4814ad
-aAPT Token: 0x1::aptos_coin::AptosCoin
-```
-
-## 🔧 Development
-
-### Running Tests
 ```bash
-# Smart contract tests
 cd contracts
-aptos move test --dev
-
-# Backend tests  
-cd backend
-npm test
-
-# Frontend tests
-cd frontend
-npm test
+aptos move test
 ```
+## 🙏 Acknowledgments
 
-### Database Seeding
-```bash
-cd backend/script
-node seedDatabase.js
-```
-
-## 🗺️ Roadmap
-
-### ✅ **Completed**
-- [x] Core distribution markets smart contracts
-- [x] Mathematical precision with 18-decimal arithmetic
-- [x] Frontend trading interface with real-time cost calculation
-- [x] Firebase backend with caching and AI integration
-- [x] Multi-wallet Aptos integration
-- [x] Interactive probability distribution charts
-- [x] **Aave Integration**: Automated yield farming for idle collateral (4.2% APY)
-- [x] **Yield Distribution**: Daily proportional yield distribution to position holders
-
-### 🚧 **In Development**
-- [ ] **Amnis Finance Integration**: Additional yield farming protocol
-- [ ] **Compound Integration**: Additional yield farming protocol
-
-### 🔮 **Future Features**
-- [ ] **Multi-Asset Support**: ETH, BTC, and other cryptocurrencies as collateral
-- [ ] **Cross-Chain Integration**: Ethereum and Polygon market support
-- [ ] **Governance Token**: Community-driven protocol upgrades
-- [ ] **Institutional API**: High-frequency trading and market making tools
-
-### 💰 **DeFi Integration Status**
-- **✅ Phase 1**: Smart contract integration with Aave lending pools (Complete)
-- **✅ Phase 2**: Automated yield distribution to position holders (Live - 4% APY)
-- **🔄 Phase 3**: Compound protocol integration for diversified yield (In Progress)
-- **📋 Phase 4**: Cross-protocol yield optimization and advanced strategies (Planned)
-
-
-## 📄 License
-
-This project is licensed under the MIT License
-
----
-
-## 🏆 Acknowledgments
-
-<div align="center">
-
-**Special thanks to the pioneers and innovators who made this possible:**
-
-| Organization | Contribution | Impact |
-|--------------|-------------|---------|
-| **[Paradigm](https://www.paradigm.xyz/)** | Groundbreaking Distribution Markets Research | 🧠 Mathematical Foundation |
-| **[Aptos Labs](https://aptos.dev/)** | Robust Blockchain Infrastructure | ⚡ High-Performance Platform |
-| **[Move Language](https://move-language.github.io/move/)** | Safe Smart Contract Development | 🛡️ Security & Resource Safety |
-| **[Aave Protocol](https://aave.com/)** | DeFi Lending Infrastructure | 💰 Yield Optimization |
-| **[OpenRouter](https://openrouter.ai/)** | AI-Powered Assistant Technology | 🤖 Intelligent User Experience |
-
-</div>
-
+- **[Dave White at Paradigm](https://www.paradigm.xyz/2024/12/distribution-markets)** for the Distribution Markets research paper
+- **Aptos Labs** for the blockchain infrastructure and Move language
+- **Next.js Team** for the amazing React framework
+- **Firebase** for the real-time database
+- **OpenAI** for AI capabilities
+- **Paradigm Research Team** for advancing the field of information finance
 ---
 
 <div align="center">
-
-## 💫 **Built with ❤️ for the Future of Prediction Markets**
-
-### *Infi Markets - Where Probability Meets Precision*
-
-![Made with Love](https://img.shields.io/badge/Made%20with-❤️-pink?style=for-the-badge)
-![Powered by Math](https://img.shields.io/badge/Powered%20by-🧮%20Mathematics-blue?style=for-the-badge)
-![Secured by Move](https://img.shields.io/badge/Secured%20by-🛡️%20Move-green?style=for-the-badge)
-
-**© 2024 Infi Markets. All rights reserved.**
-
-*Revolutionizing prediction markets through continuous probability distributions*
-
----
-
-[![Star this repo](https://img.shields.io/badge/⭐_Star_this_repo-if_it_helped_you-yellow?style=for-the-badge)](https://github.com/aryanbaranwal001/aptos_distribution_markets)
-
+<p><strong>Built with ❤️ on Aptos</strong></p>
+<p>© 2024 Infi Markets. All rights reserved.</p>
 </div>
