@@ -32,7 +32,7 @@ export interface Market {
 export const markets: Market[] = [
   {
     id: "1",
-    title: "Will Aptos APT reach $8 by end of December 2025?",
+    title: "What will be the price of APT by the End of december 2025",
     description: "Distribution market on Aptos APT token price considering chain's adoption of innovative projects, developer activity, and overall crypto market conditions.",
     volume: 1850000,
     categories: ["trending","crypto", "tech"],
@@ -62,7 +62,7 @@ export const markets: Market[] = [
 
   {
     id: "2",
-    title: "Will Bitcoin reach $100,000 by end of 2024?",
+    title: "What will be the price of BTC by the End of 2025",
     description: "Prediction market on Bitcoin's price trajectory considering current market conditions, institutional adoption, and regulatory developments.",
     volume: 2500000,
     categories: ["trending", "crypto"],
@@ -91,8 +91,8 @@ export const markets: Market[] = [
   },
   {
     id: "3",
-    title: "US Presidential Election 2024 Winner",
-    description: "Betting market on the outcome of the 2024 United States Presidential Election with real-time odds based on polling data and campaign performance.",
+    title: "What will be GDP of US by 2030",
+    description: "Prediction market on the GDP of US by 2030 with real-time odds based on polling data and campaign performance.",
     volume: 15000000,
     categories: ["trending", "politics", "elections"],
     iconName: "election.svg",
@@ -149,8 +149,8 @@ export const markets: Market[] = [
   },
   {
     id: "5",
-    title: "Will OpenAI release GPT-5 in 2024?",
-    description: "Market predicting the release timeline of OpenAI's next major language model, considering development cycles and company announcements.",
+    title: "What will be the Market Cap of Apple by the End of 2030",
+    description: "Market predicting the Market Cap of Apple by the End of 2030, considering development cycles and company announcements.",
     volume: 800000,
     categories: ["trending", "tech"],
     iconName: "ai.svg",
@@ -178,7 +178,7 @@ export const markets: Market[] = [
   },
   {
     id: "6",
-    title: "Apple Vision Pro Market Adoption Rate",
+    title: "Market Cap of Apple by the End of 2030",
     description: "Prediction market on Apple Vision Pro achieving 1 million units sold by end of 2024, considering pricing and consumer adoption patterns.",
     volume: 1900000,
     categories: ["trending", "tech"],
@@ -208,7 +208,7 @@ export const markets: Market[] = [
 
   {
     id: "7",
-    title: "FIFA World Cup 2026 Host Cities",
+    title: "What will be total number of goal in FIFA world cup 2026",
     description: "Prediction market on which additional cities will be selected as FIFA World Cup 2026 venues beyond the already announced locations.",
     volume: 1600000,
     categories: ["trending", "sports", "world"],
