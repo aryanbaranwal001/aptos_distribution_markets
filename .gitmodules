@@ -1,0 +1,3 @@
+[submodule "contracts/aptos-aave-v3"]
+	path = contracts/aptos-aave-v3
+	url = https://github.com/aave/aptos-aave-v3.git

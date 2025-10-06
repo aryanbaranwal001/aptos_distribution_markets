@@ -49,7 +49,7 @@
 
 **🔥 Try Infi Markets Now**
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-aptos--distribution--markets--d12b.vercel.app-00D4AA?style=for-the-badge&logo=vercel)](https://aptos-distribution-markets-d12b.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-aptos--distribution--markets--wmw5.vercel.app-00D4AA?style=for-the-badge&logo=vercel)](https://aptos-distribution-markets-wmw5.vercel.app/)
 
 🚨 **Website loading delay**: Render's policy of spinning down free instance with inactivity, can delay website loading by 50 seconds or more.
 

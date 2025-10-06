@@ -32,7 +32,7 @@ declare global {
 const CONTRACT_ADDRESS =
   "0x3b0c1f2a3f9f281f3a654afd1cc07dfcdfa8facee967b196cc77cdd20b98c829";
 const MARKET_ADDRESS =
-  "0x432de64f755ee2deed4423eb557a2eef3d940ac162d5fadaef8a97f223f7c30d";
+  "0x9670ebf76c115dbaed650267312b69b4ed52cdcba4bb5bc52786c89f65bbc7d2";
 
 // Aptos SDK configuration
 const config = new AptosConfig({ network: Network.TESTNET });
@@ -50,6 +50,7 @@ const DemoMarketInstance = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isTrading, setIsTrading] = useState(false);
   const [isAddingLiquidity, setIsAddingLiquidity] = useState(false);
+  const [closingPositionIndex, setClosingPositionIndex] = useState<number | null>(null);
 
   const [marketState, setMarketState] = useState<unknown>(null);
   const [marketParams, setMarketParams] = useState<unknown>(null);
@@ -521,7 +522,7 @@ const DemoMarketInstance = () => {
 
     setIsAddingLiquidity(true);
     try {
-      const y = BigInt(Math.floor(parseFloat(aptAmount) * 1e18));
+      const y = BigInt(0.5*Math.floor(parseFloat(aptAmount) * 1e18));
       const aptAmountInOctas = BigInt(Math.floor(parseFloat(aptAmount) * 1e8));
 
       const transaction = {
@@ -547,6 +548,42 @@ const DemoMarketInstance = () => {
       console.error("Failed to add liquidity:", error);
     } finally {
       setIsAddingLiquidity(false);
+    }
+  };
+
+  const handleClosePosition = async (positionIndex: number) => {
+    if (!currentWallet || !account) {
+      console.error("Please connect your wallet first");
+      return;
+    }
+
+    setClosingPositionIndex(positionIndex);
+
+    try {
+      const transaction = {
+        type: "entry_function_payload",
+        function: `${CONTRACT_ADDRESS}::distribution_markets::close_position_and_settle`,
+        type_arguments: [],
+        arguments: [
+          MARKET_ADDRESS,
+          positionIndex.toString(),
+        ],
+      };
+
+      console.log("Submitting close position transaction:", transaction);
+
+      const response = await (currentWallet as { signAndSubmitTransaction: (tx: unknown) => Promise<unknown> }).signAndSubmitTransaction(transaction);
+
+      console.log("Transaction response:", response);
+      await aptos.waitForTransaction({ transactionHash: (response as { hash: string }).hash });
+      console.log("Position closed successfully!");
+      
+      // Refresh positions
+      fetchPositions();
+    } catch (error) {
+      console.error("Failed to close position:", error);
+    } finally {
+      setClosingPositionIndex(null);
     }
   };
 
@@ -745,7 +782,7 @@ const DemoMarketInstance = () => {
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-current"></div>
                       </div>
                     ) : positions.length > 0 ? (
-                      <div className="flex flex-col h-[400px] overflow-y-auto gap-y-20">
+                      <div className="flex flex-col h-[400px] overflow-y-auto gap-y-4">
                         {positions.map((position, index) => {
                           const pos = position as unknown[];
                           const traderMean = Number(pos[0]) / 1e18;
@@ -781,17 +818,30 @@ const DemoMarketInstance = () => {
                           );
 
                           return (
-                            <div key={index} className="h-60">
+                            <div key={index} className="h-auto pb-4 border-b border-gray-500/20 last:border-b-0">
                               <h3 className="text-sm font-bold mb-2 text-center">
                                 Position {index + 1}
                               </h3>
-                              <NormalDistributionChart
-                                marketData={marketData}
-                                userProposalData={traderData}
-                                differenceData={[]}
-                                onHover={() => {}}
-                                xAxisLabel={market.x_axis_field_name}
-                              />
+                              <div className="h-60">
+                                <NormalDistributionChart
+                                  marketData={marketData}
+                                  userProposalData={traderData}
+                                  differenceData={[]}
+                                  onHover={() => {}}
+                                  xAxisLabel={market.x_axis_field_name}
+                                />
+                              </div>
+                              <div className="mt-2 text-center">
+                                <button
+                                  onClick={() => handleClosePosition(index)}
+                                  disabled={closingPositionIndex !== null}
+                                  className={`py-1 px-4 rounded-md ${theme.primaryBg} text-black text-xs font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
+                                >
+                                  {closingPositionIndex === index
+                                    ? "Settling..."
+                                    : "Settle Position"}
+                                </button>
+                              </div>
                             </div>
                           );
                         })}
