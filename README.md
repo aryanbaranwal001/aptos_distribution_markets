@@ -20,9 +20,9 @@
 
 - [📋 Table of Contents](#-table-of-contents)
 - [🚀 Live Application](#-live-application)
-- [User Guide](#user-guide)
+- [🧭 User Guide](#-user-guide)
   - [How to Engage with the Market](#how-to-engage-with-the-market)
-  - [Rewards](#rewards)
+  - [Profit](#profit)
 - [🌟 Overview](#-overview)
   - [🎯 Key Features](#-key-features)
 - [🏗️ Architecture](#️-architecture)
@@ -35,10 +35,16 @@
   - [Backend](#backend)
   - [Blockchain](#blockchain)
 - [🧮 Mathematical Foundation](#-mathematical-foundation)
-  - [Normal Distribution Parameters](#normal-distribution-parameters)
-  - [Key Formulas](#key-formulas)
-  - [Research Paper Implementation](#research-paper-implementation)
+  - [**Continuous Case Setup**](#continuous-case-setup)
+  - [**Normal Distribution Model**](#normal-distribution-model)
+  - [**L² Norm of Normal Distribution**](#l-norm-of-normal-distribution)
+  - [**Scaling Factor λ**](#scaling-factor-λ)
+  - [**Backing (Collateral) Constraint**](#backing-collateral-constraint)
+  - [**Trader’s Position and Collateral Requirement**](#traders-position-and-collateral-requirement)
+  - [**Key Formulas**](#key-formulas)
+  - [**Interpretation**](#interpretation)
 - [🧪 Testing Smart Contracts](#-testing-smart-contracts)
+- [🔗 Contract Addresses](#-contract-addresses)
 - [🙏 Acknowledgments](#-acknowledgments)
 
 
@@ -49,7 +55,7 @@
 
 **🔥 Try Infi Markets Now**
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-aptos--distribution--markets--wmw5.vercel.app-00D4AA?style=for-the-badge&logo=vercel)](https://aptos-distribution-markets-wmw5.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-aptos--distribution--markets--d12b.vercel.app-00D4AA?style=for-the-badge&logo=vercel)](https://aptos-distribution-markets-d12b.vercel.app/)
 
 🚨 **Website loading delay**: Render's policy of spinning down free instance with inactivity, can delay website loading by 50 seconds or more.
 
@@ -57,7 +63,7 @@
 
 ---
 
-## User Guide
+## 🧭 User Guide
 
 ### How to Engage with the Market
 
@@ -73,13 +79,17 @@
         **Example:** If you expect the price of APT to be $8 by the end of December 2025, you will set the mean to 8. And if you are highly confident that the price will be close to $8, you will assign a higher standard deviation, creating a pointier curve around your predicted value.
 
 3. **Execute Trades:** After setting the mean and standard deviation, users can buy their position based on their prediction. All positions will be visible in the **Positions** section.
-4. **Add Liquidity:** Users can also provide liquidity by buying the current market position.
+4. **Add Liquidity:** Users can also provide liquidity and they recieve a proportional amount of LP shares and market position minted.
 
-### Rewards
+### Profit
 
-* Rewards will be distributed based on the value of parameter (like APT price) in which market resolves and the difference curve made during position creation.
+* You earn based on your payout curve of your position. It's better to understand it visually through the following chart
+
+<img src="profit_guide.png"/>
+
 * Regardless of whether the market resolves in your favor through trade positions, users earn a **4% APY** on their positions.
-* Liquidity providers will also earn a **4% APY** on their liquidity
+* Holding LP shares allows you to earn percentage of the fees that the platform is earning. Also you get a position through which you can settle and earn.
+
 ---
 
 ## 🌟 Overview  
@@ -98,81 +108,7 @@ Unlike traditional binary prediction markets, Infi Markets allows traders to exp
 
 ## 🏗️ Architecture
 
-  
-
-```mermaid
-
-graph TB
-
-subgraph "Frontend Layer"
-
-A[Next.js 15 App]
-
-B[React Components]
-
-C[Wallet Integration]
-
-D[AI Chat Interface]
-
-end
-
-subgraph "Backend Layer"
-
-E[Express.js API]
-
-F[Firebase Admin SDK]
-
-G[Rate Limiting]
-
-H[AI Integration]
-
-end
-
-subgraph "Blockchain Layer"
-
-I[Aptos Network]
-
-J[Move Smart Contracts]
-
-K[Distribution Markets]
-
-end
-
-subgraph "Data Layer"
-
-L[Firestore Database]
-
-M[Market Data]
-
-N[User Data]
-
-end
-
-A --> E
-
-B --> A
-
-C --> I
-
-D --> H
-
-E --> F
-
-E --> G
-
-F --> L
-
-I --> J
-
-J --> K
-
-L --> M
-
-L --> N
-
-```
-
-  
+<img src="architecture.png"/>
 
 ## 🚀 Quick Start
 
@@ -184,8 +120,6 @@ L --> N
 - **OpenAI API Key** for AI features
 
 ### Installation
-
-  
 
 1. **Clone the repository**
 
@@ -269,11 +203,16 @@ aptos_distribution_markets/
 │ │ └── services/ # Business logic
 │ └── scripts/ # Database seeding scripts
 │
-├── 📜 contracts/ # Aptos Move smart contracts
-│ ├── sources/ # Move source files
-│ │ ├── distribution_markets.move # main market contract
-│ │ └── math_utils.move # state of the art math utils library in move
-│ └── tests/ # Contract tests
+├── 📜 contracts/                     # Aptos Move smart contracts
+│   ├── aptos-aave-v3/                # Aptos Aave v3 submodule
+│   ├── distribution_market_v2/       
+│   │   └── distribution_markets_v2.move   # Main market contract with Aave integration
+│   │
+│   ├── sources/                      # Move source files
+│   │   ├── distribution_markets.move     # Main market contract
+│   │   └── math_utils.move               # State-of-the-art math utils library in Move
+│   │
+│   └── tests/                         # Contract tests
 │
 └── 🖼️ README.md # Project README
 ```
@@ -307,36 +246,154 @@ aptos_distribution_markets/
 
 ## 🧮 Mathematical Foundation
 
-Infi Markets implements the **Distribution Markets** protocol based on the [Paradigm research paper](https://www.paradigm.xyz/2024/12/distribution-markets) by Dave White. This groundbreaking research introduces a new kind of prediction market for events with continuous outcomes, using constant function AMMs over probability distributions.  
+Infi Markets implements the **Distribution Markets** protocol based on the [Paradigm research paper](https://www.paradigm.xyz/2024/12/distribution-markets) by **Dave White**.
+This research introduces **continuous-outcome prediction markets** using **constant-function AMMs (CFAMMs)** defined over **probability distribution functions**.
 
-The system uses:
+The continuous case is modeled using **Normal (Gaussian)** distributions, forming the mathematical core of the system.
 
-### Normal Distribution Parameters
+---
 
-- **μ (Mean)**: Central tendency of the distribution
-- **σ (Standard Deviation)**: Spread and uncertainty
-- **λ (Lambda)**: Scaling factor for market dynamics
-- **K (Invariant)**: AMM invariant constant
+### **Continuous Case Setup**
 
-### Key Formulas
+Let outcomes lie on the real line $\mathbb{R}$.
+Both the AMM and traders hold outcome functions $f(x)$,
+where $f(x)$ represents the number of tokens that pay $f({x_0})$ if the realized outcome equals $x_0$.
 
-```
-Position Value = λ_g * √(2πσ_g) * e^(-(x-μ_g)²/(2σ_g²))
+**Inner product and L² norm:**
 
-Market Price = λ_f * √(2πσ_f) * e^(-(x-μ_f)²/(2σ_f²))
-```
+* $\langle f, g \rangle = \int_{-\infty}^{\infty} f(x) g(x), dx$
+* $|f|^2 = \int_{-\infty}^{\infty} f(x)^2, dx$
 
-  
+The AMM maintains a **constant function invariant:**
 
-### Research Paper Implementation
+$$
+|f|^2 = K
+$$
 
-This project implements the complete Distribution Markets mechanism as described in the [Paradigm research paper](https://www.paradigm.xyz/2024/12/distribution-markets), including:
+where $K$ is the invariant constant defining the CFAMM surface.
+
+---
+
+### **Normal Distribution Model**
+
+Each market position (trader or AMM) is modeled as a **scaled Normal distribution**:
+
+$$
+f(x) = \lambda , p_{\mu,\sigma}(x)
+$$
+
+where the Normal (Gaussian) probability density function is:
+
+$$
+p_{\mu,\sigma}(x) = \frac{1}{\sqrt{2\pi},\sigma} , e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+$$
+
+and the parameters are:
+
+| Symbol | Meaning                                     |
+| :----: | :------------------------------------------ |
+|  **μ** | Mean — central tendency of the distribution |
+|  **σ** | Standard deviation — spread and uncertainty |
+|  **λ** | Scaling factor to satisfy AMM invariant     |
+|  **K** | CFAMM invariant constant                    |
+
+---
+
+### **L² Norm of Normal Distribution**
+
+The squared L² norm of the Normal pdf is given by:
+
+$$
+|p_{\mu,\sigma}|^2 = \int_{-\infty}^{\infty} p_{\mu,\sigma}(x)^2, dx
+$$
+
+Substituting the pdf expression:
+
+$$
+|p_{\mu,\sigma}|^2 = \frac{1}{2\pi\sigma^2} \int_{-\infty}^{\infty} e^{-\frac{(x-\mu)^2}{\sigma^2}}, dx
+$$
+
+Using the Gaussian integral
+$\int_{-\infty}^{\infty} e^{-a(x-\mu)^2} dx = \sqrt{\frac{\pi}{a}}$ with $a = 1/\sigma^2$, we get:
+
+$$
+\boxed{|p_{\mu,\sigma}|^2 = \frac{1}{2\sigma\sqrt{\pi}}}
+$$
+
+Hence, the L² norm depends **only on the spread ($\sigma$)** and not on the mean ($\mu$).
+
+---
+
+### **Scaling Factor λ**
+
+To satisfy the AMM invariant $|f|^2 = K$:
+
+$$
+|f|^2 = \lambda^2 |p_{\mu,\sigma}|^2 = K
+$$
+
+Solving for $\lambda$ gives the closed-form relationship:
+
+$$
+\boxed{\lambda = K\sqrt{2\sigma\sqrt{\pi}}}
+$$
+
+This links the scaling factor $\lambda$ directly to the invariant $K$ and the standard deviation $\sigma$.
+
+---
+
+### **Backing (Collateral) Constraint**
+
+To maintain solvency, the AMM enforces a **maximum payout cap ($b$):**
+
+$$
+f(x) \le b \quad \forall x
+$$
 
 
-- **Constant Function AMM**: Using l₂ norm invariant over probability distributions
-- **Normal Distribution Trading**: Full implementation of Gaussian distribution markets
-- **Collateralization**: Proper backing constraints and risk management
-- **AMM Behavior**: Market dynamics that prevent information extraction attacks
+
+---
+
+### **Trader’s Position and Collateral Requirement**
+
+When a trader moves the market from $f(x)$ to $g(x)$:
+
+$$
+\pi(x) = g(x) - f(x)
+$$
+
+The **collateral required** equals the worst-case loss:
+
+$$
+\text{Collateral} = -\min_x \big(g(x) - f(x)\big)
+$$
+
+For Gaussian functions, this minimum can be found **numerically**, since the difference of two Gaussian curves is unimodal.
+
+---
+
+### **Key Formulas**
+
+| Concept               | Formula                                                                            |
+| :-------------------- | :--------------------------------------------------------------------------------- |
+| **Normal PDF**        | $p_{\mu,\sigma}(x) = \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$ |
+| **L² Norm**           | $|p_{\mu,\sigma}|^2 = \frac{1}{2\sigma\sqrt{\pi}}$                                 |
+| **Scaling Factor**    | $\lambda = \sqrt{2\sigma\sqrt{\pi},K}$                                             |
+| **Capped Function**   | $f_{\text{cap}}(x) = \min(\lambda p_{\mu,\sigma}(x), b)$                           |
+| **Invariant**         | $\int f(x)^2 dx = K$                                                               |
+| **Trader Collateral** | $\text{Collateral} = -\min_x (g(x) - f(x))$                                        |
+
+---
+
+### **Interpretation**
+
+* **μ (Mean)** → Trader’s directional belief
+* **σ (Standard Deviation)** → Trader’s confidence (narrower = higher confidence)
+* **λ (Lambda)** → Scales position to preserve the AMM invariant
+* **K (Invariant)** → Maintains constant AMM depth and stability
+* **b (Cap)** → Limits maximum exposure and ensures solvency
+
+---
 
 ## 🧪 Testing Smart Contracts
 
@@ -344,6 +401,14 @@ This project implements the complete Distribution Markets mechanism as described
 cd contracts
 aptos move test
 ```
+## 🔗 Contract Addresses
+
+**Contract Address:**  
+`0x3b0c1f2a3f9f281f3a654afd1cc07dfcdfa8facee967b196cc77cdd20b98c829`
+
+**Market Address:**  
+`0x9670ebf76c115dbaed650267312b69b4ed52cdcba4bb5bc52786c89f65bbc7d2`
+
 ## 🙏 Acknowledgments
 
 - **[Dave White at Paradigm](https://www.paradigm.xyz/2024/12/distribution-markets)** for the Distribution Markets research paper
