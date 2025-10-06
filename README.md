@@ -55,11 +55,11 @@
 
 **🔥 Try Infi Markets Now**
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-aptos--distribution--markets--d12b.vercel.app-00D4AA?style=for-the-badge&logo=vercel)](https://aptos-distribution-markets-d12b.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-aptos--distribution--markets--wmw5.vercel.app-00D4AA?style=for-the-badge&logo=vercel)](https://aptos-distribution-markets-wmw5.vercel.app/)
 
 🚨 **Website loading delay**: Render's policy of spinning down free instance with inactivity, can delay website loading by 50 seconds or more.
 
-🚨 **Only Demo available**: Currently, only the market in **Demo** is fully functional end-to-end.
+🚨 **Only Demo available**: Currently, only **Demo** market has been initialized with liquidity.
 
 ---
 
@@ -74,9 +74,9 @@
     
         **Example:** for market *What will be price of APT by the end of December 2025*, the mean here is the expected price of APT in USD.
     
-   * **Standard Deviation:** This represents your level of <u>confidence</u> in the position. A higher standard deviation indicates greater confidence, which can result in higher potential profits if the market resolves in your favor. Higher standard deviation means pointier the curve around your expected value
+   * **Standard Deviation:** This represents your level of <u>confidence</u> in the position. A lower standard deviation indicates greater confidence, which can result in higher potential profits if the market resolves in your favor. Lower standard deviation means pointier the curve around your expected value.
 
-        **Example:** If you expect the price of APT to be $8 by the end of December 2025, you will set the mean to 8. And if you are highly confident that the price will be close to $8, you will assign a higher standard deviation, creating a pointier curve around your predicted value.
+        **Example:** If you expect the price of APT to be $8 by the end of December 2025, you will set the mean to 8. And if you are highly confident that the price will be close to $8, you will assign a lower standard deviation, creating a pointier curve around your predicted value.
 
 3. **Execute Trades:** After setting the mean and standard deviation, users can buy their position based on their prediction. All positions will be visible in the **Positions** section.
 4. **Add Liquidity:** Users can also provide liquidity and they recieve a proportional amount of LP shares and market position minted.
@@ -165,7 +165,14 @@ OPENAI_API_KEY=your_openai_key
 NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
 ```
 
-4. **Start the development servers**
+4. **Seed the Firebase Firestore Database**
+
+```bash
+cd backend/scripts
+node seedDatabase.js
+```
+
+5. **Start the development servers**
 
 ```bash
 # Terminal 1: Backend
