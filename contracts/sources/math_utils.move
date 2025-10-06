@@ -32,7 +32,7 @@ module distribution_markets::math_utils {
     // Fixed Point Arithmetic
     // ==============================
 
-    /// Multiply two fixed-point numbers - ✅
+    /// Multiply two fixed-point numbers 
     #[view]
     public fun fp_mul(a: u128, b: u128): u128 {
         // Use 256-bit arithmetic to prevent overflow
@@ -48,7 +48,7 @@ module distribution_markets::math_utils {
         (result_256 as u128)
     }
 
-    /// Divide two fixed-point numbers - ✅
+    /// Divide two fixed-point numbers 
     #[view]
     public fun fp_div(a: u128, b: u128): u128 {
         assert!(b != 0, EDIVISION_BY_ZERO);
@@ -66,32 +66,32 @@ module distribution_markets::math_utils {
         (result_256 as u128)
     }
 
-    /// Add two fixed-point numbers - ✅
+    /// Add two fixed-point numbers 
     #[view]
     public fun fp_add(a: u128, b: u128): u128 {
         a + b
     }
 
-    /// Subtract two fixed-point numbers (a - b) - ✅
+    /// Subtract two fixed-point numbers (a - b)    
     #[view]
     public fun fp_sub(a: u128, b: u128): u128 {
         assert!(a >= b, EOVERFLOW);
         a - b
     }
 
-    /// Square a fixed-point number - ✅
+    /// Square a fixed-point number 
     #[view]
     public fun fp_square(a: u128): u128 {
         fp_mul(a, a)
     }
 
-    /// Convert regular integer to fixed-point - ✅
+    /// Convert regular integer to fixed-point 
     #[view]
     public fun to_fixed_point(a: u64): u128 {
         (a as u128) * PRECISION
     }
 
-    /// Convert fixed-point to regular integer (truncating decimals) - ✅
+    /// Convert fixed-point to regular integer (truncating decimals) 
     #[view]
     public fun from_fixed_point(a: u128): u64 {
         (a / PRECISION as u64)
@@ -101,7 +101,7 @@ module distribution_markets::math_utils {
     // Mathematical Functions
     // ==============================
 
-    /// Calculate square root using Newton's method (fixed-point) - ✅
+    /// Calculate square root using Newton's method (fixed-point)   
     #[view]
     public fun fp_sqrt(x: u128): u128 {
         if (x == 0) return 0;
@@ -117,7 +117,7 @@ module distribution_markets::math_utils {
         z
     }
     
-    /// Calculate exponential function e^x using range reduction and Taylor series - ✅
+    /// Calculate exponential function e^x using range reduction and Taylor series 
     /// Uses e^x = e^(integer_part) * e^(fractional_part) for better accuracy
     #[view]
     public fun fp_exp(x: u128): u128 {
@@ -157,7 +157,7 @@ module distribution_markets::math_utils {
         fp_mul(int_result, frac_result)
     }
 
-    /// Calculate natural logarithm using range reduction and series expansion - ✅
+    /// Calculate natural logarithm using range reduction and series expansion 
     /// Uses ln(x) = ln(2^n * m) = n*ln(2) + ln(m) where 1 ≤ m < 2
     /// Note: Only works for x >= 1, returns 0 for x < 1 (limitation for now)
     #[view]
@@ -211,7 +211,7 @@ module distribution_markets::math_utils {
         series_result + power_count * LN_2
     }
 
-    /// Calculate x^y for fixed-point numbers (x^y = e^(y * ln(x))) - ✅
+    /// Calculate x^y for fixed-point numbers (x^y = e^(y * ln(x))) 
     #[view]
     public fun fp_pow(x: u128, y: u128): u128 {
         if (y == 0) return PRECISION;
@@ -227,7 +227,7 @@ module distribution_markets::math_utils {
     // Statistical Functions
     // ==============================
 
-    /// Calculate the probability density function of normal distribution - ✅
+    /// Calculate the probability density function of normal distribution 
     /// PDF(x) = (1 / (σ * sqrt(2π))) * e^(-0.5 * ((x - μ) / σ)²)
     #[view]
     public fun normal_pdf(x: u128, mean: u128, std_dev: u128, x_is_negative: bool, mean_is_negative: bool): u128 {
@@ -257,7 +257,6 @@ module distribution_markets::math_utils {
         fp_mul(coefficient, exp_term)
     }
 
-    // Note: L2 norm calculation removed - not needed on-chain, K is set by initializer 
 
     /// Calculate the inner product of two normal distributions (simplified) - Will look later if needed
     /// This is used for the AMM invariant calculations
@@ -317,20 +316,20 @@ module distribution_markets::math_utils {
     // Utility Functions
     // ==============================
 
-    /// Get the precision constant - ✅
+    /// Get the precision constant 
     #[view]
     public fun get_precision(): u128 {
         PRECISION
     }
 
-    /// Check if a fixed-point number is approximately equal to another - ✅
+    /// Check if a fixed-point number is approximately equal to another 
     #[view]
     public fun fp_approx_equal(a: u128, b: u128, tolerance: u128): bool {
         let diff = if (a >= b) a - b else b - a;
         diff <= tolerance
     }
 
-    /// Clamp a value between min and max - ✅
+    /// Clamp a value between min and max 
     #[view]
     public fun clamp(value: u128, min_val: u128, max_val: u128): u128 {
         if (value < min_val) min_val

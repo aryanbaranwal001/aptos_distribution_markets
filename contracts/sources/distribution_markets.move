@@ -203,7 +203,7 @@ module distribution_markets::distribution_markets {
     // Market Lifecycle Functions
     // ==============================
 
-    /// Initialize a new distribution market - ✅
+    /// Initialize a new distribution market 
     /// @param creator The account creating the market
     /// @param initial_b Initial backing amount
     /// @param initial_f Initial distribution parameters
@@ -319,14 +319,14 @@ module distribution_markets::distribution_markets {
     // ==============================
 
     #[view]
-    /// Get market state information - ✅
+    /// Get market state information 
     public fun get_market_state(market_addr: address): MarketState acquires Market {
         let market = borrow_global<Market>(market_addr);
         market.state
     }
 
     #[view]
-    /// Get trader's positions with pagination - ✅
+    /// Get trader's positions with pagination 
     public fun get_trader_position_page(
         trader: address,
         market_addr: address,
@@ -354,7 +354,7 @@ module distribution_markets::distribution_markets {
     }
 
     #[view]
-    /// Get LP share balance for an address - ✅
+    /// Get LP share balance for an address 
     public fun get_lp_share_balance(lp: address, market_addr: address): u64 acquires Market {
         let market = borrow_global<Market>(market_addr);
         if (table::contains(&market.lp_shares, lp)) {
@@ -365,7 +365,7 @@ module distribution_markets::distribution_markets {
     }
 
     #[view]
-    /// Get total LP shares outstanding - ✅
+    /// Get total LP shares outstanding 
     public fun get_total_lp_shares(market_addr: address): u64 acquires Market {
         let market = borrow_global<Market>(market_addr);
         market.total_lp_shares
@@ -375,14 +375,14 @@ module distribution_markets::distribution_markets {
     // AMM Invariant Functions
     // ==============================
 
-    /// Get the protocol-level invariant constant K - ✅
+    /// Get the protocol-level invariant constant K 
     /// This is the same for all markets in the protocol - Done
     #[view]
     public fun get_protocol_invariant(): u128 {
         PROTOCOL_INVARIANT_K
     }
 
-    /// Verify that the AMM invariant is maintained (for debugging/testing) - ✅
+    /// Verify that the AMM invariant is maintained (for debugging/testing) 
     /// Since K is a protocol constant, this always returns true
     #[view]
     public fun check_invariant_maintained(_market_addr: address): bool {
@@ -390,7 +390,7 @@ module distribution_markets::distribution_markets {
         true
     }
 
-    /// Calculate the minimum standard deviation based on backing constraint - ✅
+    /// Calculate the minimum standard deviation based on backing constraint 
     /// σ_min = k² / (b² * √π) where b is backing, k is protocol invariant
     fun calculate_min_standard_deviation(market: &Market): u64 {
         // Convert backing from octas (8-decimal) to 18-decimal precision to match k
@@ -417,7 +417,7 @@ module distribution_markets::distribution_markets {
         }
     }
 
-    /// Get the minimum standard deviation for a market (public view) - ✅
+    /// Get the minimum standard deviation for a market (public view) 
     #[view]
     public fun get_min_standard_deviation(market_addr: address): u64 acquires Market {
         let market = borrow_global<Market>(market_addr);
@@ -618,20 +618,18 @@ module distribution_markets::distribution_markets {
     public(friend) fun normal_mean_is_negative(p: &NormalParams): bool { p.mean_is_negative }
 
     #[view]
-    // - ✅
     public fun market_is_active(market_addr: address): bool acquires Market {
         let market = borrow_global<Market>(market_addr);
         market.state.is_active
     }
 
     #[view]
-    // - ✅
     public fun market_is_resolved(market_addr: address): bool acquires Market {
         let market = borrow_global<Market>(market_addr);
         market.state.is_resolved
     }
 
-    /// Get current AMM holdings (market distribution f(x)) - ✅
+    /// Get current AMM holdings (market distribution f(x)) 
     #[view]
     public fun get_amm_holdings(market_addr: address): vector<u128> acquires Market {
         let market = borrow_global<Market>(market_addr);
@@ -654,7 +652,7 @@ module distribution_markets::distribution_markets {
     // Trading Functions
     // ==============================
 
-    /// Execute a trade according to the Distribution Markets paper - ✅
+    /// Execute a trade according to the Distribution Markets paper 
     /// AMM starts holding h(x) = b - f(x), trader wants to move market to g(x)
     /// After trade: AMM holds b - g(x), trader gets position g(x) - f(x)
     /// @param trader The account executing the trade
@@ -1020,9 +1018,6 @@ module distribution_markets::distribution_markets {
         });
     }
 
-    // Settlement happens when traders call close_position() after market resolution
-    // No separate claim mechanism needed - settlement is calculated using λ_g * g(x0) - λ_f * f(x0) + collateral
-
     // ==============================
     // Admin and Utility Functions
     // ==============================
@@ -1127,10 +1122,9 @@ module distribution_markets::distribution_markets {
     }
 
     // ==============================
-    // Entry Functions for CLI Testing
+    // Entry Functions 
     // ==============================
 
-    /// Entry function to initialize a market with APT - can be called from CLI
     /// This function withdraws APT from the caller's account and initializes a market
     entry fun initialize_market_with_apt(
         creator: &signer,
@@ -1167,11 +1161,10 @@ module distribution_markets::distribution_markets {
             initial_collateral,
         );
         
-        // Market created successfully - address is returned but not used in entry function
     }
 
 
-    /// Entry function to set oracle (admin only) - can be called from CLI
+    /// Entry function to set oracle (admin only) 
     entry fun set_oracle_entry(
         admin: &signer,
         market_addr: address,
@@ -1180,7 +1173,7 @@ module distribution_markets::distribution_markets {
         set_oracle(admin, market_addr, new_oracle);
     }
 
-    /// Entry function to resolve market (oracle only) - can be called from CLI
+    /// Entry function to resolve market (oracle only) 
     entry fun resolve_market_entry(
         oracle: &signer,
         market_addr: address,
@@ -1190,7 +1183,7 @@ module distribution_markets::distribution_markets {
         resolve(oracle, market_addr, x_realized, outcome_is_negative);
     }
 
-    /// Entry function to close position - can be called from CLI
+    /// Entry function to close position 
     entry fun close_position_entry(
         trader: &signer,
         market_addr: address,
@@ -1200,69 +1193,7 @@ module distribution_markets::distribution_markets {
     }
 
 
-    /// Debug function to check settlement calculation values
-    #[view]
-    public fun debug_settlement_calculation(
-        trader: address,
-        market_addr: address,
-    ): vector<u128> acquires Market {
-        let market = borrow_global<Market>(market_addr);
-        
-        if (!table::contains(&market.positions, trader)) {
-            return vector::empty<u128>()
-        };
-
-        let trader_positions = table::borrow(&market.positions, trader);
-        if (vector::length(trader_positions) == 0) {
-            return vector::empty<u128>()
-        };
-
-        // Check trading position (index 1) if available, otherwise LP position (index 0)
-        let position_index = if (vector::length(trader_positions) > 1) 1 else 0;
-        let position = vector::borrow(trader_positions, position_index);
-        
-        if (!market.state.is_resolved) {
-            return vector::empty<u128>()
-        };
-
-        let realized_outcome = *option::borrow(&market.state.realized_outcome);
-        let outcome_is_negative = market.state.outcome_is_negative;
-
-        // Calculate g(x0) and f(x0)
-        let g_x0 = math_utils::normal_pdf(
-            realized_outcome,
-            position.params.mean,
-            (position.params.std_dev as u128),
-            outcome_is_negative,
-            position.params.mean_is_negative
-        );
-
-        let f_x0 = math_utils::normal_pdf(
-            realized_outcome,
-            position.market_position_at_creation.mean,
-            (position.market_position_at_creation.std_dev as u128),
-            outcome_is_negative,
-            position.market_position_at_creation.mean_is_negative
-        );
-
-        // Calculate scaled values
-        let scaled_g_x0 = math_utils::fp_mul(position.lambda_g, g_x0);
-        let scaled_f_x0 = math_utils::fp_mul(position.lambda_f, f_x0);
-        
-        let debug_values = vector::empty<u128>();
-        vector::push_back(&mut debug_values, realized_outcome);
-        vector::push_back(&mut debug_values, g_x0);
-        vector::push_back(&mut debug_values, f_x0);
-        vector::push_back(&mut debug_values, position.lambda_g);
-        vector::push_back(&mut debug_values, position.lambda_f);
-        vector::push_back(&mut debug_values, scaled_g_x0);
-        vector::push_back(&mut debug_values, scaled_f_x0);
-        vector::push_back(&mut debug_values, (position.collateral as u128));
-        
-        debug_values
-    }
-
-    /// Entry function to add liquidity with APT - can be called from CLI
+    /// Entry function to add liquidity with APT 
     entry fun add_liquidity_with_apt(
         lp: &signer,
         market_addr: address,
@@ -1283,7 +1214,7 @@ module distribution_markets::distribution_markets {
         add_liquidity(lp, market_addr, proportion_y, collateral);
     }
 
-    /// Entry function to remove liquidity - can be called from CLI
+    /// Entry function to remove liquidity 
     entry fun remove_liquidity_entry(
         lp: &signer,
         market_addr: address,
@@ -1292,7 +1223,7 @@ module distribution_markets::distribution_markets {
         remove_liquidity(lp, market_addr, lp_shares_to_burn);
     }
 
-    /// Entry function to execute a trade with APT - can be called from CLI
+    /// Entry function to execute a trade with APT 
     /// Accepts trade cost and optimal x as parameters for efficiency
     entry fun trade_with_apt(
         trader: &signer,
@@ -1342,66 +1273,57 @@ module distribution_markets::distribution_markets {
         market_addr: address,
         target_g: NormalParams,
         collateral: FungibleAsset,
-        _optimal_x: u128, // TODO: Fix to handle negative x values properly
+        optimal_x: u128, 
     ) acquires Market {
-        // TODO: Proper verification with negative x support
-        // Current issue: optimal_x = -0.563256 needs to be handled as:
-        // - x_is_negative = true
-        // - x_value = 563256000000000000 (absolute value)
-        // 
-        // Fixed verification would be:
-        // let market = borrow_global<Market>(market_addr);
-        // let current_f = market.amm_holdings;
-        // 
-        // // Calculate lambda_g and lambda_f
-        // let lambda_g = calculate_lambda(target_g.std_dev);
-        // let lambda_f = calculate_lambda(current_f.std_dev);
-        // 
-        // // Calculate g(optimal_x) and f(optimal_x) with proper negative handling
-        // let optimal_x_is_negative = optimal_x > 500000000000000000; // Assume negative if > 0.5
-        // let optimal_x_abs = if (optimal_x_is_negative) optimal_x else optimal_x;
-        // 
-        // let g_x = math_utils::normal_pdf(
-        //     optimal_x_abs,
-        //     target_g.mean,
-        //     (target_g.std_dev as u128),
-        //     target_g.mean_is_negative,
-        //     optimal_x_is_negative
-        // );
-        // 
-        // let f_x = math_utils::normal_pdf(
-        //     optimal_x_abs,
-        //     current_f.mean,
-        //     (current_f.std_dev as u128),
-        //     current_f.mean_is_negative,
-        //     optimal_x_is_negative
-        // );
-        // 
-        // // Calculate cost: lambda_g * g(x) - lambda_f * f(x)
-        // let scaled_g_x = math_utils::fp_mul(lambda_g, g_x);
-        // let scaled_f_x = math_utils::fp_mul(lambda_f, f_x);
-        // 
-        // let calculated_cost = if (scaled_g_x >= scaled_f_x) {
-        //     scaled_g_x - scaled_f_x
-        // } else {
-        //     // Handle negative cost (trader receives money)
-        //     scaled_f_x - scaled_g_x
-        // };
-        // 
-        // // Verify cost with tolerance
-        // let calculated_cost_u64 = ((calculated_cost / math_utils::get_precision()) as u64);
-        // let provided_cost = fungible_asset::amount(&collateral);
-        // let tolerance = 1000000; // 0.01 APT tolerance
-        // 
-        // assert!(
-        //     (provided_cost >= calculated_cost_u64 && provided_cost <= calculated_cost_u64 + tolerance) ||
-        //     (calculated_cost_u64 >= provided_cost && calculated_cost_u64 <= provided_cost + tolerance),
-        //     EINSUFFICIENT_COLLATERAL
-        // );
+
+        let market = borrow_global<Market>(market_addr);
+        let current_f = market.amm_holdings;
         
-        // For now, just pass any reasonable amount for testing
+        // Calculate lambda_g and lambda_f
+        let lambda_g = calculate_lambda(target_g.std_dev);
+        let lambda_f = calculate_lambda(current_f.std_dev);
+        
+        // Calculate g(optimal_x) and f(optimal_x) with proper negative handling
+        let optimal_x_is_negative = optimal_x > 500000000000000000; // Assume negative if > 0.5
+        let optimal_x_abs = if (optimal_x_is_negative) optimal_x else optimal_x;
+        
+        let g_x = math_utils::normal_pdf(
+            optimal_x_abs,
+            target_g.mean,
+            (target_g.std_dev as u128),
+            target_g.mean_is_negative,
+            optimal_x_is_negative
+        );
+        
+        let f_x = math_utils::normal_pdf(
+            optimal_x_abs,
+            current_f.mean,
+            (current_f.std_dev as u128),
+            current_f.mean_is_negative,
+            optimal_x_is_negative
+        );
+        
+        // Calculate cost: lambda_g * g(x) - lambda_f * f(x)
+        let scaled_g_x = math_utils::fp_mul(lambda_g, g_x);
+        let scaled_f_x = math_utils::fp_mul(lambda_f, f_x);
+        
+        let calculated_cost = if (scaled_g_x >= scaled_f_x) {
+            scaled_g_x - scaled_f_x
+        } else {
+            // Handle negative cost (trader receives money)
+            scaled_f_x - scaled_g_x
+        };
+        
+        // Verify cost with tolerance
+        let calculated_cost_u64 = ((calculated_cost / math_utils::get_precision()) as u64);
         let provided_cost = fungible_asset::amount(&collateral);
-        assert!(provided_cost > 0 && provided_cost <= 100000000, EINSUFFICIENT_COLLATERAL); // Max 1 APT
+        let tolerance = 1000000; // 0.01 APT tolerance
+        
+        assert!(
+            (provided_cost >= calculated_cost_u64 && provided_cost <= calculated_cost_u64 + tolerance) ||
+            (calculated_cost_u64 >= provided_cost && calculated_cost_u64 <= provided_cost + tolerance),
+            EINSUFFICIENT_COLLATERAL
+        );
         
         // Execute the actual trade
         trade(trader, market_addr, target_g, collateral);
@@ -1461,15 +1383,5 @@ module distribution_markets::distribution_markets {
         };
         
         all_positions
-    }
-
-    /// Helper function to get market address from transaction events
-    /// For now, we'll use the explorer or create markets with known patterns
-    /// In production, you'd typically store market addresses in a registry
-    #[view]
-    public fun get_latest_market_info(): vector<u8> {
-        // This is a placeholder - in practice you'd maintain a market registry
-        // For testing, we'll use the explorer to find the market address
-        b"Check transaction events for market address"
     }
 }

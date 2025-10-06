@@ -5,7 +5,7 @@ import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 const CONTRACT_ADDRESS =
 	"0x3b0c1f2a3f9f281f3a654afd1cc07dfcdfa8facee967b196cc77cdd20b98c829";
 const MARKET_ADDRESS =
-	"0x305f65ce0586f4cf101774497acacf98d041022ddbd9906ba8428bcc9637d9ef";
+	"0x432de64f755ee2deed4423eb557a2eef3d940ac162d5fadaef8a97f223f7c30d";
 
 // Liquidity parameters are now calculated inside the addLiquidity function
 
